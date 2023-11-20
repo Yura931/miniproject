@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 2000
+
+logging.level:
+  org.hibernate.SQL: debug
+
+jwt:
+  header: Authorization
+  secret: eXVyYS1zcHJpbmdib290LXN1YnByb2plY3Qtand0LXRva2VuLXNwcmluZy1zZWN1cml0eS1leGFtcGxlLXByb2plY3QtYWRtaW4=
+  token_prefix: 'Bearer '
+  refresh_prefix: 'RefreshToken '
+  authorities_key: 'auth'
+  authorization_header: 'Authorization'
