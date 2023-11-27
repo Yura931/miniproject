@@ -22,8 +22,8 @@ public class BoardController {
 
     @PreAuthorize("hasRole(ROLE_ADMIN)")
     @GetMapping("/board/list")
-    public Result<?> boardList() {
-        return ResultHandler.handle(HttpStatus.OK.value(), "게시판목록",
+    public ResponseEntity boardList() {
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판목록",
                 IntStream.rangeClosed(1, 10)
                         .mapToObj(i -> Map.of(
                                 "id", i,
@@ -31,6 +31,6 @@ public class BoardController {
                                 "content", "내용" + i
                         ))
                         .collect(Collectors.toList())
-                );
+                ));
     }
 }

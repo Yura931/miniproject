@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.*;
 import subproject.admin.common.dto.Result;
@@ -23,23 +25,22 @@ import java.security.Principal;
 public class MemberController {
     private final AuthService authService;
 
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    @PostMapping("/signup")
-    public Result signup(@Valid @RequestBody MemberDto.MemberRequestDto memberRequestDto) {
-        return ResultHandler.handle(HttpStatus.OK.value(), "", authService.signup(memberRequestDto));
-    }
-
     // 커스텀 Result, ResponseEntity 뭐가 더 좋은 방법??
-    @PostMapping("/signup2")
-    public ResponseEntity signup2(@Valid @RequestBody MemberDto.MemberRequestDto memberRequestDto) {
-        return ResponseEntity.ok().body(authService.signup(memberRequestDto));
+    @PostMapping("/signup")
+    public ResponseEntity signup(@Valid @RequestBody MemberDto.MemberRequestDto memberRequestDto) {
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "", authService.signup(memberRequestDto)));
     }
 
     @PostMapping("/login")
-    public Result role(@Valid @RequestBody MemberDto.MemberRequestDto loginDto) {
-        return ResultHandler.handle(HttpStatus.OK.value(), "", authService.login(loginDto));
+    public ResponseEntity role(@Valid @RequestBody MemberDto.MemberRequestDto loginDto) {
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "", authService.login(loginDto)));
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/info")
+    public String info() {
+        return "개인정보";
     }
 
 }

@@ -17,16 +17,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// login 요청이 오면 자동으로 UserDetailsService 타입으로 IoC되어 있는 loadUserByUsername 함수가 실행
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PrincipalUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
+    // 시큐리티 session(내부 Authentication(내부 User Details))
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) {
-        return memberRepository.findOneWithRoleByEmail(username)
+    public UserDetails loadUserByUsername(String email) {
+        return memberRepository.findOneWithRoleByEmail(email)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new LoginFailException("해당 유저 정보를 찾을 수 없습니다."));
     }

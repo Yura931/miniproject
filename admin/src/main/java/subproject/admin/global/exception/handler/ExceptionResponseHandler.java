@@ -50,7 +50,7 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
 
     // BindException 감지
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         BindingResult bindingResult = ex.getBindingResult();
         Map<String, String> errors = new HashMap<>();
         bindingResult.getFieldErrors().forEach(error -> {

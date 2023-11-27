@@ -21,8 +21,8 @@ import subproject.admin.jwt.JwtSecurityConfig;
 import subproject.admin.jwt.TokenProvider;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
+@EnableWebSecurity  // 스프링 시큐리티 필터가 스프링 필터체인에 등록 됨
+@EnableMethodSecurity // security관련 어노테이션 활성화
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
@@ -48,6 +48,7 @@ public class SecurityConfig {
         http
                 // token 사용하는 방식, csrf disable
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilter(corsFilter)  // @CrossOrigin(인증X), 시큐리티 필터에 등록 인증O
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .accessDeniedHandler(jwtAccessDeniedHandler)
