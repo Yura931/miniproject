@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import subproject.admin.user.entity.enums.MemberRoles;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,9 +30,6 @@ public class MemberRole {
     @Column(name = "role")
     private MemberRoles role;
 
-    public void setMember(Member member) {
-        this.member = member;
-    }
 
     private MemberRole(Member member, MemberRoles role) {
         this.roleId = UUID.randomUUID();
@@ -44,7 +42,9 @@ public class MemberRole {
     }
 
     public static MemberRole generateNewMemberByRoleAdmin(Member member) {
-        return new MemberRole(member, MemberRoles.ROLE_ADMIN);
+        MemberRole memberRole = new MemberRole(member, MemberRoles.ROLE_ADMIN);
+        member.saveMemberRole(Collections.singletonList(memberRole));
+        return memberRole;
     }
 
     @Override

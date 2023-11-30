@@ -1,4 +1,4 @@
-package subproject.admin.auth.principal;
+package subproject.admin.jwt.principal;
 
 import lombok.Getter;
 import org.springframework.security.core.Authentication;
@@ -44,10 +44,12 @@ public class PrincipalDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getMemberRole().toString());
 //        return Collections.singleton(grantedAuthority);
-        return member.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
-                .collect(Collectors.toList());
+
+//        return member.getRoles()
+//                .stream()
+//                .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
+//                .collect(Collectors.toList());
+        return authorities;
     }
 
 

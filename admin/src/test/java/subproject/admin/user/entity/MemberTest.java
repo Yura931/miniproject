@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import subproject.admin.user.repository.MemberRepository;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -42,11 +44,10 @@ class MemberTest {
     }
 
     @Test
-    public void memberole테스트() throws Exception {
+    public void memberRole테스트() throws Exception {
         Member member = Member.joinNewAdminMember("test@email.com", "test1234");
-        MemberRole memberAdminRole = MemberRole.generateNewMemberByRoleAdmin(member);
-        MemberRole memberUserRole = MemberRole.generateNewMemberByRoleUser(member);
-        member.saveMemberRole(Arrays.asList(memberUserRole, memberAdminRole));
-        System.out.println("member = " + member.getRoles());
+        Member saveMember = memberRepository.save(member);
+        saveMember.getRoles().stream().forEach(System.out::println);
+        member.getRoles().stream().forEach(System.out::println);
     }
 }

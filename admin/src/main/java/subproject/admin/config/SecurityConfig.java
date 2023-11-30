@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,18 +18,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import org.springframework.web.filter.CorsFilter;
 import subproject.admin.jwt.JwtAccessDeniedHandler;
 import subproject.admin.jwt.JwtAuthenticationEntryPoint;
-import subproject.admin.jwt.JwtSecurityConfig;
-import subproject.admin.jwt.TokenProvider;
+import subproject.admin.jwt.filter.JwtAuthenticationFilter;
+import subproject.admin.jwt.service.UserService;
+import subproject.admin.user.entity.enums.MemberRoles;
+
 
 @Configuration
 @EnableWebSecurity  // 스프링 시큐리티 필터가 스프링 필터체인에 등록 됨
 @EnableMethodSecurity // security관련 어노테이션 활성화
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final TokenProvider tokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserService userService;
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -48,22 +56,37 @@ public class SecurityConfig {
         http
                 // token 사용하는 방식, csrf disable
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilter(corsFilter)  // @CrossOrigin(인증X), 시큐리티 필터에 등록 인증O
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling
-                                .accessDeniedHandler(jwtAccessDeniedHandler)
-                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .headers(headers ->
-                        headers.contentTypeOptions(contentTypeOptionsConfig ->
-                                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/v1/admin").hasAnyAuthority(MemberRoles.ROLE_ADMIN.name())
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider()).addFilterBefore(
+                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
                 )
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .headers(headers ->
+                        headers.contentTypeOptions(contentTypeOptionsConfig ->
+                                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
+                .addFilter(corsFilter)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .accessDeniedHandler(jwtAccessDeniedHandler)
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint));
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userService.userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

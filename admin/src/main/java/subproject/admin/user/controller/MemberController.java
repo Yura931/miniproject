@@ -7,14 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.*;
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
-import subproject.admin.jwt.TokenProvider;
-import subproject.admin.jwt.dto.TokenDto;
-import subproject.admin.user.dto.MemberDto;
-import subproject.admin.user.service.AuthService;
+import subproject.admin.jwt.dto.SignUpRequest;
+import subproject.admin.jwt.dto.SigninRequest;
+import subproject.admin.jwt.service.AuthenticationService;
 
 import java.security.Principal;
 
@@ -23,17 +23,19 @@ import java.security.Principal;
 @RequestMapping("/auth")
 @Slf4j
 public class MemberController {
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
 
     // 커스텀 Result, ResponseEntity 뭐가 더 좋은 방법??
     @PostMapping("/signup")
-    public ResponseEntity signup(@Valid @RequestBody MemberDto.MemberRequestDto memberRequestDto) {
-        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "", authService.signup(memberRequestDto)));
+    public ResponseEntity<Result> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
+        return ResponseEntity.ok()
+                .body(ResultHandler.handle(HttpStatus.OK.value(), "", authenticationService.signUp(signUpRequest)));
     }
 
     @PostMapping("/login")
-    public ResponseEntity role(@Valid @RequestBody MemberDto.MemberRequestDto loginDto) {
-        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "", authService.login(loginDto)));
+    public ResponseEntity<Result> role(@Valid @RequestBody SigninRequest signinRequest) {
+        return ResponseEntity.ok()
+                .body(ResultHandler.handle(HttpStatus.OK.value(), "", authenticationService.signIn(signinRequest)));
     }
 
 

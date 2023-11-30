@@ -81,6 +81,7 @@ public class TokenDto {
             return false;
 
         return true;
+
     }
 
     public boolean isRefreshTokenValid() {
@@ -94,4 +95,5 @@ public class TokenDto {
 
         return true;
     }
+
 }

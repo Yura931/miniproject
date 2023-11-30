@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private CreateType createType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<MemberRole> roles = new ArrayList<>();
 
@@ -51,12 +51,14 @@ public class Member extends BaseTimeEntity {
 
     public static Member joinNewAdminMember(String email, String password) {
         UUID uuid = UUID.randomUUID();
-        return Member.builder()
+        Member build = Member.builder()
                 .memberId(uuid)
                 .email(email)
                 .password(password)
                 .createType(CreateType.EMAIL)
                 .build();
+        MemberRole.generateNewMemberByRoleAdmin(build);
+        return build;
     }
 
     public void saveMemberRole(List<MemberRole> memberRoles) {

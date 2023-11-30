@@ -11,7 +11,6 @@ public class JwtProperties {
     public static String TOKEN_PREFIX;
     public static String REFRESH_PREFIX;
     public static String AUTHORITIES_KEY;
-
     public static String AUTHORIZATION_HEADER;
 
     @Value("${jwt.secret}")
