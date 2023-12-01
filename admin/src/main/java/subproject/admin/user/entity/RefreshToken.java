@@ -1,23 +1,21 @@
 package subproject.admin.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Getter
-@Entity
+@RedisHash(value = "refresh_token", timeToLive = 60)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RefreshToken {
+public class RefreshToken implements Serializable {
 
     @Id
-    @Column(name = "rt_key")
     private String key;
 
-    @Column(name = "rt_value")
     private String value;
 
     @Builder
@@ -26,8 +24,4 @@ public class RefreshToken {
         this.value = value;
     }
 
-    public RefreshToken updateValue(String token) {
-        this.value = token;
-        return this;
-    }
 }

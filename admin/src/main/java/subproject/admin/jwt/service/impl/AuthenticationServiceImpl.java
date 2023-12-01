@@ -1,29 +1,25 @@
 package subproject.admin.jwt.service.impl;
 
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import subproject.admin.global.exception.LoginFailException;
 import subproject.admin.global.exception.UserDuplicateException;
-import subproject.admin.jwt.dto.JwtAuthenticationResponse;
-import subproject.admin.jwt.dto.SignUpRequest;
-import subproject.admin.jwt.dto.SignUpResponse;
-import subproject.admin.jwt.dto.SigninRequest;
+import subproject.admin.jwt.dto.*;
+import subproject.admin.jwt.principal.PrincipalDetails;
 import subproject.admin.jwt.service.AuthenticationService;
 import subproject.admin.jwt.service.JWTService;
 import subproject.admin.jwt.service.UserService;
 import subproject.admin.user.entity.Member;
-import subproject.admin.user.entity.MemberRole;
-import subproject.admin.user.entity.RefreshToken;
 import subproject.admin.user.repository.MemberRepository;
-import subproject.admin.user.repository.RefreshTokenRepository;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +28,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JWTService jwtService;
     private final UserService userService;
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -45,7 +40,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Member member = Member.joinNewAdminMember(
                 signUpRequest.getEmail(),
                 passwordEncoder.encode(signUpRequest.getPassword()));
-        MemberRole.generateNewMemberByRoleAdmin(member);
         Member saveMember = memberRepository.save(member);
         return new SignUpResponse(saveMember.getEmail());
     }
@@ -59,11 +53,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final String token = jwtService.generateToken(userDetails);
         final String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), userDetails);
 
-        refreshTokenRepository.save(RefreshToken.builder()
-                        .key(userDetails.getUsername())
-                        .value(refreshToken)
-                        .build());
         return JwtAuthenticationResponse.of(token, refreshToken);
     }
 
+    public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
+        Member member = memberRepository.findOneWithRoleByEmail(userEmail).orElseThrow();
+
+        List<GrantedAuthority> grantedAuthorities = member.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
+                .collect(Collectors.toList());
+
+        UserDetails userDetails = new PrincipalDetails(member, grantedAuthorities);
+
+        if(jwtService.isTokenValid(refreshTokenRequest.getToken(), userDetails)) {
+            var jwt = jwtService.generateToken(userDetails);
+            return JwtAuthenticationResponse.of(jwt, refreshTokenRequest.getToken());
+        }
+
+        return null;
+    }
 }

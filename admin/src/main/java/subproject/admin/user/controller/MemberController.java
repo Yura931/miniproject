@@ -12,33 +12,22 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.web.bind.annotation.*;
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
+import subproject.admin.jwt.dto.JwtAuthenticationResponse;
+import subproject.admin.jwt.dto.RefreshTokenRequest;
 import subproject.admin.jwt.dto.SignUpRequest;
 import subproject.admin.jwt.dto.SigninRequest;
+import subproject.admin.jwt.properties.JwtProperties;
 import subproject.admin.jwt.service.AuthenticationService;
 
 import java.security.Principal;
+
+import static subproject.admin.jwt.properties.JwtProperties.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @Slf4j
 public class MemberController {
-    private final AuthenticationService authenticationService;
-
-    // 커스텀 Result, ResponseEntity 뭐가 더 좋은 방법??
-    @PostMapping("/signup")
-    public ResponseEntity<Result> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
-        return ResponseEntity.ok()
-                .body(ResultHandler.handle(HttpStatus.OK.value(), "", authenticationService.signUp(signUpRequest)));
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Result> role(@Valid @RequestBody SigninRequest signinRequest) {
-        return ResponseEntity.ok()
-                .body(ResultHandler.handle(HttpStatus.OK.value(), "", authenticationService.signIn(signinRequest)));
-    }
-
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/info")
     public String info() {

@@ -1,4 +1,4 @@
-package subproject.admin.board;
+package subproject.admin.board.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
+import subproject.admin.user.entity.enums.MemberRoles;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.stream.IntStream;
 @RestController
 public class BoardController {
 
-    @PreAuthorize("hasRole(ROLE_ADMIN)")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/board/list")
     public ResponseEntity boardList() {
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판목록",
@@ -33,4 +34,5 @@ public class BoardController {
                         .collect(Collectors.toList())
                 ));
     }
+
 }

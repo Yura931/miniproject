@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.annotation.Rollback;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static subproject.admin.jwt.properties.JwtProperties.SECRET;
@@ -99,7 +101,6 @@ class JWTServiceImplTest {
         byte[] key = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(key);
     }
-
     @Test
     public void accessToken유효시간체크() throws Exception {
         assertTrue(jwtService.isTokenValid(tokenDto.getToken(), principalDetails));
@@ -117,5 +118,6 @@ class JWTServiceImplTest {
         String claim = jwtService.extractUserName(tokenDto.getToken());
         Assertions.assertThat(claim).isEqualTo(principalDetails.getUsername());
     }
+
 
 }

@@ -17,8 +17,8 @@ public class CorsConfig {
         config.addAllowedOrigin("*");   // 모든 ip에 응답을 허용
         config.addAllowedHeader("*");   // 모든 header에 응답을 허용
         config.addAllowedMethod("*");   // 모든 post, get, put, delete, patch 요청 허용
-//        config.addExposedHeader("Authorization");
-//        config.addExposedHeader("RefreshToken");
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("RefreshToken");
         source.registerCorsConfiguration("/auth/**", config);
         return new CorsFilter(source);
     }
