@@ -3,7 +3,8 @@ package subproject.admin.board.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import subproject.admin.board.dto.BoardMasterRequest;
+import subproject.admin.board.dto.command.BoardMasterCommand;
+import subproject.admin.board.dto.request.BoardMasterRequest;
 import subproject.admin.common.entity.BaseEntity;
 
 import java.util.ArrayList;
@@ -50,12 +51,8 @@ public class BoardMaster extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Enabled boardReplyCommentEnabled;
 
-    private String boardWritePermission;
 
-    private String boardReadPermission;
-
-    @Builder(access = AccessLevel.PRIVATE)
-    private BoardMaster(UUID id, Enabled boardEnabled, Enabled boardVisible, String boardType, String boardMasterTitle, String boardMasterDescription, Enabled boardCategoryEnabled, Enabled boardFileEnabled, Enabled boardCommentEnabled, Enabled boardReplyCommentEnabled, String boardWritePermission, String boardReadPermission) {
+    private BoardMaster(UUID id, Enabled boardEnabled, Enabled boardVisible, String boardType, String boardMasterTitle, String boardMasterDescription, Enabled boardCategoryEnabled, Enabled boardFileEnabled, Enabled boardCommentEnabled, Enabled boardReplyCommentEnabled) {
         this.id = id;
         this.boardEnabled = boardEnabled;
         this.boardVisible = boardVisible;
@@ -66,33 +63,31 @@ public class BoardMaster extends BaseEntity {
         this.boardFileEnabled = boardFileEnabled;
         this.boardCommentEnabled = boardCommentEnabled;
         this.boardReplyCommentEnabled = boardReplyCommentEnabled;
-        this.boardWritePermission = boardWritePermission;
-        this.boardReadPermission = boardReadPermission;
     }
 
-    public static BoardMaster createBoardMaster(BoardMasterRequest boardMasterRequest) {
-        UUID uuid = UUID.randomUUID();
-        return new BoardMaster().builder()
-                .id(uuid)
-                .boardEnabled(Enabled.valueOf(boardMasterRequest.getBoardEnabled()))
-                .boardVisible(Enabled.valueOf(boardMasterRequest.getBoardVisible()))
-                .boardType(boardMasterRequest.getBoardType())
-                .boardMasterTitle(boardMasterRequest.getBoardMasterTitle())
-                .boardMasterDescription(boardMasterRequest.getBoardMasterDescription())
-                .boardCategoryEnabled(Enabled.valueOf(boardMasterRequest.getBoardCategoryEnabled()))
-                .boardFileEnabled(Enabled.valueOf(boardMasterRequest.getBoardFileEnabled()))
-                .boardCommentEnabled(Enabled.valueOf(boardMasterRequest.getBoardCommentEnabled()))
-                .boardReplyCommentEnabled(Enabled.valueOf(boardMasterRequest.getBoardReplyCommentEnabled()))
-                .boardWritePermission(boardMasterRequest.getBoardWritePermission())
-                .boardReadPermission(boardMasterRequest.getBoardReadPermission())
-                .build();
+    public static BoardMaster createBoardMaster(BoardMasterCommand bm) {
+        UUID id = UUID.randomUUID();
+        return new BoardMaster(
+                id,
+                bm.boardEnabled(),
+                bm.boardVisible(),
+                bm.boardType(),
+                bm.boardMasterTitle(),
+                bm.boardMasterDescription(),
+                bm.boardCategoryEnabled(),
+                bm.boardFileEnabled(),
+                bm.boardCommentEnabled(),
+                bm.boardReplyCommentEnabled()
+        );
     }
 
     public void saveBoardCategory(List<BoardCategory> boardCategory) {
         this.boardCategory = boardCategory;
     }
 
-    private void UpdateBoardMaster() {
+    public void updateBoardMaster(Enabled boardEnabled, Enabled boardVisible, String boardType,
+                                  String boardMasterTitle, String boardMasterDescription, Enabled boardCategoryEnabled,
+                                  Enabled boardFileEnabled, Enabled boardCommentEnabled, Enabled boardReplyCommentEnabled) {
         this.boardEnabled = boardEnabled;
         this.boardVisible = boardVisible;
         this.boardType = boardType;
@@ -102,7 +97,5 @@ public class BoardMaster extends BaseEntity {
         this.boardFileEnabled = boardFileEnabled;
         this.boardCommentEnabled = boardCommentEnabled;
         this.boardReplyCommentEnabled = boardReplyCommentEnabled;
-        this.boardWritePermission = boardWritePermission;
-        this.boardReadPermission = boardReadPermission;
     }
 }

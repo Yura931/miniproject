@@ -12,6 +12,7 @@ public class JwtProperties {
     public static String REFRESH_PREFIX;
     public static String AUTHORITIES_KEY;
     public static String AUTHORIZATION_HEADER;
+    public static String REFRESH_HEADER;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -28,6 +29,9 @@ public class JwtProperties {
     @Value("${jwt.authorization_header}")
     private String authorizationHeader;
 
+    @Value("${jwt.refresh_header}")
+    private String refreshHeader;
+
     @PostConstruct
     public void init() {
         SECRET = secret;
@@ -35,5 +39,6 @@ public class JwtProperties {
         REFRESH_PREFIX = refreshPrefix;
         AUTHORITIES_KEY = authoritiesKey;
         AUTHORIZATION_HEADER = authorizationHeader;
+        REFRESH_HEADER = refreshHeader;
     }
 }

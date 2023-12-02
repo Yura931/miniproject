@@ -1,14 +1,12 @@
 package subproject.admin.global.exception;
 
+import subproject.admin.common.enums.ErrorCode;
+
 public class UserDuplicateException extends RuntimeException {
-    private String message;
+    private ErrorCode errorCode;
 
-    public UserDuplicateException(String message) {
-        this.message = message;
+    public UserDuplicateException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
 }

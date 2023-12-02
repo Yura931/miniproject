@@ -33,3 +33,4 @@ jwt:
   refresh_prefix: 'RefreshToken '
   authorities_key: 'auth'
   authorization_header: 'Authorization'
+  refresh_header: 'RefreshToken'

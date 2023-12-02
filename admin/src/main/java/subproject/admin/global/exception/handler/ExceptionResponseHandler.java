@@ -1,7 +1,11 @@
 package subproject.admin.global.exception.handler;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,8 +17,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import subproject.admin.common.dto.Result;
+import subproject.admin.common.dto.ResultHandler;
+import subproject.admin.common.enums.ErrorCode;
 import subproject.admin.global.exception.InvalidTokenException;
 import subproject.admin.global.exception.LoginFailException;
+import subproject.admin.global.exception.RefreshTokenInvalidException;
 import subproject.admin.global.exception.UserDuplicateException;
 
 import java.util.HashMap;
@@ -29,13 +36,13 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(LoginFailException.class)
-    public Result<?> handleLoginFailException(LoginFailException e) {
-        return errorHandler(e, 401);
+    public Result<?> handleLoginFailException(ErrorCode e) {
+        return ResultHandler.errorHandle(e);
     }
 
     @ExceptionHandler(UserDuplicateException.class)
-    public Result<?> handleUserDuplicateException(UserDuplicateException e) {
-        return errorHandler(e, 401);
+    public Result<?> handleUserDuplicateException(ErrorCode e) {
+        return ResultHandler.errorHandle(e);
     }
 
     @ExceptionHandler(UnsupportedJwtException.class)
@@ -45,6 +52,10 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public Result<?> handleIllegalArgumentException(IllegalArgumentException e) {
+        return errorHandler(e, 401);
+    }
+    @ExceptionHandler(RefreshTokenInvalidException.class)
+    public Result<?> handleRefreshTokenInvalidException(RefreshTokenInvalidException e) {
         return errorHandler(e, 401);
     }
 

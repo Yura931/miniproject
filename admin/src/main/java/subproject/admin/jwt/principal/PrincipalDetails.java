@@ -8,10 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import subproject.admin.user.entity.Member;
 import subproject.admin.user.entity.MemberRole;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -28,16 +25,10 @@ public class PrincipalDetails implements UserDetails {
 
     private Member member;
     private Collection<GrantedAuthority> authorities;
-    private Map<String, Object> memberInfoMap;
 
     public PrincipalDetails(Member user, Collection<GrantedAuthority> authorities) {
         this.member = user;
         this.authorities = authorities;
-    }
-
-    public PrincipalDetails(Member user, Map<String, Object> memberInfoMap) {
-        this.member = user;
-        this.memberInfoMap = memberInfoMap;
     }
 
     @Override
@@ -84,6 +75,9 @@ public class PrincipalDetails implements UserDetails {
         return true;
     }
 
+    public UUID getId() {
+        return member.getId();
+    }
     public Member getUser() {
         return member;
     }

@@ -1,4 +1,4 @@
-package subproject.admin.board.dto;
+package subproject.admin.board.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;

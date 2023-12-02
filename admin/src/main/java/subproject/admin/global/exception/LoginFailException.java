@@ -1,14 +1,11 @@
 package subproject.admin.global.exception;
 
+import subproject.admin.common.enums.ErrorCode;
+
 public class LoginFailException extends RuntimeException {
-    private String message;
+    private ErrorCode errorCode;
 
-    public LoginFailException(String message) {
-        this.message = message;
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
+    public LoginFailException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
     }
 }

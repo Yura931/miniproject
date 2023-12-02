@@ -177,3 +177,44 @@
 - 헤더, 페이로드 자기가 알고 잇는 시크릿 키를 가지고 똑같이 HS256으로 암호화 해 봄
 - 값이 같으면 인증이 된 것 
 - 그 후 payload에 담겨있는 username으로 DB에서 정보를 가져와 응답 해 주면 됨
+
+
+## Access Token & Refresh Token
+---
+
+### Access / Refresh Token 재발급 원리
+1. 로그인 과정 시 Access Token과 Refresh Token을 모두 발급
+   - 이때, Refresh Token만 서버측의 DB에 저장하고 Refresh Token과 Access Token을 쿠키 혹은 웹스토리지에 저장
+2. 사용자가 인증이 필요한 API에 접근하고자 하면, 가장 먼저 토큰을 검사
+   1. access token과 refresh token 모두가 만료된 경우
+      - 에러 발생(재 로그인하여 둘 다 새로 발급)
+   2. access token은 만료됐지만, refresh token은 유효한 경우
+      - refresh token을 검증하여 access token 재발급
+      - 클라이언트(쿠키, 웹스토리지)에 저장되어있는 refresh token과 서버 DB에 저장되어 있는 refresh token이 일치한지 확인 후 access token 재발급
+   3. access token은 유효하지만, refresh token은 만료된 경우
+      - access token을 검증하여 refresh token 재발급
+      - access token이 유효하다는 것은 이미 인증된 것이니 바로 refresh token 재발급
+   4. access token과 refresh token 모두가 유효한 경우
+      - 정상 처리
+3. 로그아웃을 하면 Access Token과 Refresh Token을 모두 만료시킨다.
+
+
+### Refresh Token 인증 과정
+1. 사용자가 ID, PW를 통해 로그인
+2. 서버에서는 회원 DB에서 값을 비교
+3. 로그인이 완료되면 Access Token, Refresh Token을 발급
+4. 서버는 Redis에 Refresh Token 저장
+5. 사용자는 Refresh Token은 안전한 저장소에 저장 후, Access Token을 헤더에 실어 요청을 보냄
+6. Access Token을 검증
+7. 데이터 전송
+8. 시간이 지나 Access Token 만료
+9. 사용자는 이전과 동일하게 Access Token을 헤더에 실어 요청을 보냄
+10. 서버는 Access Token이 만료됨을 확인하고 권한 없음을 신호로 보냄
+11. 사용자는 Refresh Token과 Access Token을 함께 서버로 보낸다.
+12. 서버는 받은 Access Token이 조작되지 않았는지 확인한 후, Refresh Token과 사용자의 DB에 저장되어 있던 Refresh Token을 비교한다. Token이 동일하고 유효기간도 지나지 않았다면 새로운 Access Token을 발급해준다.
+13. 서버는 새로운 Access Token을 헤더에 실어 다시 API 요청 응답을 진행한다.
+
+
+> Access Token 만료가 될 때마다 9~10 과정을 거칠 필요는 없다.  
+> 사용자(프론트엔드) 에서 Access Token의 Payload를 통해 유효기간을 알 수 있다.  
+> 따라서 프론트엔드 단에서 API 요청 전에 토큰이 만료됐다면 곧바로 재발급 요청을 할 수도 있다.

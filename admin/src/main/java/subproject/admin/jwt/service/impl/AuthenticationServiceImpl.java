@@ -1,5 +1,7 @@
 package subproject.admin.jwt.service.impl;
 
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -8,12 +10,19 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import subproject.admin.common.enums.ErrorCode;
+import subproject.admin.global.exception.RefreshTokenInvalidException;
 import subproject.admin.global.exception.UserDuplicateException;
-import subproject.admin.jwt.dto.*;
+import subproject.admin.jwt.dto.request.RefreshTokenRequest;
+import subproject.admin.jwt.dto.request.SignUpRequest;
+import subproject.admin.jwt.dto.request.SigninRequest;
+import subproject.admin.jwt.dto.response.JwtAuthenticationResponse;
+import subproject.admin.jwt.dto.response.SignUpResponse;
 import subproject.admin.jwt.principal.PrincipalDetails;
 import subproject.admin.jwt.service.AuthenticationService;
 import subproject.admin.jwt.service.JWTService;
 import subproject.admin.jwt.service.UserService;
+import subproject.admin.redis.RedisUtil;
 import subproject.admin.user.entity.Member;
 import subproject.admin.user.repository.MemberRepository;
 
@@ -29,12 +38,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisUtil redisUtil;
 
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
 
         if(memberRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new UserDuplicateException("이미 가입되어 있는 유저입니다.");
+            throw new UserDuplicateException(ErrorCode.USER_DUPLICATE);
         }
 
         Member member = Member.joinNewAdminMember(
@@ -69,8 +79,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(jwtService.isTokenValid(refreshTokenRequest.getToken(), userDetails)) {
             var jwt = jwtService.generateToken(userDetails);
             return JwtAuthenticationResponse.of(jwt, refreshTokenRequest.getToken());
+        } else {
+            throw new RefreshTokenInvalidException("토큰이 만료되었습니다.");
         }
-
-        return null;
     }
+
 }

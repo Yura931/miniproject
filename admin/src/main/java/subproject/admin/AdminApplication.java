@@ -1,10 +1,12 @@
 package subproject.admin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import subproject.admin.user.entity.Member;
 import subproject.admin.user.entity.MemberRole;
@@ -31,5 +33,10 @@ public class AdminApplication implements CommandLineRunner {
 
 		MemberRole memberRole = MemberRole.generateNewMemberByRoleAdmin(member);
 		memberRepository.save(member);
+	}
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		return new ObjectMapper();
 	}
 }

@@ -1,4 +1,4 @@
-package subproject.admin.jwt.dto;
+package subproject.admin.jwt.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

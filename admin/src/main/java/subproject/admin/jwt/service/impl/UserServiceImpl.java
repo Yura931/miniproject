@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import subproject.admin.common.enums.ErrorCode;
 import subproject.admin.jwt.principal.PrincipalDetails;
 import subproject.admin.global.exception.LoginFailException;
 import subproject.admin.jwt.service.UserService;
@@ -19,17 +20,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final MemberRepository memberRepository;
 
     public UserDetailsService userDetailsService() {
         // loadUserByUsername()
-        return username -> (UserDetails) memberRepository.findOneWithRoleByEmail(username)
+        return username -> memberRepository.findOneWithRoleByEmail(username)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new LoginFailException("해당 유저 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new LoginFailException(ErrorCode.LOGIN_FAIL));
     }
 
-    private UserDetails createUserDetails(Member member) {
+    private PrincipalDetails createUserDetails(Member member) {
         List<GrantedAuthority> grantedAuthorities = member.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
                 .collect(Collectors.toList());
