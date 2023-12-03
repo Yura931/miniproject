@@ -80,7 +80,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/api/v1/admin").hasAnyAuthority(MemberRoles.ROLE_ADMIN.name())
+                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority(MemberRoles.ROLE_ADMIN.name())
                         .anyRequest().authenticated())
                 .addFilter(corsFilter)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

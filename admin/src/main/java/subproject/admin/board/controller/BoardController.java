@@ -1,28 +1,38 @@
 package subproject.admin.board.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import subproject.admin.board.dto.BoardPageDto;
+import subproject.admin.board.dto.RegisterBoardDto;
+import subproject.admin.board.dto.SearchBoardDto;
+import subproject.admin.board.dto.request.BoardPageRequest;
+import subproject.admin.board.dto.request.RegisterBoardRequest;
+import subproject.admin.board.dto.response.BoardPageResponse;
+import subproject.admin.board.dto.response.RegisterBoardResponse;
+import subproject.admin.board.dto.response.SearchBoardResponse;
+import subproject.admin.board.service.BoardService;
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
-import subproject.admin.user.entity.enums.MemberRoles;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/admin")
 public class BoardController {
 
+    private final BoardService boardService;
+    
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/board/list")
+    @GetMapping("/listTest")
     public ResponseEntity boardList() {
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판목록",
                 IntStream.rangeClosed(1, 10)
@@ -34,5 +44,38 @@ public class BoardController {
                         .collect(Collectors.toList())
                 ));
     }
+
+    @GetMapping("/board")
+    public ResponseEntity<Result> getBoardList(@Valid BoardPageRequest request) {
+        BoardPageResponse page = boardService.findAll(BoardPageDto.from(request));
+        return ResponseEntity.ok().body(ResultHandler.handle(
+                HttpStatus.OK.value(), "게시판관리 목록", page));
+    }
+
+    @GetMapping("/board/{id}")
+    public ResponseEntity<Result> getBoardDetail(@PathVariable UUID id) {
+        SearchBoardResponse byId = boardService.findById(SearchBoardDto.from(id));
+        return ResponseEntity.ok().body(ResultHandler.handle(
+                HttpStatus.OK.value(), "게시판관리 상세정보", byId));
+    }
+
+    @PostMapping("/board/register")
+    public ResponseEntity<Result> registerBoard(@Valid RegisterBoardRequest request) {
+        RegisterBoardResponse save = boardService.save(RegisterBoardDto.from(request));
+        return ResponseEntity.ok().body(ResultHandler.handle(
+                HttpStatus.OK.value(), "게시판관리 등록", save
+        ));
+    }
+
+    @PutMapping("/board/update")
+    public ResponseEntity<Result> updateBoard() {
+        return null;
+    }
+
+    @DeleteMapping("/board/delete")
+    public ResponseEntity<Result> deleteBoard() {
+        return null;
+    }
+
 
 }

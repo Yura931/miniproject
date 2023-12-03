@@ -19,9 +19,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
 import subproject.admin.common.enums.ErrorCode;
+import subproject.admin.global.exception.ExpiredRefreshTokenException;
 import subproject.admin.global.exception.InvalidTokenException;
 import subproject.admin.global.exception.LoginFailException;
-import subproject.admin.global.exception.RefreshTokenInvalidException;
 import subproject.admin.global.exception.UserDuplicateException;
 
 import java.util.HashMap;
@@ -54,8 +54,8 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     public Result<?> handleIllegalArgumentException(IllegalArgumentException e) {
         return errorHandler(e, 401);
     }
-    @ExceptionHandler(RefreshTokenInvalidException.class)
-    public Result<?> handleRefreshTokenInvalidException(RefreshTokenInvalidException e) {
+    @ExceptionHandler(ExpiredRefreshTokenException.class)
+    public Result<?> handleRefreshTokenInvalidException(ExpiredRefreshTokenException e) {
         return errorHandler(e, 401);
     }
 

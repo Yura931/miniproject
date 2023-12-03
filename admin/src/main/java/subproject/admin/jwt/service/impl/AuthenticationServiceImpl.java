@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import subproject.admin.common.enums.ErrorCode;
-import subproject.admin.global.exception.RefreshTokenInvalidException;
+import subproject.admin.global.exception.ExpiredRefreshTokenException;
 import subproject.admin.global.exception.UserDuplicateException;
 import subproject.admin.jwt.dto.request.RefreshTokenRequest;
 import subproject.admin.jwt.dto.request.SignUpRequest;
@@ -80,7 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             var jwt = jwtService.generateToken(userDetails);
             return JwtAuthenticationResponse.of(jwt, refreshTokenRequest.getToken());
         } else {
-            throw new RefreshTokenInvalidException("토큰이 만료되었습니다.");
+            throw new ExpiredRefreshTokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
 

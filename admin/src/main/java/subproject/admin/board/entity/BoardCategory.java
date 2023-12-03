@@ -13,32 +13,28 @@ import java.util.UUID;
 public class BoardCategory extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
     @Column(name = "board_category_id")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_master_id")
-    private BoardMaster boardMaster;
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     private String boardCategoryName;
 
-    @Builder(access = AccessLevel.PROTECTED)
-    private BoardCategory(UUID id, String boardCategoryName, BoardMaster boardMaster) {
+    private BoardCategory(UUID id, String boardCategoryName) {
         this.id = id;
         this.boardCategoryName = boardCategoryName;
     }
 
     public static BoardCategory createBoardCategory(String boardCategoryName) {
         UUID uuid = UUID.randomUUID();
-        return new BoardCategory().builder()
-                .id(uuid)
-                .boardCategoryName(boardCategoryName)
-                .build();
+        return new BoardCategory(uuid, boardCategoryName);
     }
 
-    private void UpdateBoardCategory (String boardCategoryName) {
+    public void UpdateBoardCategory (String boardCategoryName) {
         this.boardCategoryName = boardCategoryName;
     }
+
 
 }
