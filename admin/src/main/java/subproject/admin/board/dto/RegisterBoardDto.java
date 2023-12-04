@@ -1,6 +1,8 @@
 package subproject.admin.board.dto;
 
 import subproject.admin.board.dto.request.RegisterBoardRequest;
+import subproject.admin.board.entity.BoardCategory;
+import subproject.admin.board.entity.QBoard;
 import subproject.admin.board.entity.enums.Enabled;
 
 import java.util.List;
@@ -17,7 +19,7 @@ public record RegisterBoardDto(
         Enabled boardFileEnabled,
         Enabled boardCommentEnabled,
         Enabled boardReplyCommentEnabled,
-        List<BoardCategoryDto> boardCategoryDto
+        List<CategoryDto> categories
 ){
 
     public static RegisterBoardDto from(RegisterBoardRequest request) {
@@ -31,11 +33,15 @@ public record RegisterBoardDto(
                 request.getBoardFileEnabled(),
                 request.getBoardCommentEnabled(),
                 request.getBoardReplyCommentEnabled(),
-                request.getBoardCategoryRequest()
+                request.getCategories()
                         .stream()
-                        .map(BoardCategoryDto::from)
+                        .map(category -> CategoryDto.from(category))
                         .collect(Collectors.toList())
+
+//                request.getBoardCategoryRequest()
+//                        .stream()
+//                        .map(BoardCategoryDto::from)
+//                        .collect(Collectors.toList())
         );
     }
-
 }

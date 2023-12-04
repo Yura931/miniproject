@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.Board;
+import subproject.admin.board.entity.Category;
 import subproject.admin.board.entity.enums.Enabled;
 
 import java.util.List;
@@ -21,7 +22,6 @@ public class BoardItem {
     private final String boardTitle;
     private final String boardDescription;
     private final Enabled boardCategoryEnabled;
-    private final List<BoardCategory> boardCategory;
     private final Enabled boardFileEnabled;
     private final Enabled boardCommentEnabled;
     private final Enabled boardReplyCommentEnabled;
@@ -35,7 +35,6 @@ public class BoardItem {
                 board.getBoardTitle(),
                 board.getBoardDescription(),
                 board.getBoardCategoryEnabled(),
-                board.getBoardCategory(),
                 board.getBoardFileEnabled(),
                 board.getBoardCommentEnabled(),
                 board.getBoardReplyCommentEnabled()

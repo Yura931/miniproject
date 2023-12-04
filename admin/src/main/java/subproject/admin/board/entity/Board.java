@@ -3,15 +3,13 @@ package subproject.admin.board.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import subproject.admin.board.dto.BoardCategoryDto;
+import subproject.admin.board.dto.CategoryDto;
 import subproject.admin.board.dto.RegisterBoardDto;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.common.entity.BaseEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -42,9 +40,9 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Enabled boardCategoryEnabled;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<BoardCategory> boardCategory = new ArrayList<>();
+    private BoardCategory boardCategory;
 
     @Enumerated(EnumType.STRING)
     private Enabled boardFileEnabled;
@@ -55,10 +53,9 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Enabled boardReplyCommentEnabled;
 
-
     private Board(UUID id, Enabled boardEnabled, Enabled boardVisible, String boardType, String boardTitle,
                   String boardDescription, Enabled boardCategoryEnabled, Enabled boardFileEnabled, Enabled boardCommentEnabled,
-                  Enabled boardReplyCommentEnabled, List<BoardCategory> boardCategory) {
+                  Enabled boardReplyCommentEnabled, List<CategoryDto> categories) {
         this.id = id;
         this.boardEnabled = boardEnabled;
         this.boardVisible = boardVisible;
@@ -69,11 +66,12 @@ public class Board extends BaseEntity {
         this.boardFileEnabled = boardFileEnabled;
         this.boardCommentEnabled = boardCommentEnabled;
         this.boardReplyCommentEnabled = boardReplyCommentEnabled;
-        this.boardCategory = boardCategory;
+        this.boardCategory = BoardCategory.createBoardCategory(categories);
     }
 
     public static Board createBoard(RegisterBoardDto bm) {
         UUID id = UUID.randomUUID();
+
         return new Board(
                 id,
                 bm.boardEnabled(),
@@ -85,18 +83,11 @@ public class Board extends BaseEntity {
                 bm.boardFileEnabled(),
                 bm.boardCommentEnabled(),
                 bm.boardReplyCommentEnabled(),
-                createBoardCategoryList(bm.boardCategoryDto())
+                bm.categories()
         );
     }
 
-    private static List<BoardCategory> createBoardCategoryList(List<BoardCategoryDto> boardCategoryDto) {
-        return boardCategoryDto
-                .stream()
-                .map(e -> BoardCategory.createBoardCategory(e.boardCategoryName()))
-                .collect(Collectors.toList());
-    }
-
-    public void updateBoardMaster(Enabled boardEnabled, Enabled boardVisible, String boardType,
+    public void updateBoard(Enabled boardEnabled, Enabled boardVisible, String boardType,
                                   String boardTitle, String boardDescription, Enabled boardCategoryEnabled,
                                   Enabled boardFileEnabled, Enabled boardCommentEnabled, Enabled boardReplyCommentEnabled) {
         this.boardEnabled = boardEnabled;

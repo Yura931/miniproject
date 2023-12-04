@@ -12,4 +12,5 @@ public interface BoardService {
     RegisterBoardResponse save(RegisterBoardDto dto);
     SearchBoardResponse findById(SearchBoardDto dto);
     BoardPageResponse findAll(BoardPageDto dto);
+
 }

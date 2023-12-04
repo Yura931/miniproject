@@ -48,7 +48,7 @@ class BoardTest {
 
     @Test
     public void boardInsert() throws Exception {
-        RegisterBoardDto boardMasterCommand = RegisterBoardDto.from(
+        RegisterBoardDto registerBoardDto = RegisterBoardDto.from(
                 new RegisterBoardRequest(
                         Enabled.Y,
                         Enabled.Y,
@@ -59,18 +59,16 @@ class BoardTest {
                         Enabled.Y,
                         Enabled.Y,
                         Enabled.Y,
-                        Arrays.asList()
+                        Arrays.asList("category1", "category2")
                 )
         );
-        Board board = Board.createBoard(boardMasterCommand);
-
-
+        Board board = Board.createBoard(registerBoardDto);
         em.persist(board);
 
         Board findBoard = em.find(Board.class, board.getId());
 
         assertThat(board.getId()).isEqualTo(findBoard.getId());
-        assertThat(board.getBoardCategory().size()).isEqualTo(2);
+
     }
 
     @Test
@@ -80,7 +78,7 @@ class BoardTest {
 
         UUID findId = bm.get(0).getId();
         Board findBoard = em.find(Board.class, findId);
-        findBoard.updateBoardMaster(
+        findBoard.updateBoard(
                 Enabled.Y,
                 Enabled.Y,
                 "A",

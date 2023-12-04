@@ -48,11 +48,7 @@ public class JWTServiceImpl implements JWTService {
                 .compact();
 
         // redis에 저장
-        redisUtil.set(
-                userDetails.getUsername(),
-                refreshToken,
-                REFRESH_TOKEN_EXPIRE_TIME
-        );
+        redisUtil.set(userDetails.getUsername(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
         return refreshToken;
     }
 

@@ -15,11 +15,8 @@ import subproject.admin.board.dto.response.BoardPageResponse;
 import subproject.admin.board.dto.response.RegisterBoardResponse;
 import subproject.admin.board.dto.response.SearchBoardResponse;
 import subproject.admin.board.entity.Board;
-import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.repository.BoardRepository;
 import subproject.admin.board.service.BoardService;
-
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +45,6 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardPageResponse findAll(BoardPageDto dto) {
         Pageable pageable = PageRequest.of(dto.pageNo(), dto.pageSize());
-
         Page<Board> all = boardRepository.findAll(pageable);
         return new BoardPageResponse(all);
     }

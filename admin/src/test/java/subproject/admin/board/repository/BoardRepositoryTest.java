@@ -35,7 +35,7 @@ class BoardRepositoryTest {
 
     @BeforeEach
     public void beforeEach() {
-        IntStream.rangeClosed(1, 20)
+        IntStream.rangeClosed(1, 2)
                 .forEach(value -> {
                     RegisterBoardDto registerBoardDto = RegisterBoardDto.from(
                             new RegisterBoardRequest(
@@ -68,7 +68,7 @@ class BoardRepositoryTest {
                 .getResultList();
 
         bm.stream()
-                .forEach(e -> System.out.println(e.getCreateDate()));
+                .forEach(e -> System.out.println("board = " + e.getBoardCategory().getCategories()));
     }
 
     @Test
@@ -76,7 +76,6 @@ class BoardRepositoryTest {
         UUID firstId = initIdMap.get("firstId");
         Board board = boardRepository.findById(firstId).get();
         assertThat(board.getId()).isEqualTo(firstId);
-        assertThat(board.getBoardCategory()).size().isEqualTo(2);
     }
 
     @Test

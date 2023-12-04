@@ -16,10 +16,10 @@ public class RedisUtil {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, Object> redisBlackListTemplate;
 
-    public void set(String key, Object o, long minutes) {
+    public void set(String key, Object o, long milliseconds) {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer(o.getClass()));
         redisTemplate.opsForValue().set(
-                getRefreshTokenKey(key), o, minutes, TimeUnit.MINUTES);
+                getRefreshTokenKey(key), o, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     public Object get(String key) {
