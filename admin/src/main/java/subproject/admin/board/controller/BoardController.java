@@ -41,7 +41,7 @@ public class BoardController {
                                 "title", "제목" + i,
                                 "content", "내용" + i
                         ))
-                        .collect(Collectors.toList())
+                        .toList()
                 ));
     }
 

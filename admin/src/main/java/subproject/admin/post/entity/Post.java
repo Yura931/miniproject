@@ -6,10 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import subproject.admin.board.entity.Board;
-import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.Category;
 import subproject.admin.common.entity.BaseEntity;
-import subproject.admin.post.dto.PostDto;
+import subproject.admin.post.dto.RegisterPostDto;
 
 import java.util.UUID;
 
@@ -43,7 +42,7 @@ public class Post extends BaseEntity {
         this.postContent = postContent;
     }
 
-    public static Post createPost(PostDto dto) {
+    public static Post createPost(RegisterPostDto dto) {
         UUID id = UUID.randomUUID();
         return new Post(
                 id,

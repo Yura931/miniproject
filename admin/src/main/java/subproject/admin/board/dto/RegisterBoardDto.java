@@ -36,12 +36,7 @@ public record RegisterBoardDto(
                 request.getCategories()
                         .stream()
                         .map(category -> CategoryDto.from(category))
-                        .collect(Collectors.toList())
-
-//                request.getBoardCategoryRequest()
-//                        .stream()
-//                        .map(BoardCategoryDto::from)
-//                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 }

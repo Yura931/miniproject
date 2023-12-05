@@ -31,7 +31,7 @@ public class BoardCategory extends BaseTimeEntity {
         this.id = id;
         this.categories = categories.stream()
         .map(dto -> Category.createCategory(this, dto))
-        .collect(Collectors.toList());
+        .toList();
     }
 
     public static BoardCategory createBoardCategory(List<CategoryDto> categories) {

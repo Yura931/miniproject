@@ -2,7 +2,6 @@ package subproject.admin.post.entity;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,13 +19,11 @@ import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.Category;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.board.repository.BoardRepository;
-import subproject.admin.post.dto.PostDto;
+import subproject.admin.post.dto.RegisterPostDto;
 import subproject.admin.post.repository.PostRepository;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -71,7 +68,7 @@ class PostTest {
         IntStream.rangeClosed(1, 10)
                 .forEach(value -> {
                     Category category = Category.createCategory(boardCategory, CategoryDto.from(boardCategory.getCategories().get(0).getCategoryName()));
-                    PostDto of = PostDto.of(save, category, "postTitle"+value, "postContent"+value);
+                    RegisterPostDto of = RegisterPostDto.of(save, category, "postTitle"+value, "postContent"+value);
                     Post post = Post.createPost(of);
                     em.persist(post);
                 });
@@ -81,7 +78,7 @@ class PostTest {
     public void registerPostTest() {
         Board saveBoard = initMap.get("saveBoard");
         Category category = saveBoard.getBoardCategory().getCategories().get(0);
-        PostDto of = PostDto.of(saveBoard, category, "postTitle", "postContent");
+        RegisterPostDto of = RegisterPostDto.of(saveBoard, category, "postTitle", "postContent");
         Post post = Post.createPost(of);
         Post save = postRepository.save(post);
 

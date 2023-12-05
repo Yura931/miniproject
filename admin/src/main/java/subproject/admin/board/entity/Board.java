@@ -87,7 +87,7 @@ public class Board extends BaseEntity {
         );
     }
 
-    public void updateBoard(Enabled boardEnabled, Enabled boardVisible, String boardType,
+    public Board updateBoard(Enabled boardEnabled, Enabled boardVisible, String boardType,
                                   String boardTitle, String boardDescription, Enabled boardCategoryEnabled,
                                   Enabled boardFileEnabled, Enabled boardCommentEnabled, Enabled boardReplyCommentEnabled) {
         this.boardEnabled = boardEnabled;
@@ -99,6 +99,7 @@ public class Board extends BaseEntity {
         this.boardFileEnabled = boardFileEnabled;
         this.boardCommentEnabled = boardCommentEnabled;
         this.boardReplyCommentEnabled = boardReplyCommentEnabled;
+        return this;
     }
 
 }

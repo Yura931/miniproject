@@ -7,9 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import subproject.admin.board.dto.BoardPageDto;
-import subproject.admin.board.dto.RegisterBoardDto;
-import subproject.admin.board.dto.SearchBoardDto;
+import subproject.admin.board.dto.*;
 import subproject.admin.board.dto.item.BoardItem;
 import subproject.admin.board.dto.response.BoardPageResponse;
 import subproject.admin.board.dto.response.RegisterBoardResponse;
@@ -17,6 +15,8 @@ import subproject.admin.board.dto.response.SearchBoardResponse;
 import subproject.admin.board.entity.Board;
 import subproject.admin.board.repository.BoardRepository;
 import subproject.admin.board.service.BoardService;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +47,25 @@ public class BoardServiceImpl implements BoardService {
         Pageable pageable = PageRequest.of(dto.pageNo(), dto.pageSize());
         Page<Board> all = boardRepository.findAll(pageable);
         return new BoardPageResponse(all);
+    }
+
+    public void updateById(UpdateBoardDto dto) {
+        Board findBoard = boardRepository.findById(dto.id())
+                .orElseThrow(EntityNotFoundException::new);
+        Board board = findBoard.updateBoard(
+                dto.boardEnabled(),
+                dto.boardVisible(),
+                dto.boardType(),
+                dto.boardTitle(),
+                dto.boardDescription(),
+                dto.boardCategoryEnabled(),
+                dto.boardFileEnabled(),
+                dto.boardCommentEnabled(),
+                dto.boardReplyCommentEnabled()
+        );
+    }
+
+    public void deleteById(DeleteBoardDto dto) {
+        boardRepository.deleteById(dto.id());
     }
 }
