@@ -1,11 +1,9 @@
 package subproject.admin.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,8 +24,8 @@ import subproject.admin.jwt.JwtAccessDeniedHandler;
 import subproject.admin.jwt.JwtAuthenticationEntryPoint;
 import subproject.admin.jwt.filter.JwtAuthenticationFilter;
 import subproject.admin.jwt.filter.JwtExceptionFilter;
-import subproject.admin.jwt.service.impl.LogoutServiceImpl;
 import subproject.admin.jwt.service.UserService;
+import subproject.admin.jwt.service.impl.LogoutServiceImpl;
 import subproject.admin.jwt.service.impl.LogoutSuccessServiceImpl;
 import subproject.admin.user.entity.enums.MemberRoles;
 
@@ -50,7 +47,7 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
             "/users/**",
-            "/auth/**",
+            "/api/v1/auth/**",
             "/error/**",
             "/favicon.ico",
             "/**"
@@ -70,7 +67,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .logout(logoutConfig -> { logoutConfig
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/v1/logout")
                         .addLogoutHandler(logoutService)
                         .logoutSuccessHandler(logoutSuccessService);
                 })

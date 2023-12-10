@@ -4,28 +4,23 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import subproject.admin.global.exception.ExpiredAccessTokenException;
 import subproject.admin.global.exception.ExpiredJwtTokenException;
-import subproject.admin.global.exception.ExpiredRefreshTokenException;
 import subproject.admin.jwt.service.JWTService;
 import subproject.admin.redis.RedisUtil;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import static subproject.admin.jwt.properties.JwtProperties.*;
+import static subproject.admin.jwt.properties.JwtProperties.SECRET;
 
 @Service
 @RequiredArgsConstructor
 public class JWTServiceImpl implements JWTService {
-
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;    // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME =  1000 * 60 * 30; //10000;    // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     private final RedisUtil redisUtil;
 
@@ -71,7 +66,14 @@ public class JWTServiceImpl implements JWTService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new JwtException("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtTokenException();
+        }
+
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -83,26 +85,5 @@ public class JWTServiceImpl implements JWTService {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
-    public boolean accessTokenValidateCheck(String token) {
-        try {
-            extractAllClaims(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new JwtException("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            throw new ExpiredAccessTokenException();
-        }
-    }
-
-    public boolean refreshTokenValidateCheck(String refreshToken) {
-        try {
-            extractAllClaims(refreshToken);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new JwtException("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            throw new ExpiredRefreshTokenException();
-        }
-    }
 
 }

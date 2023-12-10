@@ -35,7 +35,7 @@ class BoardRepositoryTest {
 
     @BeforeEach
     public void beforeEach() {
-        IntStream.rangeClosed(1, 2)
+        IntStream.rangeClosed(1, 20)
                 .forEach(value -> {
                     RegisterBoardDto registerBoardDto = RegisterBoardDto.from(
                             new RegisterBoardRequest(
@@ -82,6 +82,12 @@ class BoardRepositoryTest {
     public void boardPageableTest() {
         PageRequest page = PageRequest.of(0, 10, Sort.by("createDate").descending());
         Page<Board> all = boardRepository.findAll(page);
+        System.out.println("all = " + all.getContent());
+        System.out.println("all.getPageable() = " + all.getPageable());
+        System.out.println("all.getNumber() = " + all.getNumber());
+        System.out.println("all.getSize() = " + all.getSize());
+        System.out.println("all.getTotalElements() = " + all.getTotalElements());
+        System.out.println("all.getTotalPages() = " + all.getTotalPages());
         assertThat(all).size().isEqualTo(10);
     }
 }

@@ -17,6 +17,7 @@ import subproject.admin.board.dto.response.SearchBoardResponse;
 import subproject.admin.board.service.BoardService;
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
+import subproject.admin.jwt.principal.PrincipalDetails;
 
 import java.util.List;
 import java.util.Map;
@@ -26,20 +27,22 @@ import java.util.stream.IntStream;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/")
 public class BoardController {
 
     private final BoardService boardService;
     
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/listTest")
-    public ResponseEntity boardList() {
+    @GetMapping("/board/listTest")
+    public ResponseEntity boardList(PrincipalDetails principalDetails) {
+        System.out.println("principalDetails = " + principalDetails);
+
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판목록",
                 IntStream.rangeClosed(1, 10)
-                        .mapToObj(i -> Map.of(
-                                "id", i,
-                                "title", "제목" + i,
-                                "content", "내용" + i
+                        .mapToObj(range -> Map.of(
+                                "id", range,
+                                "title", "제목" + range,
+                                "content", "내용" + range
                         ))
                         .toList()
                 ));

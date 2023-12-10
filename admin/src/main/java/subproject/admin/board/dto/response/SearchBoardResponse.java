@@ -1,9 +1,14 @@
 package subproject.admin.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import subproject.admin.board.dto.item.BoardItem;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchBoardResponse {
-    private final BoardItem items;
+    private BoardItem items;
 }

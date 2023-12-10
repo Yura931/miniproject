@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import subproject.admin.board.dto.*;
 import subproject.admin.board.dto.item.BoardItem;
+import subproject.admin.board.dto.item.BoardPageItem;
 import subproject.admin.board.dto.response.BoardPageResponse;
 import subproject.admin.board.dto.response.RegisterBoardResponse;
 import subproject.admin.board.dto.response.SearchBoardResponse;
@@ -46,7 +47,8 @@ public class BoardServiceImpl implements BoardService {
     public BoardPageResponse findAll(BoardPageDto dto) {
         Pageable pageable = PageRequest.of(dto.pageNo(), dto.pageSize());
         Page<Board> all = boardRepository.findAll(pageable);
-        return new BoardPageResponse(all);
+        BoardPageItem item = BoardPageItem.boardEntityToDto(all);
+        return new BoardPageResponse(item);
     }
 
     public void updateById(UpdateBoardDto dto) {

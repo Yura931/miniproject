@@ -1,19 +1,13 @@
 package subproject.admin.global.exception;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import subproject.admin.common.enums.ErrorCode;
 
-@NoArgsConstructor
+
+@RequiredArgsConstructor
+@Getter
 public class ExpiredJwtTokenException extends RuntimeException {
-
-    private ErrorCode errorCode;
-
-    public ExpiredJwtTokenException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.getMessage();
-    }
+    private final ErrorCode errorCode = ErrorCode.EXPIRED_JWT_TOKEN;
 }

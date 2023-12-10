@@ -2,6 +2,7 @@ package subproject.admin.jwt.dto;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.*;
@@ -21,16 +22,14 @@ import static subproject.admin.jwt.properties.JwtProperties.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TokenDto {
     private String token;
-    private String refreshToken;
 
-    public TokenDto(String token, String refreshToken) {
+    public TokenDto(String token) {
         this.token = token;
-        this.refreshToken = refreshToken;
     }
+
     public static TokenDto toJwtToken(HttpServletRequest request) {
         String accessToken = getHeaderAccessToken(request, AUTHORIZATION_HEADER);
-        String refreshToken = getHeaderRefreshToken(request, REFRESH_HEADER);
-        return new TokenDto(accessToken, refreshToken);
+        return new TokenDto(accessToken);
     }
 
     private static String getHeaderAccessToken(HttpServletRequest request, String headerName) {
@@ -41,15 +40,5 @@ public class TokenDto {
         }
         return headerValue.substring(TOKEN_PREFIX.length());
     }
-
-    private static String getHeaderRefreshToken(HttpServletRequest request, String headerName) {
-        String headerValue = request.getHeader(headerName);
-        if (Objects.isNull(headerValue) || StringUtils.isEmpty(headerValue)
-            || !org.apache.commons.lang3.StringUtils.startsWith(headerValue, REFRESH_PREFIX)) {
-            return "";
-        }
-        return headerValue.substring(REFRESH_PREFIX.length());
-    }
-
 
 }

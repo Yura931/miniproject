@@ -10,7 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Service;
+import subproject.admin.common.util.CookieUtil;
 import subproject.admin.jwt.dto.TokenDto;
+import subproject.admin.jwt.properties.JwtProperties;
 import subproject.admin.jwt.service.JWTService;
 import subproject.admin.redis.RedisUtil;
 
@@ -29,11 +31,14 @@ public class LogoutServiceImpl implements LogoutHandler {
 
     private final JWTService jwtService;
     private final RedisUtil redisUtil;
+    
+    private final CookieUtil cookieUtil;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String jwt = TokenDto.toJwtToken(request).getToken();
         String userEmail = jwtService.extractUserName(jwt);
+
         if (Boolean.FALSE.equals(Objects.isNull(redisUtil.get(userEmail)))) {
             // refreshToken 삭제
             redisUtil.delete(userEmail);
@@ -41,6 +46,9 @@ public class LogoutServiceImpl implements LogoutHandler {
         // redis accessToken blackList 등록
         Long getExpiration = jwtService.getExpiration(jwt) - new Date().getTime();
         redisUtil.setBlackList(userEmail, jwt, getExpiration.intValue());
+        
+        // cookie 삭제
+        cookieUtil.deleteCookie(request, response, JwtProperties.REFRESH_PREFIX);
     }
 
 }

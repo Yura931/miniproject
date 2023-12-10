@@ -1,19 +1,10 @@
 package subproject.admin.global.exception;
 
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import subproject.admin.common.enums.ErrorCode;
 
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ExpiredRefreshTokenException extends RuntimeException {
-
-    private ErrorCode errorCode;
-
-    public ExpiredRefreshTokenException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.getMessage();
-    }
+    private final ErrorCode errorCode = ErrorCode.EXPIRED_REFRESH_TOKEN;
 }

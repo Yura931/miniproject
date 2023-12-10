@@ -1,5 +1,9 @@
 package subproject.admin.common.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -17,11 +21,21 @@ import java.time.LocalDateTime;
 @ToString(of = { "createDate", "lastModifiedDate" })
 public class BaseTimeEntity {
 
+    // Java 8 date/time type java.time.LocalDateTime not supported by default
+    // LocalDateTime을 역직렬화하지 못해서 생기는 문제
+    // 추가적으로 만약 캐시로 사용할 객체에 LocalDateTime 타입의 값이
+    // 존재한다면 위처럼 @JsonSerialize, @JsonDeserialize 어노테이션을 기입해줘야 함
+    // 그렇지 않으면 오류 발생
+
     @CreatedDate
     @Column(name = "create_date", updatable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createDate;
 
     @LastModifiedDate
     @Column(name = "modified_date")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime lastModifiedDate;
 }

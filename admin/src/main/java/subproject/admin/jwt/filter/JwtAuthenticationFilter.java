@@ -49,17 +49,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // header에서 accessToken, refreshToken 찾아서 DTO 생성
+        // header에서 accessToken 찾아서 DTO 생성
         TokenDto jwtToken = TokenDto.toJwtToken(request);
         final String accessToken = jwtToken.getToken();
-        final String refreshToken = jwtToken.getRefreshToken();
-
+        System.out.println("accessToken = " + accessToken);
+        System.out.println("StringUtils.isEmpty(accessToken) = " + StringUtils.isEmpty(accessToken));
         if (StringUtils.isEmpty(accessToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwtService.accessTokenValidateCheck(accessToken);
+        System.out.println("filterException??" );
         final String userEmail = jwtService.extractUserName(accessToken);
         // logout 된 토큰으로 요청 시 Exception 처리
         logoutTokenCheck(userEmail, accessToken);
@@ -80,17 +80,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     securityContext.setAuthentication(token);
                                     SecurityContextHolder.setContext(securityContext);
                                 });
-
-                        Optional.of(refreshToken)
-                                .ifPresent((String token) -> {
-                                    Optional.of(Boolean.FALSE.equals(jwtService.isTokenValid(accessToken, userDetails))
-                                                    && Boolean.FALSE.equals(jwtService.isTokenValid(token, userDetails)))
-                                            .filter((Boolean valid) -> Boolean.TRUE.equals(valid))
-                                            .ifPresent((Boolean validResult) -> {
-                                                throw new ExpiredJwtTokenException();
-                                            });
-                                });
-
                     });
 
 

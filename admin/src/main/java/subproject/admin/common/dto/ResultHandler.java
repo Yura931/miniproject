@@ -20,7 +20,6 @@ public class ResultHandler {
                 .msg(e.getMessage())
                 .data(e)
                 .errorName(e.name())
-                .code(e.getCode().name())
                 .build();
     }
 

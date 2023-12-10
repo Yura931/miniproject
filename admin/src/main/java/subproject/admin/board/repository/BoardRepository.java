@@ -15,4 +15,5 @@ public interface BoardRepository extends JpaRepository<Board, UUID> {
     @EntityGraph(attributePaths = "boardCategory")
     Optional<Board> findById(UUID uuid);
     Page<Board> findAll(Pageable pageable);
+
 }

@@ -26,6 +26,7 @@ import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static subproject.admin.jwt.properties.JwtProperties.SECRET;
@@ -46,8 +47,8 @@ class JWTServiceImplTest {
     MemberRepository memberRepository;
     PrincipalDetails principalDetails;
 
-    private JwtAuthenticationResponse tokenDto;
-    private JwtAuthenticationResponse invalidJwtToken;
+    private Map<String, String> tokenDto;
+    private Map<String, String> invalidJwtToken;
 
     @BeforeEach
     public void beforeSetting() {
@@ -73,7 +74,10 @@ class JWTServiceImplTest {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
 
-        tokenDto = JwtAuthenticationResponse.of(accessToken, refreshToken);
+        Map<String, String> map = new HashMap<>();
+        map.put("accessToken", accessToken);
+        map.put("refreshToken", refreshToken);
+        tokenDto = map;
 
 
         accessToken = Jwts.builder()
@@ -90,7 +94,10 @@ class JWTServiceImplTest {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
 
-        invalidJwtToken = JwtAuthenticationResponse.of(accessToken, refreshToken);
+        map = new HashMap<>();
+        map.put("accessToken", accessToken);
+        map.put("refreshToken", refreshToken);
+        invalidJwtToken = map;
     }
     private Key getSignKey() {
         byte[] key = Decoders.BASE64.decode(SECRET);
@@ -98,21 +105,19 @@ class JWTServiceImplTest {
     }
     @Test
     public void accessToken유효시간체크() throws Exception {
-        assertTrue(jwtService.isTokenValid(tokenDto.getToken(), principalDetails));
-        assertThrows(ExpiredJwtException.class, () -> jwtService.isTokenValid(invalidJwtToken.getToken(), principalDetails));
+        assertTrue(jwtService.isTokenValid(tokenDto.get("accessToken"), principalDetails));
+        assertThrows(ExpiredJwtException.class, () -> jwtService.isTokenValid(invalidJwtToken.get("accessToken"), principalDetails));
     }
 
     @Test
     public void refreshToken유효시간체크() throws Exception {
-        assertTrue(jwtService.isTokenValid(tokenDto.getRefreshToken(), principalDetails));
-        assertThrows(ExpiredJwtException.class, () -> jwtService.isTokenValid(invalidJwtToken.getRefreshToken(), principalDetails));
+        assertTrue(jwtService.isTokenValid(tokenDto.get("refreshToken"), principalDetails));
+        assertThrows(ExpiredJwtException.class, () -> jwtService.isTokenValid(invalidJwtToken.get("refreshToken"), principalDetails));
     }
 
     @Test
     public void extractUserName() throws Exception {
-        String claim = jwtService.extractUserName(tokenDto.getToken());
+        String claim = jwtService.extractUserName(tokenDto.get("accessToken"));
         Assertions.assertThat(claim).isEqualTo(principalDetails.getUsername());
     }
-
-
 }

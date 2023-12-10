@@ -1,7 +1,7 @@
 package subproject.admin.jwt.service.impl;
 
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import subproject.admin.common.enums.ErrorCode;
+import subproject.admin.common.util.CookieUtil;
+import subproject.admin.global.exception.ExpiredJwtTokenException;
 import subproject.admin.global.exception.ExpiredRefreshTokenException;
 import subproject.admin.global.exception.UserDuplicateException;
-import subproject.admin.jwt.dto.request.RefreshTokenRequest;
+import subproject.admin.jwt.dto.RefreshTokenDto;
 import subproject.admin.jwt.dto.request.SignUpRequest;
 import subproject.admin.jwt.dto.request.SigninRequest;
 import subproject.admin.jwt.dto.response.JwtAuthenticationResponse;
@@ -22,13 +24,15 @@ import subproject.admin.jwt.principal.PrincipalDetails;
 import subproject.admin.jwt.service.AuthenticationService;
 import subproject.admin.jwt.service.JWTService;
 import subproject.admin.jwt.service.UserService;
-import subproject.admin.redis.RedisUtil;
 import subproject.admin.user.entity.Member;
 import subproject.admin.user.repository.MemberRepository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static subproject.admin.jwt.properties.JwtProperties.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RedisUtil redisUtil;
+    private final CookieUtil cookieUtil;
 
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
@@ -54,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new SignUpResponse(saveMember.getEmail());
     }
 
-    public JwtAuthenticationResponse signIn(SigninRequest signInRequest) {
+    public JwtAuthenticationResponse signIn(SigninRequest signInRequest, HttpServletResponse response) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInRequest.getEmail(),
                         signInRequest.getPassword()));
@@ -62,25 +66,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final UserDetails userDetails = userService.userDetailsService().loadUserByUsername(signInRequest.getEmail());
         final String token = jwtService.generateToken(userDetails);
         final String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), userDetails);
+        cookieUtil.addCookie(response, REFRESH_PREFIX, refreshToken);
 
-        return JwtAuthenticationResponse.of(token, refreshToken);
+        return JwtAuthenticationResponse.from(token);
     }
 
-    public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
-        Member member = memberRepository.findOneWithRoleByEmail(userEmail).orElseThrow();
+    public JwtAuthenticationResponse refreshToken(RefreshTokenDto refreshTokenRequest, HttpServletResponse response) {
+        String userEmail = "";
+        try {
+            userEmail = jwtService.extractUserName(refreshTokenRequest.refreshToken());
+        } catch (ExpiredJwtTokenException e) {
+            throw new ExpiredRefreshTokenException();
+        } finally {
 
-        List<GrantedAuthority> grantedAuthorities = member.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
-                .collect(Collectors.toList());
+            Member member = memberRepository.findOneWithRoleByEmail(userEmail)
+                    .orElseThrow(EntityNotFoundException::new);
 
-        UserDetails userDetails = new PrincipalDetails(member, grantedAuthorities);
+            List<GrantedAuthority> grantedAuthorities = member.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
+                    .collect(Collectors.toList());
 
-        if(jwtService.isTokenValid(refreshTokenRequest.getToken(), userDetails)) {
-            var jwt = jwtService.generateToken(userDetails);
-            return JwtAuthenticationResponse.of(jwt, refreshTokenRequest.getToken());
-        } else {
-            throw new ExpiredRefreshTokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+            UserDetails userDetails = new PrincipalDetails(member, grantedAuthorities);
+
+            String token = jwtService.generateToken(userDetails);
+            cookieUtil.addCookie(response, REFRESH_PREFIX, refreshTokenRequest.refreshToken());
+            return JwtAuthenticationResponse.from(token);
         }
     }
 

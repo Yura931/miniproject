@@ -10,15 +10,16 @@ import subproject.admin.common.enums.SortDirection;
 @AllArgsConstructor
 @Getter
 public class BoardPageRequest {
-    @NotBlank
+
     private String title;
     private String content;
+
     @NotNull
-    private SortDirection sortDirection;
+    private SortDirection sortDirection = SortDirection.ASC;
     @NotNull
-    private BoardSortCondition sortCondition;
+    private BoardSortCondition sortCondition = BoardSortCondition.CREATE_AT;
     @NotNull
-    private int pageNo = 0;
+    private Integer pageNo = 0;
     @NotNull
-    private int PageSize = 10;
+    private Integer pageSize = 10;
 }

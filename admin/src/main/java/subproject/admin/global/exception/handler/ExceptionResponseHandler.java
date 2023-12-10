@@ -19,10 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
 import subproject.admin.common.enums.ErrorCode;
-import subproject.admin.global.exception.ExpiredRefreshTokenException;
-import subproject.admin.global.exception.InvalidTokenException;
-import subproject.admin.global.exception.LoginFailException;
-import subproject.admin.global.exception.UserDuplicateException;
+import subproject.admin.global.exception.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +46,6 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     public Result<?> handleUnsupportedJwtException(UnsupportedJwtException e) {
         return errorHandler(e, 401);
     }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public Result<?> handleIllegalArgumentException(IllegalArgumentException e) {
         return errorHandler(e, 401);
@@ -58,7 +54,10 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     public Result<?> handleRefreshTokenInvalidException(ExpiredRefreshTokenException e) {
         return errorHandler(e, 401);
     }
-
+    @ExceptionHandler(ExpiredJwtTokenException.class)
+    public Result<?> handleExpiredJwtTokenException(ExpiredJwtTokenException e) {
+        return ResultHandler.errorHandle(e.getErrorCode());
+    }
     // BindException 감지
     @Override
     protected ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {

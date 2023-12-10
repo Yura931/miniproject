@@ -30,7 +30,7 @@ jwt:
   header: Authorization
   secret: eXVyYS1zcHJpbmdib290LXN1YnByb2plY3Qtand0LXRva2VuLXNwcmluZy1zZWN1cml0eS1leGFtcGxlLXByb2plY3QtYWRtaW4=
   token_prefix: 'Bearer '
-  refresh_prefix: 'RefreshToken '
+  refresh_prefix: 'RefreshToken'
   authorities_key: 'auth'
   authorization_header: 'Authorization'
   refresh_header: 'RefreshToken'
