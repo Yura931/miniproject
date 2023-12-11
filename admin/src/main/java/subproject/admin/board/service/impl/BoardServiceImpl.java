@@ -10,20 +10,21 @@ import org.springframework.stereotype.Service;
 import subproject.admin.board.dto.*;
 import subproject.admin.board.dto.item.BoardItem;
 import subproject.admin.board.dto.item.BoardPageItem;
+import subproject.admin.board.dto.projection.SearchBoardPageDto;
 import subproject.admin.board.dto.response.BoardPageResponse;
 import subproject.admin.board.dto.response.RegisterBoardResponse;
 import subproject.admin.board.dto.response.SearchBoardResponse;
 import subproject.admin.board.entity.Board;
 import subproject.admin.board.repository.BoardRepository;
+import subproject.admin.board.repository.BoardRepositoryCustom;
 import subproject.admin.board.service.BoardService;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
+    private final BoardRepositoryCustom boardRepositoryCustom;
 
     @Override
     public RegisterBoardResponse save(RegisterBoardDto dto) {
@@ -35,7 +36,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public SearchBoardResponse findById(SearchBoardDto dto) {
+    public SearchBoardResponse findById(DetailBoardDto dto) {
         Board board = boardRepository.findById(dto.id())
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -44,10 +45,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardPageResponse findAll(BoardPageDto dto) {
+    public BoardPageResponse findAll(SearchBoardDto dto) {
         Pageable pageable = PageRequest.of(dto.pageNo(), dto.pageSize());
-        Page<Board> all = boardRepository.findAll(pageable);
-        BoardPageItem item = BoardPageItem.boardEntityToDto(all);
+        // Page<Board> all = boardRepository.findAll(pageable);
+        Page<SearchBoardPageDto> searchBoardPageDtos = boardRepositoryCustom.searchAll(dto, pageable);
+        System.out.println("searchBoardPageDtos.getContent() = " + searchBoardPageDtos.getContent());
+        BoardPageItem item = BoardPageItem.boardEntityToDto(searchBoardPageDtos);
+        System.out.println("item = " + item);
         return new BoardPageResponse(item);
     }
 

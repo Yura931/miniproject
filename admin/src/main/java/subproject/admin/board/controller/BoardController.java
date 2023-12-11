@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import subproject.admin.board.dto.BoardPageDto;
-import subproject.admin.board.dto.RegisterBoardDto;
 import subproject.admin.board.dto.SearchBoardDto;
-import subproject.admin.board.dto.request.BoardPageRequest;
+import subproject.admin.board.dto.RegisterBoardDto;
+import subproject.admin.board.dto.DetailBoardDto;
+import subproject.admin.board.dto.request.SearchBoardRequest;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.dto.response.BoardPageResponse;
 import subproject.admin.board.dto.response.RegisterBoardResponse;
@@ -19,10 +19,8 @@ import subproject.admin.common.dto.Result;
 import subproject.admin.common.dto.ResultHandler;
 import subproject.admin.jwt.principal.PrincipalDetails;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RestController
@@ -49,15 +47,15 @@ public class BoardController {
     }
 
     @GetMapping("/board")
-    public ResponseEntity<Result> getBoardList(@Valid BoardPageRequest request) {
-        BoardPageResponse page = boardService.findAll(BoardPageDto.from(request));
+    public ResponseEntity<Result> getBoardList(@Valid SearchBoardRequest request) {
+        BoardPageResponse page = boardService.findAll(SearchBoardDto.from(request));
         return ResponseEntity.ok().body(ResultHandler.handle(
                 HttpStatus.OK.value(), "게시판관리 목록", page));
     }
 
     @GetMapping("/board/{id}")
     public ResponseEntity<Result> getBoardDetail(@PathVariable UUID id) {
-        SearchBoardResponse byId = boardService.findById(SearchBoardDto.from(id));
+        SearchBoardResponse byId = boardService.findById(DetailBoardDto.from(id));
         return ResponseEntity.ok().body(ResultHandler.handle(
                 HttpStatus.OK.value(), "게시판관리 상세정보", byId));
     }

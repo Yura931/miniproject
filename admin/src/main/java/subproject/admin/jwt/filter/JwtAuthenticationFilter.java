@@ -13,8 +13,10 @@ import lombok.val;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.util.Optionals;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,7 @@ import subproject.admin.jwt.service.UserService;
 import subproject.admin.redis.RedisUtil;
 
 import java.io.IOException;
+import java.security.Security;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,48 +55,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // header에서 accessToken 찾아서 DTO 생성
         TokenDto jwtToken = TokenDto.toJwtToken(request);
         final String accessToken = jwtToken.getToken();
-        System.out.println("accessToken = " + accessToken);
-        System.out.println("StringUtils.isEmpty(accessToken) = " + StringUtils.isEmpty(accessToken));
         if (StringUtils.isEmpty(accessToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("filterException??" );
         final String userEmail = jwtService.extractUserName(accessToken);
         // logout 된 토큰으로 요청 시 Exception 처리
-        logoutTokenCheck(userEmail, accessToken);
+        logoutTokenCheck(accessToken);
+            Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .ifPresentOrElse(
+                    (auth) -> {
+                        Optional.ofNullable(auth.getDetails())
+                                .map(UserDetails.class::cast)
+                                .filter(userDetails -> jwtService.isTokenValid(userEmail, userDetails))
+                                .orElseThrow(ExpiredJwtTokenException::new);
+                    },
+                    () -> {
+                        UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
+                        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities()
+                        );
 
-        Optional.ofNullable(userEmail)
-                .filter((String email) -> Objects.isNull(SecurityContextHolder.getContext().getAuthentication()))
-                    .ifPresent((String email) -> {
-                        UserDetails userDetails = userService.userDetailsService().loadUserByUsername(email);
-                        Optional.of(jwtService.isTokenValid(accessToken, userDetails))
-                                .filter((Boolean valid) -> valid)
-                                .ifPresent((Boolean validResult) -> {
-                                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                                            userDetails, null, userDetails.getAuthorities()
-                                    );
-
-                                    token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                                    securityContext.setAuthentication(token);
-                                    SecurityContextHolder.setContext(securityContext);
-                                });
-                    });
-
+                        token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        securityContext.setAuthentication(token);
+                        SecurityContextHolder.setContext(securityContext);
+                    }
+                );
 
         filterChain.doFilter(request, response);
     }
 
-    private void logoutTokenCheck(String userEmail, String accessToken) {
-        Optional.of(redisUtil.getBlackList(userEmail))
-                .ifPresent(blackListToken -> {
-                    if (accessToken.equals(blackListToken)) {
-                        throw new LogoutTokenRequestException(ErrorCode.LOGOUT_TOKEN);
-                    }
-                });
-
+    private void logoutTokenCheck(String accessToken) {
+        if(redisUtil.hasKeyBlackList(accessToken)) {
+            throw new LogoutTokenRequestException();
+        };
     }
 
 }

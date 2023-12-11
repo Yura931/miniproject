@@ -1,6 +1,5 @@
 package subproject.admin.board.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +8,7 @@ import subproject.admin.common.enums.SortDirection;
 
 @AllArgsConstructor
 @Getter
-public class BoardPageRequest {
+public class SearchBoardRequest {
 
     private String title;
     private String content;

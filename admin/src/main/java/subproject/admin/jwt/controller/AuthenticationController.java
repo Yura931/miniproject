@@ -31,7 +31,7 @@ import static subproject.admin.jwt.properties.JwtProperties.*;
 import static subproject.admin.jwt.properties.JwtProperties.REFRESH_PREFIX;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1")
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
@@ -39,14 +39,14 @@ public class AuthenticationController {
 
     private final CookieUtil cookieUtil;
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<Result> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
         SignUpResponse signUpResponse = authenticationService.signUp(signUpRequest);
         return ResponseEntity.ok()
                 .body(ResultHandler.handle(HttpStatus.OK.value(), "", signUpResponse));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<Result> role(@Valid @RequestBody SigninRequest signinRequest, HttpServletResponse response) {
         JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signIn(signinRequest, response);
         return ResponseEntity.ok()

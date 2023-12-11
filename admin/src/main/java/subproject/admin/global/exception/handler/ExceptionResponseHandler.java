@@ -51,8 +51,8 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
         return errorHandler(e, 401);
     }
     @ExceptionHandler(ExpiredRefreshTokenException.class)
-    public Result<?> handleRefreshTokenInvalidException(ExpiredRefreshTokenException e) {
-        return errorHandler(e, 401);
+    public ResponseEntity<Result> handleRefreshTokenInvalidException(ExpiredRefreshTokenException e) {
+        return ResponseEntity.status(e.getErrorCode().getStatus()).body(ResultHandler.errorHandle(e.getErrorCode()));
     }
     @ExceptionHandler(ExpiredJwtTokenException.class)
     public Result<?> handleExpiredJwtTokenException(ExpiredJwtTokenException e) {
