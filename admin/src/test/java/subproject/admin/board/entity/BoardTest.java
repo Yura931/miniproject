@@ -7,10 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import subproject.admin.board.dto.RegisterBoardDto;
+import subproject.admin.board.dto.record.RegisterBoardDto;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
+import subproject.admin.common.enums.EnumDto;
 
+import javax.sound.sampled.EnumControl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +35,7 @@ class BoardTest {
                 new RegisterBoardRequest(
                         Enabled.Y,
                         Enabled.Y,
-                        "A",
+                        BoardType.GENERAL,
                         "title",
                         "description",
                         Enabled.Y,
@@ -52,7 +55,7 @@ class BoardTest {
                 new RegisterBoardRequest(
                         Enabled.Y,
                         Enabled.Y,
-                        "A",
+                        BoardType.GENERAL,
                         "title",
                         "description",
                         Enabled.Y,
@@ -76,17 +79,24 @@ class BoardTest {
         List<Board> bm = em.createQuery("select bm from Board bm", Board.class)
                 .getResultList();
 
-        UUID findId = bm.get(0).getId();
+        Long findId = bm.get(0).getId();
         Board findBoard = em.find(Board.class, findId);
         findBoard.updateBoard(
                 Enabled.Y,
                 Enabled.Y,
-                "A",
+                BoardType.GENERAL,
                 "title2",
                 "description2",
                 Enabled.Y,
                 Enabled.Y,
                 Enabled.Y, Enabled.Y);
         assertThat(findBoard.getBoardTitle()).isEqualTo("title2");
+    }
+
+    @Test
+    public void enumsTest() {
+        List<EnumDto> enabledList = Enabled.getEnabledList();
+        String toString = Arrays.toString(enabledList.toArray());
+        System.out.println("toString = " + toString);
     }
 }

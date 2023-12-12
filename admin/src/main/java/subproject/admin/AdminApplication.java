@@ -1,20 +1,16 @@
 package subproject.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import subproject.admin.board.dto.RegisterBoardDto;
+import subproject.admin.board.dto.record.RegisterBoardDto;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.entity.Board;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.board.repository.BoardRepository;
 import subproject.admin.user.entity.Member;
@@ -56,7 +52,7 @@ public class AdminApplication implements CommandLineRunner {
 							new RegisterBoardRequest(
 									Enabled.Y,
 									Enabled.Y,
-									"A",
+									BoardType.GENERAL,
 									"title",
 									"description",
 									Enabled.Y,

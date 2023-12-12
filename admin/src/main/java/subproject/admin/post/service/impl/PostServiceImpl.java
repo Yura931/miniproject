@@ -14,6 +14,8 @@ import subproject.admin.post.entity.Post;
 import subproject.admin.post.repository.PostRepository;
 import subproject.admin.post.service.PostService;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -21,7 +23,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     @Override
     public RegisterPostResponse save(RegisterPostDto dto) {
-        Post post = Post.createPost(dto);
+        Post post = Post.createPost(dto, new ArrayList<>());
         Post savePost = postRepository.save(post);
         PostItem postItem = PostItem.PostEntityToDto(savePost);
         return null;

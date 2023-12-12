@@ -9,6 +9,7 @@ import subproject.admin.board.entity.Board;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@ToString
 public class BoardPageResponse {
     private BoardPageItem items;
 }

@@ -11,9 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import subproject.admin.board.dto.RegisterBoardDto;
+import subproject.admin.board.dto.record.RegisterBoardDto;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.entity.Board;
+import subproject.admin.board.entity.BoardCategory;
+import subproject.admin.board.entity.BoardCategoryMapping;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
 import java.util.*;
@@ -31,7 +34,7 @@ class BoardRepositoryTest {
     @PersistenceContext
     EntityManager em;
 
-    Map<String, UUID> initIdMap = new HashMap<>();
+    Map<String, Long> initIdMap = new HashMap<>();
 
     @BeforeEach
     public void beforeEach() {
@@ -41,7 +44,7 @@ class BoardRepositoryTest {
                             new RegisterBoardRequest(
                                     Enabled.Y,
                                     Enabled.Y,
-                                    "A",
+                                    BoardType.GENERAL,
                                     "title",
                                     "description",
                                     Enabled.Y,
@@ -68,14 +71,34 @@ class BoardRepositoryTest {
                 .getResultList();
 
         bm.stream()
-                .forEach(e -> System.out.println("board = " + e.getBoardCategory().getCategories()));
+                .forEach(e -> System.out.println("board = " + e.getBoardCategoryMapping().getCategories()));
     }
 
     @Test
-    public void boardFindById() {
-        UUID firstId = initIdMap.get("firstId");
+    public void boardFindByIdTest() {
+        Long firstId = initIdMap.get("firstId");
         Board board = boardRepository.findById(firstId).get();
         assertThat(board.getId()).isEqualTo(firstId);
+    }
+
+    @Test
+    public void boardCategoryFindTest() {
+        Long firstId = initIdMap.get("firstId");
+        Board board = boardRepository.findById(firstId).get();
+        BoardCategoryMapping boardCategoryMapping = board.getBoardCategoryMapping();
+        List<BoardCategory> categories = boardCategoryMapping.getCategories();
+        assertThat(categories).size().isEqualTo(2);
+    }
+    @Test
+    public void boardCategoryUpdateTest() {
+        Long firstId = initIdMap.get("firstId");
+        Board board = boardRepository.findById(firstId).get();
+        BoardCategoryMapping boardCategoryMapping = board.getBoardCategoryMapping();
+        List<BoardCategory> categories = boardCategoryMapping.getCategories();
+        BoardCategory boardCategory = categories.get(0);
+        UUID boardCategoryId = boardCategory.getId();
+        boardCategoryMapping.updateBoardCategoryMapping(boardCategoryId, "updateUpdate");
+        assertThat(boardCategory.getCategoryName()).isEqualTo("updateUpdate");
     }
 
     @Test

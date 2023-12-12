@@ -1,4 +1,4 @@
-package subproject.admin.board.dto;
+package subproject.admin.board.dto.record;
 
 import subproject.admin.board.dto.enums.BoardSortCondition;
 import subproject.admin.board.dto.request.SearchBoardRequest;

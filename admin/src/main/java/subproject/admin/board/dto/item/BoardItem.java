@@ -4,21 +4,19 @@ package subproject.admin.board.dto.item;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.Board;
-import subproject.admin.board.entity.Category;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class BoardItem {
-    private final UUID id;
+    private final Long id;
     private final Enabled boardEnabled;
     private final Enabled boardVisible;
-    private final String boardType;
+    private final BoardType boardType;
     private final String boardTitle;
     private final String boardDescription;
     private final Enabled boardCategoryEnabled;

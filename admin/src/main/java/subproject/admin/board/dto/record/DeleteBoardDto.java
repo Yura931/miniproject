@@ -1,12 +1,12 @@
-package subproject.admin.board.dto;
+package subproject.admin.board.dto.record;
 
 import java.util.UUID;
 
 public record DeleteBoardDto(
-        UUID id
+        Long id
 ) {
 
-    public static DeleteBoardDto of (UUID id) {
+    public static DeleteBoardDto of (Long id) {
         return new DeleteBoardDto(id);
     }
 }

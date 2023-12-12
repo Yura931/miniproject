@@ -11,17 +11,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import subproject.admin.board.dto.CategoryDto;
-import subproject.admin.board.dto.RegisterBoardDto;
+import subproject.admin.board.dto.record.BoardCategoryDto;
+import subproject.admin.board.dto.record.RegisterBoardDto;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.entity.Board;
+import subproject.admin.board.entity.BoardCategoryMapping;
 import subproject.admin.board.entity.BoardCategory;
-import subproject.admin.board.entity.Category;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.board.repository.BoardRepository;
 import subproject.admin.post.dto.RegisterPostDto;
 import subproject.admin.post.repository.PostRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +52,7 @@ class PostTest {
                 new RegisterBoardRequest(
                         Enabled.Y,
                         Enabled.Y,
-                        "A",
+                        BoardType.GENERAL,
                         "title",
                         "description",
                         Enabled.Y,
@@ -64,12 +66,12 @@ class PostTest {
         Board save = boardRepository.save(board);
         initMap.put("saveBoard", save);
 
-        BoardCategory boardCategory = save.getBoardCategory();
+        BoardCategoryMapping boardCategoryMapping = save.getBoardCategoryMapping();
         IntStream.rangeClosed(1, 10)
                 .forEach(value -> {
-                    Category category = Category.createCategory(boardCategory, CategoryDto.from(boardCategory.getCategories().get(0).getCategoryName()));
-                    RegisterPostDto of = RegisterPostDto.of(save, category, "postTitle"+value, "postContent"+value);
-                    Post post = Post.createPost(of);
+                    BoardCategory boardCategory = BoardCategory.createCategory(boardCategoryMapping, BoardCategoryDto.from(boardCategoryMapping.getCategories().get(0).getCategoryName()));
+                    RegisterPostDto of = RegisterPostDto.of(save, boardCategory, "postTitle"+value, "postContent"+value);
+                    Post post = Post.createPost(of, new ArrayList<>());
                     em.persist(post);
                 });
     }
@@ -77,9 +79,9 @@ class PostTest {
     @Test
     public void registerPostTest() {
         Board saveBoard = initMap.get("saveBoard");
-        Category category = saveBoard.getBoardCategory().getCategories().get(0);
-        RegisterPostDto of = RegisterPostDto.of(saveBoard, category, "postTitle", "postContent");
-        Post post = Post.createPost(of);
+        BoardCategory boardCategory = saveBoard.getBoardCategoryMapping().getCategories().get(0);
+        RegisterPostDto of = RegisterPostDto.of(saveBoard, boardCategory, "postTitle", "postContent");
+        Post post = Post.createPost(of, new ArrayList<>());
         Post save = postRepository.save(post);
 
         Assertions.assertThat(save.getId()).isEqualTo(post.getId());

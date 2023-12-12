@@ -1,25 +1,23 @@
-package subproject.admin.board.dto;
+package subproject.admin.board.dto.record;
 
 import subproject.admin.board.dto.request.RegisterBoardRequest;
-import subproject.admin.board.entity.BoardCategory;
-import subproject.admin.board.entity.QBoard;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public record RegisterBoardDto(
         Enabled boardEnabled,
         Enabled boardVisible,
-        String boardType,
+        BoardType boardType,
         String boardTitle,
         String boardDescription,
         Enabled boardCategoryEnabled,
         Enabled boardFileEnabled,
         Enabled boardCommentEnabled,
         Enabled boardReplyCommentEnabled,
-        List<CategoryDto> categories
+        List<BoardCategoryDto> categories
 ){
 
     public static RegisterBoardDto from(RegisterBoardRequest request) {
@@ -35,7 +33,7 @@ public record RegisterBoardDto(
                 request.getBoardReplyCommentEnabled(),
                 request.getCategories()
                         .stream()
-                        .map(category -> CategoryDto.from(category))
+                        .map(category -> BoardCategoryDto.from(category))
                         .toList()
         );
     }

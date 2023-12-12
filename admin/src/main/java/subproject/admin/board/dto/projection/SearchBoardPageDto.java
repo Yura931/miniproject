@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
 import java.time.LocalDate;
@@ -19,10 +20,10 @@ import java.util.UUID;
 @ToString(of = { "id", "boardEnabled", "boardVisible", "boardType", "boardTitle", "createDate" })
 @Getter
 public class SearchBoardPageDto {
-    private UUID id;
+    private Long id;
     private Enabled boardEnabled;
     private Enabled boardVisible;
-    private String boardType;
+    private BoardType boardType;
     private String boardTitle;
     private LocalDateTime createDate;
 }

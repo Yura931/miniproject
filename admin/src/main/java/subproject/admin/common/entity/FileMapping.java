@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import subproject.admin.common.dto.FileDto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class FileMapping {
     private UUID id;
 
     @OneToMany(mappedBy = "fileMapping", cascade = CascadeType.ALL)
-    private List<File> file;
+    private List<File> file = new ArrayList<>();
 
     public FileMapping(UUID id, List<FileDto> files) {
         this.id = id;

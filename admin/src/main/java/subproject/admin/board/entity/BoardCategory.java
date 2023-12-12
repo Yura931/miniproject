@@ -1,42 +1,48 @@
 package subproject.admin.board.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import subproject.admin.board.dto.CategoryDto;
-import subproject.admin.common.entity.BaseTimeEntity;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import subproject.admin.board.dto.record.BoardCategoryDto;
+import subproject.admin.post.entity.Post;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = { "id" })
-public class BoardCategory extends BaseTimeEntity {
+@ToString(of = { "id", "categoryName" })
+public class BoardCategory {
 
     @Id
     @Column(name = "board_category_id")
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", unique = true)
-    private Board board;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_category_mapping_id")
+    private BoardCategoryMapping boardCategoryMapping;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "boardCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Category> categories = new ArrayList<>();
+    private String categoryName;
 
-    private BoardCategory(UUID id, List<CategoryDto> categories) {
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "boardCategory")
+    private Post post;
+
+    private BoardCategory(UUID id, BoardCategoryMapping boardCategoryMapping, BoardCategoryDto dto) {
         this.id = id;
-        this.categories = categories.stream()
-        .map(dto -> Category.createCategory(this, dto))
-        .toList();
+        boardCategoryMapping.getCategories().add(this);
+        this.boardCategoryMapping = boardCategoryMapping;
+        this.categoryName = dto.categoryName();
     }
 
-    public static BoardCategory createBoardCategory(List<CategoryDto> categories) {
-        UUID uuid = UUID.randomUUID();
-        return new BoardCategory(uuid, categories);
+    public static BoardCategory createCategory(BoardCategoryMapping boardCategoryMapping, BoardCategoryDto dto) {
+        UUID id = UUID.randomUUID();
+        return new BoardCategory(id, boardCategoryMapping, dto);
     }
 
+    public BoardCategory updateCategory(String categoryName) {
+        this.categoryName = categoryName;
+        return this;
+    }
 }
