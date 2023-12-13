@@ -14,6 +14,7 @@ import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.common.enums.EnumDto;
 
 import javax.sound.sampled.EnumControl;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -95,8 +96,7 @@ class BoardTest {
 
     @Test
     public void enumsTest() {
-        List<EnumDto> enabledList = Enabled.getEnabledList();
-        String toString = Arrays.toString(enabledList.toArray());
-        System.out.println("toString = " + toString);
+        Field[] declaredFields = Enabled.class.getDeclaredFields();
+        System.out.println("declaredFields = " + declaredFields);
     }
 }

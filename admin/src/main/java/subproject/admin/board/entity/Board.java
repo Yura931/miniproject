@@ -9,6 +9,7 @@ import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.common.entity.BaseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,9 +43,8 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Enabled boardCategoryEnabled;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private BoardCategoryMapping boardCategoryMapping;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardCategory> categories = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Enabled boardFileEnabled;
@@ -67,7 +67,7 @@ public class Board extends BaseEntity {
         this.boardFileEnabled = boardFileEnabled;
         this.boardCommentEnabled = boardCommentEnabled;
         this.boardReplyCommentEnabled = boardReplyCommentEnabled;
-        this.boardCategoryMapping = BoardCategoryMapping.createBoardCategory(categories, this);
+        this.categories = BoardCategory.createCategories(this, categories);
     }
 
     public static Board createBoard(RegisterBoardDto bm) {

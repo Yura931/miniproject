@@ -3,7 +3,6 @@ package subproject.admin.board.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +17,8 @@ import subproject.admin.board.dto.response.RegisterBoardResponse;
 import subproject.admin.board.dto.response.SearchBoardResponse;
 import subproject.admin.board.dto.response.UpdateBoardResponse;
 import subproject.admin.board.entity.Board;
-import subproject.admin.board.entity.BoardCategoryMapping;
+import subproject.admin.board.entity.BoardCategory;
+import subproject.admin.board.repository.BoardCategoryRepository;
 import subproject.admin.board.repository.BoardRepository;
 import subproject.admin.board.repository.BoardRepositoryCustom;
 import subproject.admin.board.service.BoardService;
@@ -30,6 +30,8 @@ import subproject.admin.board.service.BoardService;
 public class BoardServiceImpl implements BoardService {
     private BoardRepository boardRepository;
     private BoardRepositoryCustom boardRepositoryCustom;
+
+    private BoardCategoryRepository boardCategoryRepository;
 
     @Override
     public RegisterBoardResponse save(RegisterBoardDto dto) {
@@ -76,23 +78,31 @@ public class BoardServiceImpl implements BoardService {
         BoardItem boardItem = BoardItem.boardEntityToDto(board);
         return new UpdateBoardResponse(boardItem);
     }
-
-    public void updateCategoryById(UpdateBoardCategoryDto dto) {
-        Board board = boardRepository.findById(dto.boardId())
-                .orElseThrow(EntityNotFoundException::new);
-        BoardCategoryMapping boardCategoryMapping = board
-                        .getBoardCategoryMapping()
-                        .updateBoardCategoryMapping(dto.boardCategoryId(), dto.boardCategoryName());
-    }
-
     public void deleteById(DeleteBoardDto dto) {
         boardRepository.deleteById(dto.id());
     }
 
-    public void deleteCategoryById(DeleteBoardCategoryDto dto) {
+    public RegisterBoardResponse insertCategoryById(RegisterBoardCategoryDto dto, BoardCategoryDto categoryDto) {
         Board board = boardRepository.findById(dto.boardId())
                 .orElseThrow(EntityNotFoundException::new);
-        BoardCategoryMapping boardCategoryMapping = board.getBoardCategoryMapping();
-        boardRepository.deleteByBoardCategoryMappingAndCategoryId(boardCategoryMapping, dto.categoryId());
+        board.getCategories().add(BoardCategory.createCategory(board, categoryDto));
+        BoardItem boardItem = BoardItem.boardEntityToDto(board);
+        return new RegisterBoardResponse(boardItem);
+    }
+
+    public UpdateBoardResponse updateCategoryById(UpdateBoardCategoryDto dto) {
+        Board board = boardRepository.findById(dto.boardId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        board.getCategories().stream()
+                .filter((categories) -> categories.getId().equals(dto.boardId()))
+                .map((category) -> category.updateCategory(dto.boardCategoryName()))
+                .toList();
+
+        BoardItem boardItem = BoardItem.boardEntityToDto(board);
+        return new UpdateBoardResponse(boardItem);
+    }
+    public void deleteCategoryById(DeleteBoardCategoryDto dto) {
+        boardCategoryRepository.deleteById(dto.categoryId());
     }
 }

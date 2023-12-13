@@ -1,24 +1,23 @@
-package subproject.admin.common.util;
+package subproject.admin.file.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import subproject.admin.common.dto.FileDto;
+import subproject.admin.file.dto.FileDto;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class FileUtil {
+    @Value("${file.uploadPath}")
+    String storedPathString;
 
-    public List<FileDto> uploadFileDto (MultipartHttpServletRequest request, String uploadPath) throws Exception {
-
+    public List<FileDto> uploadFileDto (MultipartHttpServletRequest request) throws Exception {
         final Map<String, MultipartFile> files = request.getFileMap();
-        final String storedPathString = "/" + uploadPath;
 
         if (Boolean.FALSE.equals(files.isEmpty())) {
             File saveFolder = new File(filePathBlackList(storedPathString));
@@ -29,26 +28,29 @@ public class FileUtil {
                     .filter(file -> Boolean.FALSE.equals(StringUtils.isEmpty(file.getOriginalFilename())))
                     .map((file) -> {
                         String originalFileName = file.getOriginalFilename();
-                        int index = originalFileName.lastIndexOf(".");
-                        String fileExt = originalFileName.substring(index + 1);
-
+                        String fileExt = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
                         String newName = UUID.randomUUID().toString();
                         long size = file.getSize();
 
-                        String filePath = storedPathString + File.pathSeparator + newName;
+                        String filePath = storedPathString + File.separator + newName + "." + fileExt;
                         try {
-                            file.transferTo(new File(filePathBlackList(filePath)));
+                            if(!saveFolder.exists()) {
+                                saveFolder.mkdirs();
+                            }
+                            File storedFile = new File(filePathBlackList(filePath));
+                            file.transferTo(storedFile);
                         } catch (IOException e) {
+                            e.printStackTrace();
                             throw new RuntimeException(e);
                         }
 
                         return FileDto.of(
-                           originalFileName,
-                           newName,
-                           storedPathString,
-                           Long.toString(size),
-                           file.getContentType(),
-                           fileExt, 0
+                            originalFileName,
+                            newName,
+                            filePath,
+                            Long.toString(size),
+                            file.getContentType(),
+                            fileExt, 0
                         );
 
                     })

@@ -23,12 +23,12 @@ public enum Enabled implements EnumModel {
         return name();
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
-
-    public static List<EnumDto> getEnabledList() {
+    public static List<EnumDto> getEnumList() {
         return Stream.of(Enabled.values())
                 .map(EnumDto::new)
                 .toList();

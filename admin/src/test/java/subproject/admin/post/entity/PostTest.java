@@ -15,12 +15,11 @@ import subproject.admin.board.dto.record.BoardCategoryDto;
 import subproject.admin.board.dto.record.RegisterBoardDto;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.entity.Board;
-import subproject.admin.board.entity.BoardCategoryMapping;
 import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.board.repository.BoardRepository;
-import subproject.admin.post.dto.RegisterPostDto;
+import subproject.admin.post.dto.record.RegisterPostDto;
 import subproject.admin.post.repository.PostRepository;
 
 import java.util.ArrayList;
@@ -66,11 +65,10 @@ class PostTest {
         Board save = boardRepository.save(board);
         initMap.put("saveBoard", save);
 
-        BoardCategoryMapping boardCategoryMapping = save.getBoardCategoryMapping();
         IntStream.rangeClosed(1, 10)
                 .forEach(value -> {
-                    BoardCategory boardCategory = BoardCategory.createCategory(boardCategoryMapping, BoardCategoryDto.from(boardCategoryMapping.getCategories().get(0).getCategoryName()));
-                    RegisterPostDto of = RegisterPostDto.of(save, boardCategory, "postTitle"+value, "postContent"+value);
+                    BoardCategory boardCategory = BoardCategory.createCategory(save, BoardCategoryDto.from(save.getCategories().get(0).getCategoryName()));
+                    RegisterPostDto of = RegisterPostDto.of(save, boardCategory, "postTitle"+value, "postContent"+value, new ArrayList<>());
                     Post post = Post.createPost(of, new ArrayList<>());
                     em.persist(post);
                 });
@@ -79,8 +77,8 @@ class PostTest {
     @Test
     public void registerPostTest() {
         Board saveBoard = initMap.get("saveBoard");
-        BoardCategory boardCategory = saveBoard.getBoardCategoryMapping().getCategories().get(0);
-        RegisterPostDto of = RegisterPostDto.of(saveBoard, boardCategory, "postTitle", "postContent");
+        BoardCategory boardCategory = saveBoard.getCategories().get(0);
+        RegisterPostDto of = RegisterPostDto.of(saveBoard, boardCategory, "postTitle", "postContent", new ArrayList<>());
         Post post = Post.createPost(of, new ArrayList<>());
         Post save = postRepository.save(post);
 

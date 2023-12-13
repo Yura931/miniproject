@@ -1,9 +1,11 @@
 package subproject.admin.post.dto.response;
 
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import subproject.admin.post.dto.item.PostItem;
 
-@RequiredArgsConstructor
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SearchPostResponse {
-    private final PostItem postItem;
+    private PostItem items;
 }

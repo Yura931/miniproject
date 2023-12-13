@@ -1,4 +1,4 @@
-package subproject.admin.common.util;
+package subproject.admin.file.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import subproject.admin.common.dto.FileDto;
+import subproject.admin.file.dto.FileDto;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -22,6 +22,7 @@ public class S3Util {
     private final Map<String, String> buketInfo;
 
     public List<FileDto> uploadFileDto(MultipartHttpServletRequest request) {
+
         final Map<String, MultipartFile> files = request.getFileMap();
 
         if (Boolean.FALSE.equals(files.isEmpty())) {

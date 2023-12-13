@@ -13,6 +13,6 @@ public interface BoardService {
     BoardPageResponse findAll(SearchBoardDto dto);
     UpdateBoardResponse updateById(UpdateBoardDto dto);
     void deleteById(DeleteBoardDto dto);
-    void updateCategoryById(UpdateBoardCategoryDto dto);
+    UpdateBoardResponse updateCategoryById(UpdateBoardCategoryDto dto);
     void deleteCategoryById(DeleteBoardCategoryDto of);
 }

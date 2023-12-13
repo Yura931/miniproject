@@ -1,8 +1,11 @@
-package subproject.admin.common.dto;
+package subproject.admin.file.dto;
 
 
 public record FileDto (
+        // 원본 명
         String originalFilename,
+
+        // 저장 명
         String storedFilename,
         String filePath,
         String fileSize,

@@ -1,4 +1,11 @@
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      location: /home/file
+      max-request-size: 30MB
+      max-file-size: 10MB
+
   datasource:
     url: jdbc:h2:tcp://localhost/~/yulpang;DB_CLOSE_ON_EXIT=FALSE
     username: sa
@@ -32,3 +39,6 @@ jwt:
   authorities_key: 'auth'
   authorization_header: 'Authorization'
   refresh_header: 'RefreshToken'
+
+file:
+  uploadPath: '/home/file'

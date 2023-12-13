@@ -1,10 +1,11 @@
 package subproject.admin.post.dto.response;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import subproject.admin.post.dto.item.PostItem;
 
-@RequiredArgsConstructor
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterPostResponse {
-    private final PostItem postItem;
+    private PostItem items;
 }

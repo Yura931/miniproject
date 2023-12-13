@@ -6,19 +6,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import subproject.admin.file.dto.FileDto;
-import subproject.admin.file.util.S3Util;
+import subproject.admin.file.util.FileUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @SpringBootTest
-class AwsCloudUtilTest {
+class FileUtilTest {
 
     @Autowired
-    S3Util awsCloudUtil;
+    FileUtil fileUtil;
 
     @Test
-    public void awsCloudUploadFileTest() {
+    public void localFileUploadTest() throws Exception {
         MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -28,7 +28,8 @@ class AwsCloudUtilTest {
         );
 
         request.addFile(file);
-        List<FileDto> fileDtos = awsCloudUtil.uploadFileDto(request);
+        List<FileDto> fileDtos = fileUtil.uploadFileDto(request);
         System.out.println("fileDtos = " + fileDtos);
     }
+
 }

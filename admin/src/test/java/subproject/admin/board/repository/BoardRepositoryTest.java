@@ -15,14 +15,13 @@ import subproject.admin.board.dto.record.RegisterBoardDto;
 import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.entity.Board;
 import subproject.admin.board.entity.BoardCategory;
-import subproject.admin.board.entity.BoardCategoryMapping;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Rollback(value = false)
@@ -71,7 +70,7 @@ class BoardRepositoryTest {
                 .getResultList();
 
         bm.stream()
-                .forEach(e -> System.out.println("board = " + e.getBoardCategoryMapping().getCategories()));
+                .forEach(e -> System.out.println("board = " + e.getCategories()));
     }
 
     @Test
@@ -85,19 +84,17 @@ class BoardRepositoryTest {
     public void boardCategoryFindTest() {
         Long firstId = initIdMap.get("firstId");
         Board board = boardRepository.findById(firstId).get();
-        BoardCategoryMapping boardCategoryMapping = board.getBoardCategoryMapping();
-        List<BoardCategory> categories = boardCategoryMapping.getCategories();
+        List<BoardCategory> categories = board.getCategories();
+        System.out.println("categories = " + categories);
         assertThat(categories).size().isEqualTo(2);
     }
     @Test
     public void boardCategoryUpdateTest() {
         Long firstId = initIdMap.get("firstId");
         Board board = boardRepository.findById(firstId).get();
-        BoardCategoryMapping boardCategoryMapping = board.getBoardCategoryMapping();
-        List<BoardCategory> categories = boardCategoryMapping.getCategories();
+        List<BoardCategory> categories = board.getCategories();
         BoardCategory boardCategory = categories.get(0);
-        UUID boardCategoryId = boardCategory.getId();
-        boardCategoryMapping.updateBoardCategoryMapping(boardCategoryId, "updateUpdate");
+        boardCategory.updateCategory("updateUpdate");
         assertThat(boardCategory.getCategoryName()).isEqualTo("updateUpdate");
     }
 
