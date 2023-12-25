@@ -1,24 +1,23 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {
-    FormBox,
-    FormContainer,
-    Input,
-    InputBox,
-    Inputs,
-    Label,
     LoginButton,
     LoginWrapper,
     SubmitContainer,
-    Title
 } from "./Login.styled";
 import {login} from "../api/sign";
+import axiosInstance from "../utils/axiosInstance";
+import {FormBox, FormContainer, Input, InputBox, Inputs, Label, Title} from "../components/Common";
 
 
 const Login = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
+
+    useEffect(() => {
+        let header = axiosInstance.defaults.headers["Authorization"];
+    }, [])
 
     const idRef = useRef();
     const pwRef = useRef();
@@ -33,8 +32,8 @@ const Login = () => {
 
     const onSignIn = async() => {
         await login(id, password)
-            .then((response) => {
-                navigate('/');
+            .then((data) => {
+                navigate("/");
             });
     }
 

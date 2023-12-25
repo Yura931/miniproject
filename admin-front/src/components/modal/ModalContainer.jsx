@@ -1,44 +1,45 @@
-import {useContext} from "react";
-import {ModalStateContext} from "../../context/ModalProvider";
 import {createPortal} from "react-dom";
 import BoardModal from "./BoardModal";
 import useModal from "../../hook/useModal";
-import {ModalBody, ModalContents, ModalWrapper} from "./ModalContainer.styled";
-
+import {ModalBody, ModalCloseBtn, ModalContents, ModalWrapper} from "./ModalContainer.styled";
+import CategoryModal from "./CategoryModal";
+import TestModal from "./TestModal";
+import {FaRegWindowClose} from "react-icons/fa";
 
 const MODAL_COMPONENTS = {
     board: BoardModal,
+    category: CategoryModal,
+    test: TestModal
 };
 
 const ModalContainer = () => {
     const { closeModal, modalState } = useModal();
-    const { type, props } = useContext(ModalStateContext);
-    const isModalOpen = Boolean(modalState.type);
+    const renderModal = modalState.map(({ type, props }, index) => {
+        const isModalOpen = !(type == null);
+        if(!type) {
+            return null;
+        }
+        const ModalComponent = MODAL_COMPONENTS[type];
+        return (
+            <ModalWrapper key={index} >
+                <ModalBody
+                    $ismodalopen={isModalOpen.toString()}
+                >
+                    <ModalContents>
+                        <ModalCloseBtn onClick={closeModal} >
+                            <FaRegWindowClose size={30} />
+                        </ModalCloseBtn>
+                        <ModalComponent {...props} />
+                    </ModalContents>
+                </ModalBody>
+            </ModalWrapper>
+        );
+    });
 
-    if(!type) {
-        return null;
-    }
-
-    const Modal = MODAL_COMPONENTS[type];
     return createPortal(
-        <ModalWrapper>
-            <ModalBody modalState={isModalOpen}>
-                <ModalContents>
-                    <Modal {...props} onClose={closeModal} />
-                </ModalContents>
-            </ModalBody>
-        </ModalWrapper>,
+        <>{renderModal}</>,
         document.getElementById('root')
     );
-
-
-/*    const { closeModal } = useModal();
-
-    const renderModal = modalList.map(( { type, props }) => {
-        const ModalComponent = MODAL_COMPONENTS[type];
-        return <ModalComponent key={type} {...props} onClose={closeModal} />;
-    });
-    return createPortal(<>{renderModal}</>, document.getElementById("modal"));*/
 }
 
 export default ModalContainer;

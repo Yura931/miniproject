@@ -1,18 +1,5 @@
 @import "./_variables";
 
-body {
-  font-family: $fontFamily;
-  background-color: $veryLightGreen;
-}
-
-h1 {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .sidebar {
   background-color: $white;
   position: absolute;
@@ -41,7 +28,7 @@ h1 {
     background-color: $green;
     position: absolute;
     right: (-35px / 2);
-    top: calc(9rem / 1.15);
+    top: calc(8rem / 1.15);
     width: 35px;
     height: 35px;
     border-radius: 2rem;
@@ -112,7 +99,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 3rem 0 0 0;
+    padding: 6rem 0 0 0;
 
     img {
       width: auto;
@@ -142,7 +129,7 @@ h1 {
   }
 
   .contentsContainer {
-    margin: 2rem 0 0 0;
+    margin: 4rem 0 0 0;
 
     ul {
       display: flex;
@@ -169,7 +156,6 @@ h1 {
         }
 
         a {
-          text-decoration: none;
           color: $darkGrey;
           font-size: 20px;
           display: flex;
@@ -230,8 +216,8 @@ h1 {
   }
 
   .contentsContainer {
-    a {
-      opacity: 0;
+    span {
+      opacity: 1;
     }
   }
 }

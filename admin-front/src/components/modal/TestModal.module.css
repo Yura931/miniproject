@@ -1,0 +1,78 @@
+.box {
+    padding-left: 1.5rem;
+    padding-top: 1.5rem;
+    flex: 0;
+    max-width: 100%;
+    flex-basis: 100%;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.body {
+    overflow: auto;
+    padding: 1.5rem;
+    height: 50vh;
+}
+
+.row {
+    box-sizing: border-box;
+    display: flex;
+    flex-flow: wrap;
+    width: calc(100% + 1.25rem);
+    margin-top: -1.25rem;
+    margin-left: -1.25rem;
+}
+
+.item50 {
+    padding-left: 1.25rem;
+    padding-top: 1.25rem;
+    flex: 0;
+    flex-basis: 50%;
+    max-width: 50%;
+}
+
+.item100 {
+    padding-left: 1.25rem;
+    padding-top: 1.25rem;
+    flex: 0;
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.column {
+    display: inline-flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0px;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    vertical-align: top;
+    width: 100%;
+}
+
+.form {
+
+}
+
+.input {
+    padding: 8px 10px;
+    border-radius: 5px;
+    border: 1px solid #c4cae0;
+    margin-top: 5px;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #6f6df4
+}
+
+.textarea {
+    padding: 8px 10px;
+    border-radius: 5px;
+    border: 1px solid #c4cae0;
+    margin-top: 5px;
+
+}

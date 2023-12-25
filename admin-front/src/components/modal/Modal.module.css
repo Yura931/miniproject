@@ -53,6 +53,8 @@
     width: 100%;
 }
 
+
+
 .form {
 
 }
@@ -62,6 +64,7 @@
     border-radius: 5px;
     border: 1px solid #c4cae0;
     margin-top: 5px;
+    margin-right: 10px;
 }
 
 .input:focus {
