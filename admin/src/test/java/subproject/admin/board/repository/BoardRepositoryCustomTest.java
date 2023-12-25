@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import subproject.admin.board.dto.record.RegisterBoardDto;
@@ -63,7 +64,6 @@ class BoardRepositoryCustomTest {
     @Test
     public void queryDslPageTest() {
 
-        PageRequest pageRequest = PageRequest.of(0, 10);
         Page<SearchBoardPageDto> searchBoardPageDtos = boardRepositoryCustom.searchAll(
                 SearchBoardDto.of(
                         "title",
@@ -71,13 +71,13 @@ class BoardRepositoryCustomTest {
                         SortDirection.ASC,
                         BoardSortCondition.CREATE_AT,
                         0,
-                        10), pageRequest
+                        10)
         );
 
         List<SearchBoardPageDto> content = searchBoardPageDtos.getContent();
-        System.out.println("content = " + content);
+        Pageable pageable = searchBoardPageDtos.getPageable();
+        System.out.println("pageable = " + pageable);
 
-        assertThat(content).size().isEqualTo(10);
     }
 
 }

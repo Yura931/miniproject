@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 @Getter
 public enum Enabled implements EnumModel {
-    Y("표시"), N("표시 안함");
+    Y("사용"), N("사용 안함");
     private final String value;
 
     Enabled(String value) {
@@ -28,7 +28,7 @@ public enum Enabled implements EnumModel {
         return value;
     }
 
-    public static List<EnumDto> getEnumList() {
+    public static List<EnumDto> getEnabledList() {
         return Stream.of(Enabled.values())
                 .map(EnumDto::new)
                 .toList();

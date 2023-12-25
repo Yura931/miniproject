@@ -1,8 +1,11 @@
 package subproject.admin.board.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
@@ -10,16 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UpdateBoardRequest {
 
-    @NotBlank
+    @NotNull
     private Enabled boardEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardVisible;
 
-    @NotBlank
+    @NotNull
     private BoardType boardType;
 
     @NotBlank
@@ -27,15 +32,15 @@ public class UpdateBoardRequest {
 
     private String boardDescription;
 
-    @NotBlank
+    @NotNull
     private Enabled boardCategoryEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardFileEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardCommentEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardReplyCommentEnabled;
 }

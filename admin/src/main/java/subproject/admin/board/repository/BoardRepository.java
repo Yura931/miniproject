@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPredicateExecutor {
 
     @EntityGraph(attributePaths = "categories")
-    Optional<Board> findById(Long uuid);
+    Optional<Board> findById(Long id);
     Page<Board> findAll(Pageable pageable);
 }

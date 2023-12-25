@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import subproject.admin.board.dto.projection.SearchBoardPageDto;
 import subproject.admin.board.entity.Board;
+import subproject.admin.board.entity.enums.BoardType;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class BoardPageItem {
     private final Integer size;
     private final Long totalElements;
     private final Integer totalPages;
+    private final Pageable pageable;
 
     private final List<SearchBoardPageDto> contents;
 
@@ -27,6 +30,7 @@ public class BoardPageItem {
                 board.getSize(),
                 board.getTotalElements(),
                 board.getTotalPages(),
+                board.getPageable(),
                 board.getContent()
         );
     }

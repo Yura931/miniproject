@@ -14,10 +14,13 @@ import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.common.enums.EnumDto;
 
 import javax.sound.sampled.EnumControl;
+import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -98,5 +101,11 @@ class BoardTest {
     public void enumsTest() {
         Field[] declaredFields = Enabled.class.getDeclaredFields();
         System.out.println("declaredFields = " + declaredFields);
+    }
+
+    @Test
+    public void fieldNameTest() throws IntrospectionException {
+        List<Map<String, List<EnumDto>>> filedName = Board.getEnabled();
+        filedName.forEach(System.out::println);
     }
 }

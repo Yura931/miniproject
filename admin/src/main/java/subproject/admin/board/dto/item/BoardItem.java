@@ -5,9 +5,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import subproject.admin.board.entity.Board;
+import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,6 +25,7 @@ public class BoardItem {
     private final Enabled boardFileEnabled;
     private final Enabled boardCommentEnabled;
     private final Enabled boardReplyCommentEnabled;
+    private final List<BoardCategory> categories;
 
     public static BoardItem boardEntityToDto(Board board) {
         return new BoardItem(
@@ -35,7 +38,8 @@ public class BoardItem {
                 board.getBoardCategoryEnabled(),
                 board.getBoardFileEnabled(),
                 board.getBoardCommentEnabled(),
-                board.getBoardReplyCommentEnabled()
+                board.getBoardReplyCommentEnabled(),
+                board.getCategories()
         );
     }
 }

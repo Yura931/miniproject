@@ -5,13 +5,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import subproject.admin.board.dto.record.BoardCategoryDto;
 import subproject.admin.board.dto.record.RegisterBoardDto;
+import subproject.admin.board.dto.request.RegisterBoardRequest;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
 import subproject.admin.common.entity.BaseEntity;
+import subproject.admin.common.enums.EnumDto;
+import subproject.admin.post.entity.Post;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.beans.IntrospectionException;
+import java.util.*;
 
 @Entity
 @Getter
@@ -19,7 +21,7 @@ import java.util.UUID;
 @ToString(of = { "id", "boardEnabled", "boardVisible",
                 "boardType", "boardTitle", "boardDescription", "boardCategoryEnabled",
                 "boardFileEnabled", "boardCommentEnabled", "boardReplyCommentEnabled"})
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class Board extends BaseEntity {
 
     @Id
@@ -34,6 +36,7 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Enabled boardVisible;
 
+    @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
     private String boardTitle;
@@ -54,6 +57,10 @@ public class Board extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Enabled boardReplyCommentEnabled;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+    private List<Post> posts = new ArrayList<>();
 
     private Board(Enabled boardEnabled, Enabled boardVisible, BoardType boardType, String boardTitle,
                   String boardDescription, Enabled boardCategoryEnabled, Enabled boardFileEnabled, Enabled boardCommentEnabled,
@@ -100,4 +107,30 @@ public class Board extends BaseEntity {
         return this;
     }
 
+    public Board addBoardCategory(BoardCategoryDto dto) {
+        this.categories.add(BoardCategory.createCategory(this, dto));
+        return this;
+    }
+
+    public Board deleteBoardCategory(UUID categoryId) {
+        this.categories.removeIf(category -> category.getId().equals(categoryId));
+        return this;
+    }
+    public static List<Map<String, List<EnumDto>>> getEnabled() throws IntrospectionException {
+        Board board = new Board();
+        Class<?> clazz = board.getClass();
+
+        java.beans.BeanInfo beanInfo = java.beans.Introspector.getBeanInfo(clazz);
+        java.beans.PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+
+        List<Map<String, List<EnumDto>>> maps = Arrays.stream(propertyDescriptors)
+                .filter((property) -> Enabled.class.isAssignableFrom(property.getPropertyType()))
+                .map((property) -> {
+                    Map<String, List<EnumDto>> map = new HashMap<>();
+                    map.put(property.getName(), Enabled.getEnabledList());
+                    return map;
+                })
+                .toList();
+        return maps;
+    }
 }

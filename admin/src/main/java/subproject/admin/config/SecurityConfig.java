@@ -67,7 +67,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .logout(logoutConfig -> { logoutConfig
-                        .logoutUrl("/api/v1/logout")
+                        .logoutUrl("/api/v1/admin/logout")
                         .addLogoutHandler(logoutService)
                         .logoutSuccessHandler(logoutSuccessService);
                 })

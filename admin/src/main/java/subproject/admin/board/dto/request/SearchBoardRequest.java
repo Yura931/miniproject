@@ -1,24 +1,32 @@
 package subproject.admin.board.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
+import subproject.admin.board.dto.enums.BoardSearchCondition;
 import subproject.admin.board.dto.enums.BoardSortCondition;
 import subproject.admin.common.enums.SortDirection;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
+@ToString
 public class SearchBoardRequest {
+    private String searchWord;
 
-    private String title;
-    private String content;
+    private String boardSearchCondition = BoardSearchCondition.ALL.name();
 
     @NotNull
-    private SortDirection sortDirection = SortDirection.ASC;
+    @NotBlank
+    private String sortDirection = SortDirection.DESC.name();
+
     @NotNull
-    private BoardSortCondition sortCondition = BoardSortCondition.CREATE_AT;
+    @NotBlank
+    private String sortCondition = BoardSortCondition.CREATE_AT.name();
+
     @NotNull
-    private Integer pageNo = 0;
+    private Integer pageNo;
+
     @NotNull
-    private Integer pageSize = 10;
+    private Integer pageSize;
 }
+

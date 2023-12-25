@@ -9,6 +9,7 @@ import subproject.admin.file.dto.FileDto;
 import subproject.admin.post.entity.Post;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -62,5 +63,10 @@ public class File extends BaseEntity {
                         dto.downloadCount()
                 ))
                 .toList();
+    }
+
+    public File addPost(Post post) {
+        this.post = post;
+        return this;
     }
 }

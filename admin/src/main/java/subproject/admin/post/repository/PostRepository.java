@@ -11,5 +11,5 @@ import subproject.admin.post.entity.Post;
 import java.util.UUID;
 
 public interface PostRepository extends JpaRepository<Post, UUID>, QuerydslPredicateExecutor {
-    Page<Post> findAllByBoard(Pageable pageable, @Param("board") Board board);
+
 }

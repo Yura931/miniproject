@@ -6,6 +6,6 @@ import subproject.admin.board.dto.record.SearchBoardDto;
 import subproject.admin.board.dto.projection.SearchBoardPageDto;
 
 public interface BoardRepositoryCustom {
-    Page<SearchBoardPageDto> searchAll(SearchBoardDto condition, Pageable pageable);
+    Page<SearchBoardPageDto> searchAll(SearchBoardDto condition);
 
 }

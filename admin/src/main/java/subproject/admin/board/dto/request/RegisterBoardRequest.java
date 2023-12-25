@@ -1,27 +1,30 @@
 package subproject.admin.board.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import subproject.admin.board.entity.Board;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
+import subproject.admin.common.enums.EnumDto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.beans.IntrospectionException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-@Setter
 public class RegisterBoardRequest {
 
-    @NotBlank
+    @NotNull
     private Enabled boardEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardVisible;
 
-    @NotBlank
+    @NotNull
     private BoardType boardType;
 
     @NotBlank
@@ -29,16 +32,16 @@ public class RegisterBoardRequest {
 
     private String boardDescription;
 
-    @NotBlank
+    @NotNull
     private Enabled boardCategoryEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardFileEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardCommentEnabled;
 
-    @NotBlank
+    @NotNull
     private Enabled boardReplyCommentEnabled;
 
     private List<String> categories = new ArrayList<>();
@@ -58,4 +61,5 @@ public class RegisterBoardRequest {
                 ", categories=" + categories +
                 '}';
     }
+
 }

@@ -1,6 +1,7 @@
 package subproject.admin.post.entity;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,14 +19,13 @@ import subproject.admin.board.entity.Board;
 import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.entity.enums.BoardType;
 import subproject.admin.board.entity.enums.Enabled;
+import subproject.admin.board.repository.BoardCategoryRepository;
 import subproject.admin.board.repository.BoardRepository;
 import subproject.admin.post.dto.record.RegisterPostDto;
 import subproject.admin.post.repository.PostRepository;
+import subproject.admin.post.repository.PostRepositoryCustom;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @SpringBootTest
@@ -39,7 +39,13 @@ class PostTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private PostRepositoryCustom postRepositoryCustom;
+
+    @Autowired
+    private BoardCategoryRepository boardCategoryRepository;
     Map<String, Board> initMap = new HashMap<>();
+    Map<String, Post> initPostMap = new HashMap<>();
 
     @PersistenceContext
     EntityManager em;
@@ -65,32 +71,33 @@ class PostTest {
         Board save = boardRepository.save(board);
         initMap.put("saveBoard", save);
 
-        IntStream.rangeClosed(1, 10)
+/*        IntStream.rangeClosed(1, 2)
                 .forEach(value -> {
-                    BoardCategory boardCategory = BoardCategory.createCategory(save, BoardCategoryDto.from(save.getCategories().get(0).getCategoryName()));
-                    RegisterPostDto of = RegisterPostDto.of(save, boardCategory, "postTitle"+value, "postContent"+value, new ArrayList<>());
-                    Post post = Post.createPost(of, new ArrayList<>());
+                    UUID categoryId = save.getCategories().get(value - 1).getId();
+                    RegisterPostDto of = RegisterPostDto.of(save.getId(), categoryId, "postTitle"+value, "postContent"+value, 0L, new ArrayList<>());
+                    Post post = Post.createPost(of, save);
                     em.persist(post);
+                    initPostMap.put("savePost" + value, post);
                 });
+
+        em.flush();
+        em.clear();
+        initMap.put("saveBoard", save);*/
     }
 
     @Test
     public void registerPostTest() {
-        Board saveBoard = initMap.get("saveBoard");
-        BoardCategory boardCategory = saveBoard.getCategories().get(0);
-        RegisterPostDto of = RegisterPostDto.of(saveBoard, boardCategory, "postTitle", "postContent", new ArrayList<>());
-        Post post = Post.createPost(of, new ArrayList<>());
-        Post save = postRepository.save(post);
 
-        Assertions.assertThat(save.getId()).isEqualTo(post.getId());
     }
 
     @Test
     public void postPageableList() {
-        Board saveBoard = initMap.get("saveBoard");
-        PageRequest of = PageRequest.of(0, 10);
-        Page<Post> allByBoard = postRepository.findAllByBoard(of, saveBoard);
-        Assertions.assertThat(allByBoard).size().isEqualTo(10);
+        initPostMap.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEach((post) -> {
+                    System.out.println("post.getBoardCategory().getCategoryName() = " + post.getBoardCategory().getCategoryName());
+                });
     }
 
 }

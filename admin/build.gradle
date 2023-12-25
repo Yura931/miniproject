@@ -22,7 +22,8 @@ repositories {
 }
 
 compileJava {
-	options.compilerArgs += ["-parameters"]
+	/*options.compilerArgs += ["-parameters"]*/
+	options.compilerArgs << "-parameters"
 }
 
 dependencies {
@@ -33,6 +34,7 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.604'
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
 
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

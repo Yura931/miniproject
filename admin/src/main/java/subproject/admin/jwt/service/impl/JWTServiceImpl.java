@@ -21,7 +21,7 @@ import static subproject.admin.jwt.properties.JwtProperties.SECRET;
 @Service
 @RequiredArgsConstructor
 public class JWTServiceImpl implements JWTService {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 5000; //1000 * 60 * 30; //10000;    // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //10000;    // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     private final RedisUtil redisUtil;
 

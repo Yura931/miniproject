@@ -1,5 +1,6 @@
 package subproject.admin.board.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.ToString;
 import subproject.admin.board.dto.record.BoardCategoryDto;
 import subproject.admin.post.entity.Post;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,12 +25,14 @@ public class BoardCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @JsonIgnore
     private Board board;
 
     private String categoryName;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "boardCategory")
-    private Post post;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "boardCategory")
+    @JsonIgnore
+    private List<Post> post = new ArrayList<>();
 
     private BoardCategory(UUID id, Board board, String categoryName) {
         this.id = id;
@@ -57,4 +61,5 @@ public class BoardCategory {
         this.categoryName = categoryName;
         return this;
     }
+
 }

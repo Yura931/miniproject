@@ -53,7 +53,7 @@ public class AuthenticationController {
                 .body(ResultHandler.handle(HttpStatus.OK.value(), "", jwtAuthenticationResponse));
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/admin/refresh")
     public ResponseEntity<Result> refresh(HttpServletRequest request, HttpServletResponse response) {
         Optional<Cookie> cookie = cookieUtil.getCookie(request, REFRESH_PREFIX);
         RefreshTokenDto dto = RefreshTokenDto.from(

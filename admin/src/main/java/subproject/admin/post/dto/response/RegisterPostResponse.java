@@ -1,11 +1,11 @@
 package subproject.admin.post.dto.response;
 
 import lombok.*;
-import subproject.admin.post.dto.item.PostItem;
+import subproject.admin.post.dto.item.RegisterPostItem;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterPostResponse {
-    private PostItem items;
+    private RegisterPostItem items;
 }

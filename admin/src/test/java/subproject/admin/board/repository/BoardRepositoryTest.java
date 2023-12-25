@@ -70,7 +70,7 @@ class BoardRepositoryTest {
                 .getResultList();
 
         bm.stream()
-                .forEach(e -> System.out.println("board = " + e.getCategories()));
+                .forEach(e -> System.out.println("board = " + e));
     }
 
     @Test

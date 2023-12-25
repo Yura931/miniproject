@@ -1,21 +1,16 @@
 package subproject.admin.board.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import subproject.admin.board.dto.item.BoardItem;
 import subproject.admin.board.dto.item.BoardPageItem;
 import subproject.admin.board.dto.projection.SearchBoardPageDto;
 import subproject.admin.board.dto.record.*;
-import subproject.admin.board.dto.response.BoardPageResponse;
-import subproject.admin.board.dto.response.RegisterBoardResponse;
-import subproject.admin.board.dto.response.SearchBoardResponse;
-import subproject.admin.board.dto.response.UpdateBoardResponse;
+import subproject.admin.board.dto.response.*;
 import subproject.admin.board.entity.Board;
 import subproject.admin.board.entity.BoardCategory;
 import subproject.admin.board.repository.BoardCategoryRepository;
@@ -24,16 +19,16 @@ import subproject.admin.board.repository.BoardRepositoryCustom;
 import subproject.admin.board.service.BoardService;
 
 @Service
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class BoardServiceImpl implements BoardService {
-    private BoardRepository boardRepository;
-    private BoardRepositoryCustom boardRepositoryCustom;
 
-    private BoardCategoryRepository boardCategoryRepository;
+    private final BoardRepository boardRepository;
+    private final BoardRepositoryCustom boardRepositoryCustom;
+    private final BoardCategoryRepository boardCategoryRepository;
 
     @Override
+    @Transactional
     public RegisterBoardResponse save(RegisterBoardDto dto) {
         Board board = Board.createBoard(dto);
         Board save = boardRepository.save(board);
@@ -43,7 +38,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public SearchBoardResponse findById(DetailBoardDto dto) {
+    @Transactional(readOnly = true)
+    public SearchBoardResponse findById(SelectBoardDto dto) {
         Board board = boardRepository.findById(dto.id())
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -52,14 +48,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BoardPageResponse findAll(SearchBoardDto dto) {
-        Pageable pageable = PageRequest.of(dto.pageNo(), dto.pageSize());
         // Page<Board> all = boardRepository.findAll(pageable);
-        Page<SearchBoardPageDto> searchBoardPageDtos = boardRepositoryCustom.searchAll(dto, pageable);
+        Page<SearchBoardPageDto> searchBoardPageDtos = boardRepositoryCustom.searchAll(dto);
         BoardPageItem item = BoardPageItem.boardEntityToDto(searchBoardPageDtos);
         return new BoardPageResponse(item);
     }
 
+    @Transactional
     public UpdateBoardResponse updateById(UpdateBoardDto dto) {
         Board findBoard = boardRepository.findById(dto.id())
                 .orElseThrow(EntityNotFoundException::new);
@@ -78,31 +75,43 @@ public class BoardServiceImpl implements BoardService {
         BoardItem boardItem = BoardItem.boardEntityToDto(board);
         return new UpdateBoardResponse(boardItem);
     }
+
+    @Transactional
     public void deleteById(DeleteBoardDto dto) {
         boardRepository.deleteById(dto.id());
     }
 
-    public RegisterBoardResponse insertCategoryById(RegisterBoardCategoryDto dto, BoardCategoryDto categoryDto) {
-        Board board = boardRepository.findById(dto.boardId())
-                .orElseThrow(EntityNotFoundException::new);
-        board.getCategories().add(BoardCategory.createCategory(board, categoryDto));
+    @Transactional
+    public RegisterBoardResponse insertCategoryByBoardId(RegisterBoardCategoryDto dto) {
+        Board board = this.getBoard(dto.boardId());
+        board.addBoardCategory(BoardCategoryDto.from(dto.categoryName()));
         BoardItem boardItem = BoardItem.boardEntityToDto(board);
         return new RegisterBoardResponse(boardItem);
     }
 
-    public UpdateBoardResponse updateCategoryById(UpdateBoardCategoryDto dto) {
-        Board board = boardRepository.findById(dto.boardId())
-                .orElseThrow(EntityNotFoundException::new);
-
+    @Transactional
+    public UpdateBoardResponse updateCategoryByBoardId(UpdateBoardCategoryDto dto) {
+        Board board = this.getBoard(dto.boardId());
         board.getCategories().stream()
-                .filter((categories) -> categories.getId().equals(dto.boardId()))
+                .filter((categories) -> categories.getId().equals(dto.boardCategoryId()))
                 .map((category) -> category.updateCategory(dto.boardCategoryName()))
                 .toList();
 
         BoardItem boardItem = BoardItem.boardEntityToDto(board);
         return new UpdateBoardResponse(boardItem);
     }
-    public void deleteCategoryById(DeleteBoardCategoryDto dto) {
-        boardCategoryRepository.deleteById(dto.categoryId());
+
+    private Board getBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional
+    public DeleteBoardResponse deleteCategoryById(DeleteBoardCategoryDto dto) {
+        boardCategoryRepository.deleteByIdAndBoardId(dto.categoryId(), dto.boardId());
+        Board board = this.getBoard(dto.boardId());
+        board.deleteBoardCategory(dto.categoryId());
+        BoardItem boardItem = BoardItem.boardEntityToDto(board);
+        return new DeleteBoardResponse(boardItem);
     }
 }

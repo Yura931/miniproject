@@ -26,4 +26,5 @@ public class SearchBoardPageDto {
     private BoardType boardType;
     private String boardTitle;
     private LocalDateTime createDate;
+    private String createdBy;
 }
