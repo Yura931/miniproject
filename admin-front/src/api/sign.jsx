@@ -9,7 +9,8 @@ export const login = async (email, pw) => {
         password: pw
     })
     .then(response => {
-        const { token } = response.data;
+        console.log('response', response);
+        const { token } = response.data.data.items;
         axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
         return response.data;
     })

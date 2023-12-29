@@ -10,9 +10,9 @@ import {createColumnHelper} from "@tanstack/react-table";
 const Board = () => {
 let navigate = useNavigate();
 const [boardType, setBoardType] = useState([]);
-const [enabled, setEnabled] = useState([]);
-const [sortConditions, setSortConditions] = useState([]);
-const [searchConditions, setSearchConditions] = useState([]);
+const [boardEnabled, setBoardEnabled] = useState([]);
+const [boardSortConditions, setBoardSortConditions] = useState([]);
+const [boardSearchConditions, setBoardSearchConditions] = useState([]);
 
 const { openModal, closeModal } = useModal();
 const [list, setList] = useState([]);
@@ -21,7 +21,7 @@ const [loading, setLoading] = useState(true);
 
 const [params, setParams] = useState({
     searchWord: '',
-    sortCondition: 'CREATE_AT',
+    boardSortCondition: 'CREATE_AT',
     sortDirection: 'DESC',
     boardSearchCondition: 'ALL',
     pageNo: 0,
@@ -30,7 +30,7 @@ const [params, setParams] = useState({
 
 
 const paramInput = useRef();
-const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, pageSize} = params;
+const {boardSortCondition, pageNo, pageSize} = params;
 
     const handleSetParams = (event) => {
         const { value } = event.target;
@@ -52,6 +52,10 @@ const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, 
                 totalElements: items.totalElements,
                 totalPages: items.totalPages
             });
+            setBoardType(items.boardTypeList);
+            setBoardEnabled(items.boardEnabledList);
+            setBoardSortConditions(items.boardSortConditionList);
+            setBoardSearchConditions(items.boardSearchConditionList);
             setLoading(false);
         }
 
@@ -62,23 +66,8 @@ const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, 
 
     useEffect(() => {
         getBoardList();
-    }, [navigate, pageNo, sortCondition]);
+    }, [navigate, pageNo, boardSortCondition]);
 
-    useEffect( () => {
-        const getEnums = async() => {
-            const data = await boardEnums();
-            const items = data?.items;
-            if (items) {
-                const items = data.items;
-                setBoardType(items.boardTypeList);
-                setEnabled(items.enabledList);
-                setSortConditions(items.boardSortConditionList);
-                setSearchConditions(items.boardSearchConditionList);
-            }
-        }
-
-        getEnums();
-    }, []);
 
     const columnHelper = createColumnHelper();
     const columns = [
@@ -96,7 +85,7 @@ const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, 
     ]
 
     const handleModifiedBoard = (boardId) => {
-        return openModal( { type: "board", props: { enabled, boardType, boardId, closeModal }});
+        return openModal( { type: "board", props: { boardEnabled, boardType, boardId, closeModal }});
     }
 
     const handleDeleteBoard = async (boardId) => {
@@ -112,7 +101,7 @@ const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, 
             </>
         )
     }
-    const showModal = () => openModal({ type: "board", props: {enabled, boardType, setList, closeModal}});
+    const showModal = () => openModal({ type: "board", props: {boardEnabled, boardType, setList, closeModal}});
 
 
     return (
@@ -128,11 +117,11 @@ const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, 
                         <div className={styled.item50} style={{ position: 'absolute', left: '0.6rem'}}>
                             <select
                                 className={styled.input}
-                                name={"sortCondition"}
+                                name={"boardSortCondition"}
                                 onChange={handleSetParams}
                             >
                                 {
-                                    sortConditions.map((condition, index) => {
+                                    boardSortConditions.map((condition, index) => {
                                         return (
                                             <option key={index} value={condition.key}>{condition.value}</option>
                                         )
@@ -147,7 +136,7 @@ const { searchWord, sortCondition, sortDirection, boardSearchCondition, pageNo, 
                             >
                                 <option>선택</option>
                                 {
-                                    searchConditions.map((condition, index) => {
+                                    boardSearchConditions.map((condition, index) => {
                                         return (
                                             <option key={index} value={condition.key}>{condition.value}</option>
                                         )
