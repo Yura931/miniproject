@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import sideproject.boardservice.board.dto.SearchBoardDto;
 import sideproject.boardservice.board.dto.enums.BoardSortCondition;
 import sideproject.boardservice.board.dto.projection.SearchBoardPageDto;
+import sideproject.boardservice.board.dto.projection.BoardSelectorDto;
 import sideproject.boardservice.board.entity.Board;
 import sideproject.boardservice.board.repository.BoardRepositoryCustom;
 
@@ -29,6 +30,19 @@ public class BoardRepositoryImpl extends QuerydslRepositorySupport implements Bo
     public BoardRepositoryImpl(EntityManager entityManager) {
         super(Board.class);
         this.queryFactory = new JPAQueryFactory(entityManager);
+    }
+
+    public List<BoardSelectorDto> boardSelector() {
+        List<BoardSelectorDto> fetch = queryFactory
+                .select(Projections.constructor(
+                        BoardSelectorDto.class,
+                        board.id,
+                        board.boardTitle
+                ))
+                .from(board)
+                .fetch();
+
+        return fetch;
     }
 
     public Page<SearchBoardPageDto> searchAll(SearchBoardDto dto) {

@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import sideproject.boardservice.common.dto.Result;
 import sideproject.boardservice.common.dto.ResultHandler;
 import sideproject.boardservice.common.exception.ExpiredJwtTokenException;
+import sideproject.boardservice.common.exception.UserInformationNotMatchException;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +28,10 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
         return ResultHandler.errorHandle(e.getErrorCode());
     }
 
+    @ExceptionHandler(UserInformationNotMatchException.class)
+    public Result<?> handleUserInformationNotMatchException(UserInformationNotMatchException e) {
+        return ResultHandler.errorHandle(e.getErrorCode());
+    }
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         BindingResult bindingResult = ex.getBindingResult();

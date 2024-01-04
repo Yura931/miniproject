@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sideproject.fileservice.file.dto.FileDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +23,18 @@ public class FileMapping {
     @OneToMany(mappedBy = "fileMapping", cascade = CascadeType.ALL)
     private List<File> files = new ArrayList<>();
 
-    public FileMapping(UUID id, List<File> files) {
+    public FileMapping(UUID id, List<FileDto> files) {
         this.id = id;
-        this.files = files;
+        this.files = files.stream()
+                .map(file -> File.createFile(file, this))
+                .toList();
+
     }
 
-    public static FileMapping createFileMapping(List<File> files) {
+    public static FileMapping createFileMapping(List<FileDto> files) {
         return new FileMapping(
-                UUID.randomUUID(), files
+                UUID.randomUUID(),
+                files
         );
     }
 }

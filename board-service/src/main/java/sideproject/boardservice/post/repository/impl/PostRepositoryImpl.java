@@ -47,6 +47,7 @@ public class PostRepositoryImpl extends QuerydslRepositorySupport implements Pos
                 .from(post)
                 .leftJoin(boardCategory)
                 .on(post.boardCategory.eq(boardCategory))
+                .where(boardEq(dto.boardId()))
                 .offset(dto.pageable().getOffset())
                 .limit(dto.pageable().getPageSize())
                 .fetch();

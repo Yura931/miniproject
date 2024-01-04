@@ -61,8 +61,16 @@ const BoardModal = (props) => {
         }
         await boardRegister(params)
             .then(data => {
-                props.setList((list) => [...list, data]);
+                props.setParams({
+                    searchWord: '',
+                    boardSortCondition: 'CREATE_AT',
+                    sortDirection: 'DESC',
+                    boardSearchCondition: 'ALL',
+                    pageNo: 0,
+                    pageSize: 5
+                });
                 props.closeModal();
+                window.location.reload();
             });
     }
 

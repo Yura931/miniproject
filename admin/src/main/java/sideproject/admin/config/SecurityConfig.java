@@ -38,9 +38,6 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     private static final String[] WHITE_LIST = {
-            "/users/**",
-            "/api/v1/auth/**",
-            "/error/**",
             "/favicon.ico",
             "/**"
     };

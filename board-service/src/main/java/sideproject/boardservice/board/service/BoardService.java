@@ -4,7 +4,7 @@ import sideproject.boardservice.board.dto.*;
 import sideproject.boardservice.board.dto.response.*;
 
 public interface BoardService {
-
+    BoardSelectorResponse boardSelector();
     RegisterBoardResponse save(RegisterBoardDto dto);
     SearchBoardResponse findById(SelectBoardDto dto);
     BoardPageResponse findAll(SearchBoardDto dto);

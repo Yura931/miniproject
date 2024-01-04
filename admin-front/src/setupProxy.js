@@ -12,7 +12,7 @@ module.exports = function(app) {
     );
 
     app.use(
-        '/admin-service',
+        '/board-service',
         createProxyMiddleware({
             target: 'http://localhost:8000',
             changeOrigin: true,

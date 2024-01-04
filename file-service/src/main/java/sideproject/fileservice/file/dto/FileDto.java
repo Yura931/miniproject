@@ -5,7 +5,6 @@ import sideproject.fileservice.file.entity.File;
 public record FileDto(
         // 원본 명
         String originalFilename,
-
         // 저장 명
         String storedFilename,
         String filePath,

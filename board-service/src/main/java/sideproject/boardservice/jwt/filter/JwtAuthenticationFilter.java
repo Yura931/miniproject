@@ -30,8 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String accessToken = jwtUtil.getHeaderAccessToken(request);
 
-        // logout 된 토큰으로 요청 시 Exception 처리
-
         if (StringUtils.hasText(accessToken) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             Authentication authentication = jwtUtil.getAuthentication(accessToken);

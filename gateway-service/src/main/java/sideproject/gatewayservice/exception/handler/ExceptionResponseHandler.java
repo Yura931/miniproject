@@ -8,34 +8,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 import sideproject.gatewayservice.common.dto.Result;
 import sideproject.gatewayservice.common.dto.ResultHandler;
-import sideproject.gatewayservice.exception.*;
-import sideproject.gatewayservice.exception.enums.ErrorCode;
+import sideproject.gatewayservice.exception.ExpiredJwtTokenException;
+import sideproject.gatewayservice.exception.ExpiredRefreshTokenException;
+import sideproject.gatewayservice.exception.InvalidTokenException;
 
 @RestControllerAdvice @Slf4j
 public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public Result<?> handleInvalidTokenException(InvalidTokenException e) {
-        return errorHandler(e, 401);
-    }
-
-    @ExceptionHandler(LoginFailException.class)
-    public Result<?> handleLoginFailException(ErrorCode e) {
-        return ResultHandler.errorHandle(e);
-    }
-
-    @ExceptionHandler(UserDuplicateException.class)
-    public Result<?> handleUserDuplicateException(ErrorCode e) {
-        return ResultHandler.errorHandle(e);
+        return ResultHandler.errorHandle(e.getErrorCode());
     }
 
     @ExceptionHandler(UnsupportedJwtException.class)
-    public Result<?> handleUnsupportedJwtException(UnsupportedJwtException e) {
-        return errorHandler(e, 401);
+    public Result<?> handleUnsupportedJwtException(InvalidTokenException e) {
+        return ResultHandler.errorHandle(e.getErrorCode());
     }
     @ExceptionHandler(IllegalArgumentException.class)
-    public Result<?> handleIllegalArgumentException(IllegalArgumentException e) {
-        return errorHandler(e, 401);
+    public Result<?> handleIllegalArgumentException(InvalidTokenException e) {
+        return ResultHandler.errorHandle(e.getErrorCode());
     }
     @ExceptionHandler(ExpiredRefreshTokenException.class)
     public ResponseEntity<Result> handleRefreshTokenInvalidException(ExpiredRefreshTokenException e) {
@@ -44,15 +35,6 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ExpiredJwtTokenException.class)
     public Result<?> handleExpiredJwtTokenException(ExpiredJwtTokenException e) {
         return ResultHandler.errorHandle(e.getErrorCode());
-    }
-
-    private Result<?> errorHandler(Exception e, Integer status) {
-        log.error(e.getMessage());
-        return Result.builder()
-                .status(status)
-                .msg(e.getMessage())
-                .errorName(e.getClass().getSimpleName())
-                .build();
     }
 
 }

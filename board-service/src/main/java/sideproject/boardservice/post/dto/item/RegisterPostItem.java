@@ -17,7 +17,7 @@ public class RegisterPostItem {
     private final String postTitle;
     private final String postContent;
 
-    public static RegisterPostItem PostEntityToDto(Post post) {
+    public static RegisterPostItem postEntityToDto(Post post) {
         return new RegisterPostItem(
                 post.getId(),
                 post.getBoard(),

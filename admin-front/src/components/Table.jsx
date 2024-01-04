@@ -17,46 +17,59 @@ const Table = ({data, pageable, columns, handleSetParams}) => {
         data, columns, getCoreRowModel: getCoreRowModel()
     });
 
+
     return (
         <ResponsiveTable>
             <TableContainer>
                 <TableBox>
                     <TableHead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableTr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableTh key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                </TableTh>
-                            ))}
-                        </TableTr>
-                    ))}
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableTr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableTh key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableTh>
+                                ))}
+                            </TableTr>
+                        ))}
                     </TableHead>
-                    <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableTr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <TableTd key={cell.id}>
-                                    {
-                                        flexRender(cell.column.columnDef.cell, cell.getContext())
-                                    }
-                                </TableTd>
+                    {
+                        data.length > 0 ?
+                        <TableBody>
+                            {table.getRowModel().rows.map((row) => (
+                                <TableTr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableTd key={cell.id}>
+                                            {
+                                                flexRender(cell.column.columnDef.cell, cell.getContext())
+                                            }
+                                        </TableTd>
+                                    ))}
+                                </TableTr>
                             ))}
-                        </TableTr>
-                    ))}
-                    </TableBody>
+                        </TableBody>
+                        : <div style={{marginTop: '20px'}}>
+                                데이터가 없습니다.
+                        </div>
+                    }
+
                 </TableBox>
-                <PaginationProvider
-                    pageable={pageable}
-                    handleSetParams={handleSetParams}
-                />
+
+                {
+                    data.length > 0 ?
+                        <PaginationProvider
+                            pageable={pageable}
+                            handleSetParams={handleSetParams}
+                        /> : null
+                }
             </TableContainer>
         </ResponsiveTable>
+
     )
 }
 

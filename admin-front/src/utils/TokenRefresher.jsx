@@ -14,7 +14,7 @@ const TokenRefresher = () => {
             const newToken = await handleTokenRefresh();
             if(newToken !== undefined) {
                 axiosInstance.defaults.headers["Authorization"] = `Bearer ${newToken}`;
-                navigate(pathname);
+                navigate(pathname === "/login" ? "/" : pathname);
             }
         }
 

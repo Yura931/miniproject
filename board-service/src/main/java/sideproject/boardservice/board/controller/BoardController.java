@@ -28,6 +28,12 @@ public class BoardController {
     public ResponseEntity<String> test() {
         return ResponseEntity.ok().body("board-service-test");
     }
+
+    @GetMapping("/board/selector")
+    public ResponseEntity<Result> boardSelector() {
+        BoardSelectorResponse boardSelectorResponse = boardService.boardSelector();
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "board_id 목록", boardSelectorResponse));
+    }
     @GetMapping("/board")
     public ResponseEntity<Result> searchBoard(@Valid SearchBoardRequest request) {
         BoardPageResponse boardPageResponse = boardService.findAll(SearchBoardDto.from(request));

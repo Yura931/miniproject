@@ -14,11 +14,9 @@ const [boardEnabled, setBoardEnabled] = useState([]);
 const [boardSortConditions, setBoardSortConditions] = useState([]);
 const [boardSearchConditions, setBoardSearchConditions] = useState([]);
 
-const { openModal, closeModal } = useModal();
 const [list, setList] = useState([]);
-const [pageable, setPageable] = useState({});
-const [loading, setLoading] = useState(true);
-
+    const [pageable, setPageable] = useState({});
+    const [loading, setLoading] = useState(true);
 const [params, setParams] = useState({
     searchWord: '',
     boardSortCondition: 'CREATE_AT',
@@ -28,22 +26,23 @@ const [params, setParams] = useState({
     pageSize: 5
 });
 
-
 const paramInput = useRef();
-const {boardSortCondition, pageNo, pageSize} = params;
 
+
+    const {boardSortCondition, pageNo, pageSize} = params;
     const handleSetParams = (event) => {
+
         const { value } = event.target;
         const name = event.target.getAttribute("name");
-
         setParams({
             ...params,
             [name]: value
         });
+
     }
     const getBoardList = async() => {
         const data = await boardList(params);
-        if (data?.items?.contents.length > 0) {
+        if (data?.items) {
             const items = data.items;
             setList(items.contents);
             setPageable({
@@ -56,20 +55,20 @@ const {boardSortCondition, pageNo, pageSize} = params;
             setBoardEnabled(items.boardEnabledList);
             setBoardSortConditions(items.boardSortConditionList);
             setBoardSearchConditions(items.boardSearchConditionList);
-            setLoading(false);
         }
-
+        setLoading(false);
     }
+
     const handleSearch = () => {
         getBoardList();
     }
-
     useEffect(() => {
         getBoardList();
     }, [navigate, pageNo, boardSortCondition]);
 
-
     const columnHelper = createColumnHelper();
+
+
     const columns = [
         { id: 'rowNumber', header: '번호', accessorFn: (row, index) => (pageable.totalElements - (pageable.size * pageable.number) - index) },
         { id: 'boardTitle', header: '게시판 제목', accessorFn: (row) => row.boardTitle },
@@ -83,12 +82,12 @@ const {boardSortCondition, pageNo, pageSize} = params;
         { id: 'createdBy', header: '작성자', accessorFn: (row) => row.createdBy},
         columnHelper.display({id: 'actions', header: '비고', cell: props => <ActionButton original={props.cell.row.original} />})
     ]
-
     const handleModifiedBoard = (boardId) => {
-        return openModal( { type: "board", props: { boardEnabled, boardType, boardId, closeModal }});
-    }
 
+        return openModal( { type: "board", props: { boardEnabled, boardType, boardId, closeModal, setParams }});
+    }
     const handleDeleteBoard = async (boardId) => {
+
         await boardDelete(boardId)
             .then(data => window.location.reload());
     }
@@ -101,7 +100,8 @@ const {boardSortCondition, pageNo, pageSize} = params;
             </>
         )
     }
-    const showModal = () => openModal({ type: "board", props: {boardEnabled, boardType, setList, closeModal}});
+    const { openModal, closeModal } = useModal();
+    const showModal = () => openModal({ type: "board", props: {boardEnabled, boardType, setList, closeModal, setParams}});
 
 
     return (
@@ -121,11 +121,12 @@ const {boardSortCondition, pageNo, pageSize} = params;
                                 onChange={handleSetParams}
                             >
                                 {
-                                    boardSortConditions.map((condition, index) => {
+                                    boardSortConditions.length > 0 ? boardSortConditions.map((condition, index) => {
                                         return (
                                             <option key={index} value={condition.key}>{condition.value}</option>
                                         )
                                     })
+                                    : null
                                 }
                             </select>
                         </div>
@@ -134,7 +135,6 @@ const {boardSortCondition, pageNo, pageSize} = params;
                                 className={styled.input}
                                 name={"boardSearchCondition"}
                             >
-                                <option>선택</option>
                                 {
                                     boardSearchConditions.map((condition, index) => {
                                         return (
@@ -156,15 +156,13 @@ const {boardSortCondition, pageNo, pageSize} = params;
                 <div className={styled.mainBody}>
                     {
                         loading ? (<p>Loading...</p>) : (
-                            list.length > 0
-                                ? <Table
-                                    data={list}
-                                    columns={columns}
-                                    boardType={boardType}
-                                    pageable={pageable}
-                                    handleSetParams={handleSetParams}
-                                />
-                                : null
+                             <Table
+                                data={list}
+                                columns={columns}
+                                boardType={boardType}
+                                pageable={pageable}
+                                handleSetParams={handleSetParams}
+                            />
                         )
                     }
                 </div>

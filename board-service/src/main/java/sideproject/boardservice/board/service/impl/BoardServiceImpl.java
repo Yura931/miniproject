@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sideproject.boardservice.board.dto.*;
 import sideproject.boardservice.board.dto.item.BoardItem;
 import sideproject.boardservice.board.dto.item.BoardPageItem;
+import sideproject.boardservice.board.dto.item.BoardSelectorItem;
 import sideproject.boardservice.board.dto.projection.SearchBoardPageDto;
 import sideproject.boardservice.board.dto.response.*;
 import sideproject.boardservice.board.entity.Board;
@@ -25,6 +26,13 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardRepositoryCustom boardRepositoryCustom;
     private final BoardCategoryRepository boardCategoryRepository;
+
+    @Override
+    @Transactional
+    public BoardSelectorResponse boardSelector() {
+        BoardSelectorItem boardSelectorItem = BoardSelectorItem.boardEntityToDto(boardRepositoryCustom.boardSelector());
+        return new BoardSelectorResponse(boardSelectorItem);
+    }
 
     @Override
     @Transactional

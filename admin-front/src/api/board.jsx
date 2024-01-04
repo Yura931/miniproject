@@ -55,5 +55,11 @@ export const boardCategoryUpdate = async (params) => {
 export const boardCategoryDelete = async (params) => {
     return await axiosInstance.delete(CATEGORY.DELETE(params.boardId, params.categoryId))
         .then(response => response.data.data)
-        .catch(error => console.log(error))
+        .catch(error => console.log(error));
+}
+
+export const boardSelector = async () => {
+    return await axiosInstance.get(BOARD.SELECTOR)
+        .then(response => response.data.data)
+        .catch(error => console.log(error));
 }

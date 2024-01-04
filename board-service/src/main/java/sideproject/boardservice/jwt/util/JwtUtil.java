@@ -32,11 +32,6 @@ public class JwtUtil {
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-
-        if (claims.get("roles") == null) {
-
-        }
-
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("roles").toString().split(","))
                         .map(SimpleGrantedAuthority::new)

@@ -19,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
-import sideproject.authservice.member.enums.UserRoles;
 import sideproject.authservice.principal.PrincipalDetailsService;
 
 @Configuration
@@ -32,9 +31,6 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
 
     private static final String[] WHITE_LIST = {
-            "/users/**",
-            "/api/v1/auth/**",
-            "/error/**",
             "/favicon.ico",
             "/**"
     };
@@ -51,7 +47,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/admin-service/api/v1/**").hasAnyAuthority(UserRoles.ROLE_ADMIN.name())
                         .anyRequest().authenticated())
                 .addFilter(corsFilter)
                 .build();

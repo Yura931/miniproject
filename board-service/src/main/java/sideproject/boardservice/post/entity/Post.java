@@ -11,9 +11,8 @@ import sideproject.boardservice.board.entity.Board;
 import sideproject.boardservice.board.entity.BoardCategory;
 import sideproject.boardservice.common.entity.BaseEntity;
 import sideproject.boardservice.post.dto.RegisterPostDto;
+import sideproject.boardservice.post.dto.UpdatePostDto;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -72,16 +71,14 @@ public class Post extends BaseEntity {
         this.fileMappingId = fileMappingId;
     }
 
-    public void changeCategory(BoardCategory boardCategory) {
-        this.boardCategory = boardCategory;
+    public void updatePost(UpdatePostDto dto) {
+        this.postTitle = dto.postTitle();
+        this.postContent = dto.postContent();
+        this.boardCategory.updateCategory(dto.categoryName());
     }
 
-    public Post updatePost() {
-        return this;
-    }
-
-    public Post updateViewCount() {
-        return this;
+    public void updateViewCount() {
+        this.viewCount = this.viewCount + 1;
     }
 
 }

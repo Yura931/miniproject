@@ -20,7 +20,7 @@ public class SearchPostItem {
     private final Integer totalPages;
     private final Pageable pageable;
     private final List<SearchPostPageDto> contents;
-    public static SearchPostItem PostEntityToDto(Page<SearchPostPageDto> post) {
+    public static SearchPostItem postEntityToDto(Page<SearchPostPageDto> post) {
         return new SearchPostItem(
                 post.getNumber(),
                 post.getSize(),

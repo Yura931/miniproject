@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {
     LoginButton,
     LoginWrapper,
@@ -11,6 +11,7 @@ import {FormBox, FormContainer, Input, InputBox, Inputs, Label, Title} from "../
 
 
 const Login = () => {
+    const { pathname } = useLocation();
     const navigate = useNavigate();
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
@@ -33,7 +34,7 @@ const Login = () => {
     const onSignIn = async() => {
         await login(id, password)
             .then((data) => {
-                navigate("/");
+                navigate(pathname);
             });
     }
 

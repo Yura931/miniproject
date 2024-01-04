@@ -5,19 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import sideproject.boardservice.common.dto.Result;
 import sideproject.boardservice.common.dto.ResultHandler;
-import sideproject.boardservice.post.dto.RegisterPostDto;
-import sideproject.boardservice.post.dto.SearchPostDto;
+import sideproject.boardservice.post.dto.*;
 import sideproject.boardservice.post.dto.request.RegisterPostRequest;
 import sideproject.boardservice.post.dto.request.SearchPostRequest;
+import sideproject.boardservice.post.dto.request.UpdatePostRequest;
+import sideproject.boardservice.post.dto.response.RegisterPostResponse;
 import sideproject.boardservice.post.dto.response.SearchPostResponse;
+import sideproject.boardservice.post.dto.response.SelectPostResponse;
+import sideproject.boardservice.post.dto.response.UpdatePostResponse;
 import sideproject.boardservice.post.service.PostService;
 
-import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -30,29 +34,28 @@ public class PostController {
     @GetMapping("/posts")
     public ResponseEntity<Result> searchPosts(@Valid SearchPostRequest request) {
         SearchPostDto dto = SearchPostDto.of(request.getBoardId(), request, PageRequest.of(request.getPageNo(), request.getPageSize()));
-        SearchPostResponse searchPosts = postService.findAll(dto);
-        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 목록", searchPosts));
+        SearchPostResponse searchPostResponse = postService.findAll(dto);
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 목록", searchPostResponse));
     }
-
-    @GetMapping("/board/{boardId}/posts")
-    public ResponseEntity<Result> searchBoardPosts(@PathVariable Long boardId) {
-        return null;
-    }
-
-    @PostMapping("/board/{boardId}/posts/register")
+    @PostMapping("/posts/{boardId}/register")
     public ResponseEntity<Result> registerPost(MultipartHttpServletRequest multipartRequest, @PathVariable Long boardId, RegisterPostRequest request) throws Exception {
         RegisterPostDto dto = RegisterPostDto.of(boardId, request,0L);
-        postService.save(dto, multipartRequest);
-        return null;
+        RegisterPostResponse registerPostResponse = postService.save(dto, multipartRequest);
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 등록", registerPostResponse));
     }
-
-    @PutMapping("/posts/{postId}/update")
-    public ResponseEntity<Result> updatePost(@PathVariable UUID postId) {
-        return null;
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<Result> selectPost(@PathVariable UUID postId) {
+        SelectPostResponse selectPostResponse = postService.selectPost(SelectPostDto.of(postId));
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 상세정보", selectPostResponse));
     }
-
-    @DeleteMapping("/posts/{postId}/delete")
-    public ResponseEntity<Result> deletePost(@PathVariable UUID postId) {
-        return null;
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity<Result> updatePost(@PathVariable UUID postId, @RequestBody UpdatePostRequest request, MultipartHttpServletRequest multipartRequest, @AuthenticationPrincipal UserDetails userDetails) {
+        UpdatePostResponse updatePostResponse = postService.updatePost(UpdatePostDto.of(postId, request), multipartRequest, userDetails);
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 수정", updatePostResponse));
+    }
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<Result> deletePost(@PathVariable UUID postId, @AuthenticationPrincipal UserDetails userDetails) {
+        postService.deletePost(DeletePostDto.from(postId), userDetails);
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 삭제", ""));
     }
 }

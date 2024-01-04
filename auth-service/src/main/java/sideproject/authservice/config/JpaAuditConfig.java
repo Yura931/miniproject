@@ -6,7 +6,7 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import sideproject.authservice.principal.PrincipalDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ public class JpaAuditConfig {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return () -> Optional.ofNullable(authentication)
                 .map((auth) -> {
-                    PrincipalDetails userDetails = (PrincipalDetails) authentication.getPrincipal();
+                    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                     return userDetails.getUsername();
                 })
                 .orElse("admin").describeConstable();

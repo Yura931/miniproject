@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import sideproject.fileservice.file.dto.FileDto;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -60,6 +59,15 @@ public class FileUtil {
         }
 
         return new ArrayList<>();
+    }
+
+    public void deleteFiles(List<sideproject.fileservice.file.entity.File> files) {
+        files.stream()
+                .forEach(file -> {
+                    String filePath = file.getFilePath();
+                    File deleteFile = new File(filePath);
+                    deleteFile.delete();
+                });
     }
 
     private String filePathBlackList(String value) {
