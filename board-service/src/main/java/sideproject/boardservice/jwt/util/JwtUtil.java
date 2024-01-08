@@ -16,10 +16,7 @@ import org.springframework.stereotype.Component;
 import sideproject.boardservice.common.exception.ExpiredJwtTokenException;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,8 +34,18 @@ public class JwtUtil {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        UserDetails userDetails = new User(claims.getSubject(), "", authorities);
+        UserDetails userDetails = new User(getNickname(accessToken), "", authorities);
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+    }
+
+    public String getNickname(String accessToken) {
+        Claims claims = extractAllClaims(accessToken);
+        return Optional.ofNullable(claims.get("nickname").toString()).orElseGet(() -> "");
+    }
+
+    public String getMemberId(String accessToken) {
+        Claims claims = extractAllClaims(accessToken);
+        return Optional.ofNullable(claims.get("id").toString()).orElseGet(() -> "");
     }
 
     public Long getExpiration(String token) {

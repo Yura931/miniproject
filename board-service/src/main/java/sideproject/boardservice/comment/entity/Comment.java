@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sideproject.boardservice.comment.dto.RegisterCommentDto;
 import sideproject.boardservice.common.entity.BaseEntity;
 import sideproject.boardservice.post.entity.Post;
 
@@ -33,8 +34,12 @@ public class Comment extends BaseEntity {
         this.comment = comment;
     }
 
-    public static Comment createComment() {
-        return new Comment();
+    public static Comment createComment(RegisterCommentDto dto, Post post) {
+        return new Comment(
+                UUID.randomUUID(),
+                post,
+                dto.comment()
+        );
     }
 
 }
