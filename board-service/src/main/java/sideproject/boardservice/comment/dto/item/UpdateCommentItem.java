@@ -5,14 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import sideproject.boardservice.comment.entity.Comment;
 
+import java.util.UUID;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class RegisterCommentItem {
-    private String comment;
+public class UpdateCommentItem {
+    private UUID commentId;
 
-    public static RegisterCommentItem CommentEntityToDto(Comment comment) {
-        return new RegisterCommentItem(
-                comment.getComment()
+    public static UpdateCommentItem CommentEntityToDto(Comment comment) {
+        return new UpdateCommentItem(
+                comment.getId()
         );
     }
 }

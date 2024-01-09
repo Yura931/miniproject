@@ -9,13 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sideproject.boardservice.jwt.util.JwtUtil;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -29,13 +29,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         final String accessToken = jwtUtil.getHeaderAccessToken(request);
+        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .ifPresentOrElse(auth -> {
+                    UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                    String username = userDetails.getUsername();
+                    String nickname = jwtUtil.getNickname(accessToken);
 
-        if (StringUtils.hasText(accessToken) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            Authentication authentication = jwtUtil.getAuthentication(accessToken);
-            securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
-        }
+                    if (!username.equals(nickname)) {
+
+                    }
+
+                }, () -> {
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                    Authentication authentication = jwtUtil.getAuthentication(accessToken);
+                    securityContext.setAuthentication(authentication);
+                    SecurityContextHolder.setContext(securityContext);
+                });
 
         filterChain.doFilter(request, response);
     }

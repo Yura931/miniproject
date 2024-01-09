@@ -1,6 +1,6 @@
 package sideproject.authservice.auth.dto;
 
-import sideproject.authservice.auth.dto.request.SignUpRequest;
+import sideproject.authservice.auth.dto.request.SignInRequest;
 import sideproject.authservice.member.enums.AccountType;
 
 public record SignInDto (
@@ -8,7 +8,7 @@ public record SignInDto (
         String password,
         AccountType accountType
 ) {
-    public static SignInDto from(SignUpRequest request) {
+    public static SignInDto from(SignInRequest request) {
         return new SignInDto(
                 request.getEmail(),
                 request.getPassword(),

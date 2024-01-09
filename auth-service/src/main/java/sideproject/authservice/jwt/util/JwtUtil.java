@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import sideproject.authservice.global.exception.ExpiredJwtTokenException;
+import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.redis.RedisUtil;
 import sideproject.authservice.redis.dto.RedisDto;
 
@@ -28,9 +29,11 @@ public class JwtUtil {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     private final RedisUtil redisUtil;
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(PrincipalDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("roles", userDetails.getAuthorities());
+        extraClaims.put("id", userDetails.getId());
+        extraClaims.put("nickname", userDetails.getNickname());
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())

@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import sideproject.authservice.auth.dto.RefreshTokenDto;
 import sideproject.authservice.auth.dto.SignInDto;
@@ -19,10 +18,12 @@ import sideproject.authservice.auth.repository.AuthRepository;
 import sideproject.authservice.auth.service.AuthService;
 import sideproject.authservice.common.util.CookieUtil;
 import sideproject.authservice.global.exception.ExpiredRefreshTokenException;
-import sideproject.authservice.global.exception.UserDuplicateException;
+import sideproject.authservice.global.exception.MemberDuplicateException;
+import sideproject.authservice.global.exception.NicknameDuplicateException;
 import sideproject.authservice.jwt.util.JwtUtil;
 import sideproject.authservice.member.entity.Member;
 import sideproject.authservice.member.entity.MemberRole;
+import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.principal.PrincipalDetailsService;
 import sideproject.authservice.redis.RedisUtil;
 import sideproject.authservice.redis.dto.RedisDto;
@@ -45,7 +46,10 @@ public class AuthServiceImpl implements AuthService {
 
     public SignUpResponse signUp(SignUpDto dto) {
         if(authRepository.existsByEmail(dto.email()))
-            throw new UserDuplicateException();
+            throw new MemberDuplicateException();
+
+        if(authRepository.existsByNickname(dto.nickname()))
+            throw new NicknameDuplicateException();
 
         Member member = Member.createUser(dto);
         member.saveUserRole(Collections.singletonList(MemberRole.generateNewMemberByRoleAdmin(member)));
@@ -54,8 +58,7 @@ public class AuthServiceImpl implements AuthService {
         return new SignUpResponse(signUpItem);
     }
     public SignInResponse signIn(SignInDto dto, HttpServletResponse response) {
-        final UserDetails userDetails = principalDetailsService.userDetailsService().loadUserByUsername(dto.email());
-
+        final PrincipalDetails userDetails = (PrincipalDetails) principalDetailsService.userDetailsService().loadUserByUsername(dto.email());
         final String token = jwtUtil.generateToken(userDetails);
         final String refreshToken = jwtUtil.generateRefreshToken(new HashMap<>(), userDetails);
         cookieUtil.addCookie(response, REFRESH_PREFIX, refreshToken);
@@ -64,9 +67,9 @@ public class AuthServiceImpl implements AuthService {
 
     public ReIssueAccessTokenResponse reIssueAccessToken(RefreshTokenDto dto, HttpServletResponse response) {
 
-        String userEmail = jwtUtil.extractUserName(dto.refreshToken());
-        UserDetails userDetails = principalDetailsService.userDetailsService().loadUserByUsername(userEmail);
-        String token = jwtUtil.generateToken(userDetails);
+        final String userEmail = jwtUtil.extractUserName(dto.refreshToken());
+        final PrincipalDetails userDetails = (PrincipalDetails) principalDetailsService.userDetailsService().loadUserByUsername(userEmail);
+        final String token = jwtUtil.generateToken(userDetails);
         cookieUtil.addCookie(response, REFRESH_PREFIX, dto.refreshToken());
 
         return ReIssueAccessTokenResponse.from(token);

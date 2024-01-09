@@ -9,13 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import sideproject.authservice.auth.dto.RefreshTokenDto;
 import sideproject.authservice.auth.dto.SignInDto;
 import sideproject.authservice.auth.dto.SignUpDto;
+import sideproject.authservice.auth.dto.request.SignInRequest;
 import sideproject.authservice.auth.dto.request.SignUpRequest;
 import sideproject.authservice.auth.dto.response.LogoutResponse;
 import sideproject.authservice.auth.dto.response.ReIssueAccessTokenResponse;
@@ -37,12 +37,6 @@ public class AuthController {
     private final AuthService authService;
     private final CookieUtil cookieUtil;
     private final PasswordEncoder passwordEncoder;
-
-    @GetMapping("/home")
-    public ResponseEntity home() {
-        log.info("auth-service");
-        return ResponseEntity.ok().body("auth-service");
-    }
     @PostMapping("/api/v1/signUp")
     public ResponseEntity<Result> sighUp(@Valid @RequestBody SignUpRequest request) {
         SignUpResponse signUpResponse = authService.signUp(SignUpDto.of(request, passwordEncoder));
@@ -50,7 +44,7 @@ public class AuthController {
                 .body(ResultHandler.handle(HttpStatus.OK.value(), "회원가입", signUpResponse));
     }
     @PostMapping("/api/v1/signIn")
-    public ResponseEntity<Result> signIn(@Valid @RequestBody SignUpRequest request, HttpServletResponse response) {
+    public ResponseEntity<Result> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response) {
         SignInResponse signInResponse = authService.signIn(SignInDto.from(request), response);
         return ResponseEntity.ok()
                 .body(ResultHandler.handle(HttpStatus.OK.value(), "로그인", signInResponse));

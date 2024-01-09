@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sideproject.boardservice.comment.dto.RegisterCommentDto;
+import sideproject.boardservice.comment.dto.UpdateCommentDto;
 import sideproject.boardservice.common.entity.BaseEntity;
 import sideproject.boardservice.post.entity.Post;
 
@@ -42,4 +43,8 @@ public class Comment extends BaseEntity {
         );
     }
 
+    public Comment updateComment(UpdateCommentDto dto) {
+        this.comment = dto.comment();
+        return this;
+    }
 }

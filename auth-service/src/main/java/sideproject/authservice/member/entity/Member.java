@@ -28,6 +28,8 @@ public class Member {
 
     private String password;
 
+    private String nickname;
+
     @Enumerated(value = EnumType.STRING)
     private AccountType accountType;
 
@@ -35,10 +37,11 @@ public class Member {
     @JsonIgnore
     private List<MemberRole> roles = new ArrayList<>();
 
-    private Member(UUID userId, String email, String password, AccountType accountType) {
+    private Member(UUID userId, String email, String nickname, String password, AccountType accountType) {
         this.id = userId;
         this.email = email;
         this.password = password;
+        this.nickname = nickname;
         this.accountType = accountType;
     }
 
@@ -48,6 +51,7 @@ public class Member {
                 uuid,
                 dto.email(),
                 dto.password(),
+                dto.nickname(),
                 dto.accountType()
         );
     }

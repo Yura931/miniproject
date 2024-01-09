@@ -8,6 +8,7 @@ import sideproject.authservice.member.enums.UserRoles;
 public record SignUpDto (
         String email,
         String password,
+        String nickname,
         AccountType accountType,
         UserRoles userRoles
 ) {
@@ -17,6 +18,7 @@ public record SignUpDto (
         return new SignUpDto(
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
+                request.getNickname(),
                 request.getAccountType(),
                 request.getUserRoles()
         );

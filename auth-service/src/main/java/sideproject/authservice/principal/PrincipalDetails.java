@@ -58,6 +58,10 @@ public class PrincipalDetails implements UserDetails {
         return this.member.getId();
     }
 
+    public String getNickname() {
+        return this.member.getNickname();
+    }
+
     public Member getMember() {
         return this.member;
     }
