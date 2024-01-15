@@ -28,6 +28,9 @@
 - Easier REST Clients
   - Feign Client
     - 각각의 마이크로 서비스 간의 통신
+
+---
+**강의 통해 보충 할 예정**
 - Visibility and monitoring
   - Zipkin Distributed Tracing
   - Netflix API gateway
@@ -36,7 +39,7 @@
 - Fault Tolerance
   - Netflix Hystrix
     - 장애가 발생했을 경우 빠르게 복구하기 위한 회복성 패턴
-
+  - Resilience4j
 
 ---
 
@@ -46,3 +49,12 @@
   - 외부에서 다른 어떤 서비스들이 마이크로 서비스를 검색하기 위해 사용되는 개념
 - 각각의 마이크로 서비스가 자신의 위치 정보를 스프링 클라우드 넷플릭스 유레카 서버에 등록
 - Eureka Dashboard를 통해 등록되어 있는 인스턴스들을 확인할 수 있다.
+
+## API Gateway Service
+- 사용자나 외부 시스템으로부터 요청을 단일화하여 처리
+- 사용자가 설정한 라우팅 설정에 따라서 각각 엔드포인트로 클라이언트를 대신해서 요청하고 응답을 받으면 다시 클라이언트한테 전달해주는 프록시 역할
+- 시스템 내부 구조는 숨기고 외부의 요청에 대해서 적절한 형태로 가공해서 응답
+
+## Feign Client
+- Spring Cloud에서의 MSA간 통신
+- 직접적인 서버의 주소나 마이크로 서버의 주소 포트번호 없이 마이크로 서비스 이름으로 호출 가능
