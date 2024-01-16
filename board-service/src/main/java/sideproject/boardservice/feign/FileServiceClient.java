@@ -2,10 +2,7 @@ package sideproject.boardservice.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import sideproject.boardservice.common.dto.FileDto;
 
@@ -19,8 +16,8 @@ public interface FileServiceClient {
     @PostMapping("/api/v1/files/register")
     ResponseEntity<UUID> fileRegister(MultipartHttpServletRequest request);
 
-    @PostMapping("/api/v1/files/update")
-    ResponseEntity<UUID> fileUpdate(MultipartHttpServletRequest request, @RequestBody UUID fileMappingId);
+    @PostMapping("/api/v1/files/{fileMappingId}")
+    ResponseEntity<UUID> fileUpdate(MultipartHttpServletRequest request, @PathVariable UUID fileMappingId);
 
     @DeleteMapping("/api/v1/file-mapping")
     ResponseEntity fileMappingDelete(@RequestBody UUID fileMappingId);

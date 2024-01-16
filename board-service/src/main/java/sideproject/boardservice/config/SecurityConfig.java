@@ -37,6 +37,8 @@ public class SecurityConfig {
                         headers.contentTypeOptions(contentTypeOptionsConfig ->
                                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/board-service/actuator/**").permitAll()
                         .requestMatchers("/board-service/api/v1/board/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptionHandling ->

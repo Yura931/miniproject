@@ -4,20 +4,15 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.micrometer.common.util.StringUtils;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import sideproject.gatewayservice.exception.ExpiredJwtTokenException;
 import sideproject.gatewayservice.exception.enums.ErrorCode;
 import sideproject.gatewayservice.redis.RedisUtil;
-import sideproject.gatewayservice.redis.dto.RedisDto;
-
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -30,32 +25,6 @@ public class JwtUtil {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //10000;    // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     private final RedisUtil redisUtil;
-
-    public String generateToken(UserDetails userDetails) {
-        return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        extraClaims.put("roles", userDetails.getAuthorities());
-        String refreshToken = Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
-                .compact();
-
-        // redis에 저장
-
-        RedisDto refreshDto = RedisDto.of(userDetails.getUsername(), refreshToken);
-        redisUtil.set(refreshToken, refreshDto, REFRESH_TOKEN_EXPIRE_TIME);
-        return refreshToken;
-    }
 
     public Long getExpiration(String token) {
         return extractClaim(token, Claims::getExpiration).getTime();

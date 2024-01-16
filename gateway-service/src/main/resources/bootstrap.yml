@@ -5,3 +5,4 @@ spring:
       name: gateway-service
   profiles:
     active: local
+
