@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import sideproject.authservice.member.entity.Member;
+import sideproject.authservice.member.entity.Users;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -15,23 +15,23 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private Member member;
+    private Users users;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.member.getRoles().stream()
+        return this.users.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return users.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return users.getEmail();
     }
 
     @Override
@@ -55,14 +55,14 @@ public class PrincipalDetails implements UserDetails {
     }
 
     public UUID getId() {
-        return this.member.getId();
+        return this.users.getId();
     }
 
     public String getNickname() {
-        return this.member.getNickname();
+        return this.users.getNickname();
     }
 
-    public Member getMember() {
-        return this.member;
+    public Users getUsers() {
+        return this.users;
     }
 }

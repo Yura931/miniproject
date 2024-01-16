@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sideproject.authservice.member.enums.AccountType;
 
 @Getter
 @NoArgsConstructor
@@ -15,4 +16,7 @@ public class SignInRequest {
 
     @NotBlank
     private String password;
+
+
+    private AccountType accountType;
 }

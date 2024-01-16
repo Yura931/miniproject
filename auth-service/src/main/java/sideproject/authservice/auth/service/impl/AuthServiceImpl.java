@@ -21,8 +21,8 @@ import sideproject.authservice.global.exception.ExpiredRefreshTokenException;
 import sideproject.authservice.global.exception.MemberDuplicateException;
 import sideproject.authservice.global.exception.NicknameDuplicateException;
 import sideproject.authservice.jwt.util.JwtUtil;
-import sideproject.authservice.member.entity.Member;
-import sideproject.authservice.member.entity.MemberRole;
+import sideproject.authservice.member.entity.Users;
+import sideproject.authservice.member.entity.UserRole;
 import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.principal.PrincipalDetailsService;
 import sideproject.authservice.redis.RedisUtil;
@@ -51,10 +51,10 @@ public class AuthServiceImpl implements AuthService {
         if(authRepository.existsByNickname(dto.nickname()))
             throw new NicknameDuplicateException();
 
-        Member member = Member.createUser(dto);
-        member.saveUserRole(Collections.singletonList(MemberRole.generateNewMemberByRoleAdmin(member)));
-        Member saveMember = authRepository.save(member);
-        SignUpItem signUpItem = SignUpItem.UserEntityToDto(saveMember);
+        Users users = Users.createUser(dto);
+        users.saveUserRole(Collections.singletonList(UserRole.generateNewMemberByRoleAdmin(users)));
+        Users saveUsers = authRepository.save(users);
+        SignUpItem signUpItem = SignUpItem.UserEntityToDto(saveUsers);
         return new SignUpResponse(signUpItem);
     }
     public SignInResponse signIn(SignInDto dto, HttpServletResponse response) {
