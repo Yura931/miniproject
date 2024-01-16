@@ -16,42 +16,42 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @ToString(of = { "roleId", "role" })
-public class MemberRole {
+public class UserRole {
 
     @Id
     @Column(name = "role_id", length = 32)
     private UUID roleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "user_id")
+    private Users users;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UserRoles role;
 
 
-    private MemberRole(Member member, UserRoles role) {
+    private UserRole(Users users, UserRoles role) {
         this.roleId = UUID.randomUUID();
-        this.member = member;
+        this.users = users;
         this.role = role;
     }
 
-    public static MemberRole generateNewMemberByRoleUser(Member member) {
-        return new MemberRole(member, UserRoles.ROLE_USER);
+    public static UserRole generateNewMemberByRoleUser(Users users) {
+        return new UserRole(users, UserRoles.ROLE_USER);
     }
 
-    public static MemberRole generateNewMemberByRoleAdmin(Member member) {
-        MemberRole memberRole = new MemberRole(member, UserRoles.ROLE_ADMIN);
-        member.saveUserRole(Collections.singletonList(memberRole));
-        return memberRole;
+    public static UserRole generateNewMemberByRoleAdmin(Users users) {
+        UserRole userRole = new UserRole(users, UserRoles.ROLE_ADMIN);
+        users.saveUserRole(Collections.singletonList(userRole));
+        return userRole;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MemberRole that = (MemberRole) o;
+        UserRole that = (UserRole) o;
         return Objects.equals(getRoleId(), that.getRoleId());
     }
 

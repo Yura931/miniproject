@@ -18,26 +18,27 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Member {
+public class Users {
 
     @Id
-    @Column(name = "member_id", length = 32)
+    @Column(name = "user_id")
     private UUID id;
 
+    @Column(nullable = false, length = 50)
     private String email;
-
+    @Column(nullable = false, unique = true)
     private String password;
-
+    @Column(nullable = false, length = 50)
     private String nickname;
 
     @Enumerated(value = EnumType.STRING)
     private AccountType accountType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "users", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<MemberRole> roles = new ArrayList<>();
+    private List<UserRole> roles = new ArrayList<>();
 
-    private Member(UUID userId, String email, String nickname, String password, AccountType accountType) {
+    private Users(UUID userId, String email, String nickname, String password, AccountType accountType) {
         this.id = userId;
         this.email = email;
         this.password = password;
@@ -45,9 +46,9 @@ public class Member {
         this.accountType = accountType;
     }
 
-    public static Member createUser(SignUpDto dto) {
+    public static Users createUser(SignUpDto dto) {
         UUID uuid = UUID.randomUUID();
-        return new Member(
+        return new Users(
                 uuid,
                 dto.email(),
                 dto.password(),
@@ -56,10 +57,10 @@ public class Member {
         );
     }
 
-    public void saveUserRole(List<MemberRole> memberRoles) {
-        this.roles = memberRoles
+    public void saveUserRole(List<UserRole> userRoles) {
+        this.roles = userRoles
                 .stream()
-                .filter(role -> role.getMember().id.equals(this.id))
+                .filter(role -> role.getUsers().id.equals(this.id))
                 .toList();
     }
 
@@ -67,7 +68,7 @@ public class Member {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Member that = (Member) o;
+        Users that = (Users) o;
         return Objects.equals(this.getId(), that.getId());
     }
 

@@ -14,15 +14,15 @@ import java.util.UUID;
 
 @FeignClient(name = "file-service")
 public interface FileServiceClient {
-    @GetMapping("/file-service/api/v1/files")
+    @GetMapping("/api/v1/files")
     ResponseEntity<List<FileDto>> files(@RequestBody UUID fileMappingId);
-    @PostMapping("/file-service/api/v1/files/register")
+    @PostMapping("/api/v1/files/register")
     ResponseEntity<UUID> fileRegister(MultipartHttpServletRequest request);
 
-    @PostMapping("/file-service/api/v1/files/update")
+    @PostMapping("/api/v1/files/update")
     ResponseEntity<UUID> fileUpdate(MultipartHttpServletRequest request, @RequestBody UUID fileMappingId);
 
-    @DeleteMapping("/file-service/api/v1/file-mapping")
+    @DeleteMapping("/api/v1/file-mapping")
     ResponseEntity fileMappingDelete(@RequestBody UUID fileMappingId);
 
 }
