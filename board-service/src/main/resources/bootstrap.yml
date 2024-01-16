@@ -5,3 +5,9 @@ spring:
       name: board-service
   profiles:
     active: local
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
