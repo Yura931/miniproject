@@ -31,3 +31,13 @@
 - Ack를 기다리지 않고 전달 가능
 - 생산자 중심
 
+
+---
+
+## Dependencies 추가
+- Config Server
+  - AMQP for Spring Cloud Bus, Actuator
+- config-server, gateway-service, board-service 등 마이크로 서비스 RabbitMQ 클라이언트로 등록
+  - 변경 사항이 생기면 변경사항을 AMQP라는 프로토콜로 받을 수 있음
+  - 웹 브라우저에서 접속할 때는 15672 포트, 시스템에서 AMQP 프로토콜 사용할 때는 5672포트 사용
+- config-server에 변경사항 요청이 들어오면 RabbitMQ에 요청사항을 받았음을 통보 -> RabbitMQ에 등록되어진 또 다른 마이크로 서비스에 그 정보를 일괄적으로 푸시해주게 됨 (일종의 클라이언트 역할)

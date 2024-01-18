@@ -7,7 +7,9 @@ spring:
     config:
       server:
         native:
-          searchLocations: "{cipher}9df5b4d3eb11706853e7371d462b491f3390fe7ea4d207eec629dbbeab8a0fcf"
+          searchLocations: C:\dev\config
+          #"{cipher}9df5b4d3eb11706853e7371d462b491f3390fe7ea4d207eec629dbbeab8a0fcf"
+          # 경로에 있는 설정 파일 중 application.yml 파일은 config client로 등록되어 있는 마이크로 서비스가 공통으로 사용 함
         encrypt:
           enabled: false
 
@@ -16,6 +18,12 @@ spring:
 
   profiles:
     active: native
+
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
 
@@ -32,10 +40,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: refresh, health, beans, httpexchanges, busrefresh
 
   endpoint:
     shutdown:
       enabled: true
-encrypt:
-  key: key-brian

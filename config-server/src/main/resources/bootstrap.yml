@@ -1,0 +1,7 @@
+# encrypt key 이 자체가 대칭키에 사용될 수 있다는 뜻
+encrypt:
+#  key: abcdefghijklmnopqrstuvwxyz0123456789
+  key-store:
+    location: file:///${user.home}/keystore/apiEncryptionKey.jks
+    password: test1234
+    alias: apiEncryptionKey
