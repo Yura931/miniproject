@@ -4,27 +4,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import sideproject.fileservice.file.dto.FileDto;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class FileUtil {
     @Value("${file.uploadPath}")
     String storedPathString;
 
-    public List<FileDto> uploadFileDto (MultipartHttpServletRequest request) throws Exception {
-        final Map<String, MultipartFile> files = request.getFileMap();
+    public List<FileDto> uploadFileDto (List<MultipartFile> files) throws Exception {
 
         if (Boolean.FALSE.equals(files.isEmpty())) {
             File saveFolder = new File(filePathBlackList(storedPathString));
 
-            return files.entrySet()
+            return files
                     .stream()
-                    .map(Map.Entry::getValue)
                     .filter(file -> Boolean.FALSE.equals(StringUtils.isEmpty(file.getOriginalFilename())))
                     .map((file) -> {
                         String originalFileName = file.getOriginalFilename();

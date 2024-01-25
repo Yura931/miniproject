@@ -18,7 +18,6 @@ import sideproject.boardservice.common.exception.ExpiredJwtTokenException;
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static sideproject.boardservice.jwt.properties.JwtProperties.*;
 
@@ -29,13 +28,15 @@ public class JwtUtil {
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("roles").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        List<Map<String, String>> roles = new ArrayList<>();
+        roles = (List<Map<String, String>>) claims.get("roles");
+
+        Collection<? extends GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+                .toList();
 
         UserDetails userDetails = new User(getNickname(accessToken), "", authorities);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, accessToken, authorities);
     }
 
     public String getNickname(String accessToken) {

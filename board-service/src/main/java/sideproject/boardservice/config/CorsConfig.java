@@ -16,7 +16,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);   // 내 서버가 응답을 할 때 json을 자바스크립트에서 처리할 수 있게 할지를 설정하는 것 (ajax, fetch, axios 사용 시 응답)
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001", "http://localhost:8000"));
         config.addAllowedHeader("*");   // 모든 header에 응답을 허용
         config.addAllowedMethod("*");   // 모든 post, get, put, delete, patch 요청 허용
         config.addExposedHeader("Authorization");

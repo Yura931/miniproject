@@ -3,9 +3,8 @@ package sideproject.boardservice.post.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -16,6 +15,7 @@ import sideproject.boardservice.board.repository.BoardRepository;
 import sideproject.boardservice.common.dto.FileDto;
 import sideproject.boardservice.common.exception.UserInformationNotMatchException;
 import sideproject.boardservice.feign.FileServiceClient;
+import sideproject.boardservice.messagequeue.PostProducer;
 import sideproject.boardservice.post.dto.*;
 import sideproject.boardservice.post.dto.item.RegisterPostItem;
 import sideproject.boardservice.post.dto.item.SearchPostItem;
@@ -34,6 +34,7 @@ import sideproject.boardservice.post.service.PostService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,21 +45,31 @@ public class PostServiceImpl implements PostService {
     private final PostRepositoryCustom postRepositoryCustom;
     private final BoardCategoryRepository boardCategoryRepository;
     private final FileServiceClient fileServiceClient;
+    private final PostProducer postProducer;
+    private final CircuitBreakerFactory circuitBreakerFactory;
+
     @Override
     @Transactional
     public RegisterPostResponse save(RegisterPostDto dto, MultipartHttpServletRequest request) {
         Board board = boardRepository.findById(dto.boardId())
                 .orElseThrow(EntityNotFoundException::new);
-        BoardCategory boardCategory = boardCategoryRepository.findById(dto.categoryId())
-                .orElseThrow(EntityNotFoundException::new);
-        Post post = Post.createPost(dto, board, boardCategory);
-            Optional.ofNullable(request.getMultiFileMap())
-                    .ifPresent(file -> {
-                        ResponseEntity<UUID> responseEntity = fileServiceClient.fileRegister(request);
-                        UUID fileMappingId = responseEntity.getBody();
-                        post.addFileMappingId(fileMappingId);
-                    });
+        Post post = Post.createPost(dto, board);
+        Optional.ofNullable(dto.categoryId())
+                .ifPresent(categoryId -> {
+                    BoardCategory boardCategory = boardCategoryRepository.findById(categoryId)
+                            .orElseThrow(EntityNotFoundException::new);
+                    post.addBoardCategory(boardCategory);
+                });
+        Optional.ofNullable(request.getMultiFileMap())
+                .ifPresent(multiValueMap -> {
+                    UUID fileMappingId = fileServiceClient.fileRegister(
+                            multiValueMap.values().stream().flatMap(List::stream)
+                                    .collect(Collectors.toList())
+                    ).getBody();
+                    post.addFileMappingId(fileMappingId);
+                });
         Post savePost = postRepository.save(post);
+//        postProducer.send("posts", KafkaRegisterPostDto.postEntityToDto(post));
         RegisterPostItem registerPostItem = RegisterPostItem.postEntityToDto(savePost);
         return new RegisterPostResponse(registerPostItem);
     }
@@ -89,31 +100,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public UpdatePostResponse updatePost(UpdatePostDto dto, MultipartHttpServletRequest request, UserDetails userDetails) {
+    public UpdatePostResponse updatePost(UpdatePostDto dto, MultipartHttpServletRequest request) {
         Post post = postRepository.findById(dto.postId())
                 .orElseThrow(EntityNotFoundException::new);
-        usernameMatch(userDetails.getUsername(), post.getCreatedBy());
         post.updatePost(dto);
-        Optional.ofNullable(request.getMultiFileMap())
-                .ifPresent(map -> {
-                    Optional.ofNullable(post.getFileMappingId())
-                            .ifPresentOrElse(uuid -> {
-                                fileServiceClient.fileUpdate(request, uuid);
-                            }, () -> {
-                                UUID responseFileMappingId = fileServiceClient.fileRegister(request).getBody();
-                                post.addFileMappingId(responseFileMappingId);
-                            });
-                });
         UpdatePostItem updatePostItem = UpdatePostItem.postEntityToDto(post);
         return new UpdatePostResponse(updatePostItem);
     }
 
     @Override
     @Transactional
-    public void deletePost(DeletePostDto dto, UserDetails userDetails) {
+    public void deletePost(DeletePostDto dto) {
         Post post = postRepository.findById(dto.postId())
                 .orElseThrow(EntityNotFoundException::new);
-        usernameMatch(post.getCreatedBy(), userDetails.getUsername());
         Optional.ofNullable(post.getFileMappingId())
                 .ifPresent(uuid -> {
                     fileServiceClient.fileMappingDelete(uuid);

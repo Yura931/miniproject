@@ -2,6 +2,8 @@ package sideproject.boardservice.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -21,6 +24,7 @@ import sideproject.boardservice.jwt.filter.JwtAuthenticationFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -37,29 +41,32 @@ public class SecurityConfig {
                         headers.contentTypeOptions(contentTypeOptionsConfig ->
                                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers("/board-service/actuator/**").permitAll()
-                        .requestMatchers("/board-service/api/v1/board/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/board-service/api/v1/board/**").hasAnyAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
+                .addFilter(corsFilter)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .accessDeniedHandler(accessDeniedHandler())
                                 .authenticationEntryPoint(authenticationEntryPoint())
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilter(corsFilter);
+                );
 
+        log.info("SecurityFilterChain() -> {}", SecurityContextHolder.getContext().getAuthentication());
         return http.build();
     }
 
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            log.info("accessDeniedException -> {}", "accessDeniedException");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
         };
     }
 
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authenticationException) -> {
+            log.info("authenticationException -> {}", "authenticationException");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         };
     }

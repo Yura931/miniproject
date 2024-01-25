@@ -24,11 +24,11 @@ public class Users {
     @Column(name = "user_id")
     private UUID id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String email;
     @Column(nullable = false, unique = true)
     private String password;
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String nickname;
 
     @Enumerated(value = EnumType.STRING)

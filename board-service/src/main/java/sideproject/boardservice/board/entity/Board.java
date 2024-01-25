@@ -24,7 +24,7 @@ public class Board extends BaseEntity {
 
     @Id
     @Column(name = "board_id")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 

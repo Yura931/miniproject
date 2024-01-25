@@ -65,7 +65,7 @@ class FileServiceTest {
 
         request.addFile(file1);
         request.addFile(file2);
-        List<FileDto> fileDtos = fileUtil.uploadFileDto(request);
+        List<FileDto> fileDtos = fileUtil.uploadFileDto(null);
         RegisterFileResponse saveFile = fileService.save(fileDtos);
         RegisterFileItem items = saveFile.getItems();
         FindFileResponse findFileResponse = fileService.selectFiles(FindFileDto.from(items.fileMappingId()));
@@ -90,7 +90,7 @@ class FileServiceTest {
 
         request.addFile(file1);
         request.addFile(file2);
-        List<FileDto> fileDtos2 = fileUtil.uploadFileDto(request);
+        List<FileDto> fileDtos2 = fileUtil.uploadFileDto(null);
         List<File> files = File.updateFiles(fileMapping, fileDtos2);
         List<File> files1 = fileRepository.saveAll(files);
 
@@ -118,7 +118,7 @@ class FileServiceTest {
 
         request.addFile(file1);
         request.addFile(file2);
-        List<FileDto> fileDtos = fileUtil.uploadFileDto(request);
+        List<FileDto> fileDtos = fileUtil.uploadFileDto(null);
         FileMapping fileMapping = fileMappingRepository.findAll().get(0);
 
         File.updateFiles(fileMapping, fileDtos);

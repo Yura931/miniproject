@@ -46,25 +46,26 @@ public class Post extends BaseEntity {
     @Column(name = "file_mapping_id")
     private UUID fileMappingId;
 
-    private Post(UUID id, Board board, BoardCategory category, String postTitle, String postContent, Long viewCount) {
+    private Post(UUID id, Board board, String postTitle, String postContent, Long viewCount) {
         this.id = id;
         this.board = board;
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.viewCount = viewCount;
-        this.boardCategory = category;
     }
 
-    public static Post createPost(RegisterPostDto dto, Board board, BoardCategory boardCategory) {
-        UUID id = UUID.randomUUID();
+    public static Post createPost(RegisterPostDto dto, Board board) {
         return new Post(
-                id,
+                dto.postId(),
                 board,
-                boardCategory,
                 dto.postTitle(),
                 dto.postContent(),
                 dto.viewCount()
         );
+    }
+
+    public void addBoardCategory(BoardCategory boardCategory) {
+        this.boardCategory = boardCategory;
     }
 
     public void addFileMappingId(UUID fileMappingId) {

@@ -21,14 +21,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1")
 @Slf4j
 public class BoardController {
-
     private final BoardService boardService;
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok().body("board-service-test");
-    }
-
     @GetMapping("/board/selector")
     public ResponseEntity<Result> boardSelector() {
         BoardSelectorResponse boardSelectorResponse = boardService.boardSelector();

@@ -17,6 +17,7 @@ import sideproject.boardservice.board.repository.BoardCategoryRepository;
 import sideproject.boardservice.board.repository.BoardRepository;
 import sideproject.boardservice.board.repository.BoardRepositoryCustom;
 import sideproject.boardservice.board.service.BoardService;
+import sideproject.boardservice.messagequeue.KafkaProducer;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardRepositoryCustom boardRepositoryCustom;
     private final BoardCategoryRepository boardCategoryRepository;
+    private final KafkaProducer kafkaProducer;
 
     @Override
     @Transactional
@@ -39,6 +41,9 @@ public class BoardServiceImpl implements BoardService {
     public RegisterBoardResponse save(RegisterBoardDto dto) {
         Board board = Board.createBoard(dto);
         Board save = boardRepository.save(board);
+
+
+        
 
         BoardItem item = BoardItem.boardEntityToDto(save);
         return new RegisterBoardResponse(item);

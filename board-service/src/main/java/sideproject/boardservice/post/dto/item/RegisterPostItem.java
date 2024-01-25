@@ -1,29 +1,32 @@
 package sideproject.boardservice.post.dto.item;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import sideproject.boardservice.board.entity.Board;
-import sideproject.boardservice.board.entity.BoardCategory;
+import lombok.NoArgsConstructor;
 import sideproject.boardservice.post.entity.Post;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterPostItem {
-    private final UUID id;
-    private final Board board;
-    private final BoardCategory boardCategory;
-    private final String postTitle;
-    private final String postContent;
+    private UUID postId;
+    private Long boardId;
+    private String postTitle;
+    private String postContent;
+    private String lastModifiedBy;
+    private LocalDateTime lastModifiedDate;
 
     public static RegisterPostItem postEntityToDto(Post post) {
         return new RegisterPostItem(
                 post.getId(),
-                post.getBoard(),
-                post.getBoardCategory(),
+                post.getBoard().getId(),
                 post.getPostTitle(),
-                post.getPostContent()
+                post.getPostContent(),
+                post.getLastModifiedBy(),
+                post.getLastModifiedDate()
         );
     }
 }

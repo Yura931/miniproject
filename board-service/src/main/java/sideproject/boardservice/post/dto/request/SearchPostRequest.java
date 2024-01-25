@@ -1,13 +1,11 @@
 package sideproject.boardservice.post.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import sideproject.boardservice.common.enums.SortDirection;
 
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString

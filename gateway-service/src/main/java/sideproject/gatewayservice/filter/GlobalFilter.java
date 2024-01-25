@@ -31,17 +31,17 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
             ServerHttpRequest request = exchange.getRequest();
             ServerHttpResponse response = exchange.getResponse();
 
-            stopWatch.start();
+
             log.info("[글로벌 필터] REQUEST 요청 >>>> IP : {}, URI : {}", request.getRemoteAddress().getAddress(), request.getURI());
 
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 
-                stopWatch.stop();
+
                 log.info("[글로벌 필터] RESPONSE 응답 >>>> IP : {}, URI : {}, 응답코드 : {} --> 처리시간 : {} ms",
                         request.getRemoteAddress().getAddress(),
                         request.getURI(),
                         response.getStatusCode(),
-                        stopWatch.getLastTaskTimeMillis()
+                        System.currentTimeMillis()
                 );
 
             }));

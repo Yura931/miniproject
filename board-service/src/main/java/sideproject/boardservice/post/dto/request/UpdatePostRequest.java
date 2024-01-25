@@ -1,12 +1,12 @@
 package sideproject.boardservice.post.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UpdatePostRequest {
     private String postTitle;
     private String postContent;
