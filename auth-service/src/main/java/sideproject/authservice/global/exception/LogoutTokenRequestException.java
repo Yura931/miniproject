@@ -5,6 +5,6 @@ import sideproject.authservice.global.exception.enums.ErrorCode;
 
 @RequiredArgsConstructor
 public class LogoutTokenRequestException extends RuntimeException {
-    private final ErrorCode errorCode = ErrorCode.LOGOUT_TOKEN;
+    private final ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
 
 }

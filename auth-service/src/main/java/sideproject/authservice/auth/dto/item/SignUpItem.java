@@ -1,8 +1,8 @@
 package sideproject.authservice.auth.dto.item;
 
 
-import sideproject.authservice.member.entity.Users;
-import sideproject.authservice.member.enums.AccountType;
+import sideproject.authservice.user.entity.Users;
+import sideproject.authservice.user.enums.AccountType;
 
 public record SignUpItem (
     String email,

@@ -1,7 +1,7 @@
 package sideproject.authservice.auth.dto;
 
 import sideproject.authservice.auth.dto.request.SignInRequest;
-import sideproject.authservice.member.enums.AccountType;
+import sideproject.authservice.user.enums.AccountType;
 
 public record SignInDto (
         String email,

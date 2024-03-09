@@ -33,7 +33,7 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
         return ResultHandler.errorHandle(e);
     }
 
-    @ExceptionHandler(MemberDuplicateException.class)
+    @ExceptionHandler(EmailDuplicateException.class)
     public Result<?> handleUserDuplicateException(ErrorCode e) {
         return ResultHandler.errorHandle(e);
     }

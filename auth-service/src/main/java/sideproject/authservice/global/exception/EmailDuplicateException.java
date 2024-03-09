@@ -4,6 +4,6 @@ import lombok.RequiredArgsConstructor;
 import sideproject.authservice.global.exception.enums.ErrorCode;
 
 @RequiredArgsConstructor
-public class MemberDuplicateException extends RuntimeException {
-    private final ErrorCode errorCode = ErrorCode.USER_DUPLICATE;
+public class EmailDuplicateException extends RuntimeException {
+    private final ErrorCode errorCode = ErrorCode.EMAIL_DUPLICATE;
 }

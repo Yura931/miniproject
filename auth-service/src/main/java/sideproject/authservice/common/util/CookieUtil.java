@@ -5,16 +5,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 
+
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static sideproject.authservice.jwt.properties.JwtProperties.*;
 
 @Component
 public class CookieUtil {
 
-    private static final int REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     public void addCookie(HttpServletResponse response, String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(REFRESH_TOKEN_EXPIRE_TIME);
+        cookie.setMaxAge(REFRESH_TOKEN_EXPIRE_TIME.intValue());
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

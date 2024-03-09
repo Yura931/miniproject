@@ -2,7 +2,7 @@ package sideproject.authservice.auth.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import sideproject.authservice.member.entity.Users;
+import sideproject.authservice.user.entity.Users;
 
 import java.util.Optional;
 import java.util.UUID;

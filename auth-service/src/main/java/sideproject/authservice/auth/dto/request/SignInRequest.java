@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sideproject.authservice.member.enums.AccountType;
+import sideproject.authservice.user.enums.AccountType;
 
 @Getter
 @NoArgsConstructor

@@ -21,7 +21,7 @@ public class CorsConfig {
         config.addAllowedMethod("*");   // 모든 post, get, put, delete, patch 요청 허용
         config.addExposedHeader("Authorization");
         config.addExposedHeader("RefreshToken");
-        source.registerCorsConfiguration("/auth-service/api/v1/**", config);
+        source.registerCorsConfiguration("/api/v1/**", config);
         return new CorsFilter(source);
     }
 }

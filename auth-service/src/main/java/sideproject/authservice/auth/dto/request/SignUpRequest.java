@@ -8,8 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import sideproject.authservice.member.enums.AccountType;
-import sideproject.authservice.member.enums.UserRoles;
+import sideproject.authservice.user.enums.AccountType;
 
 @Getter
 @NoArgsConstructor
@@ -32,6 +31,4 @@ public class SignUpRequest {
     @NotNull
     private AccountType accountType;
 
-
-    private UserRoles userRoles;
 }

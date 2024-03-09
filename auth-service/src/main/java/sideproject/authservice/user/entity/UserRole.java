@@ -1,11 +1,11 @@
-package sideproject.authservice.member.entity;
+package sideproject.authservice.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import sideproject.authservice.member.enums.UserRoles;
+import sideproject.authservice.user.enums.UserRoles;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -38,12 +38,14 @@ public class UserRole {
     }
 
     public static UserRole generateNewMemberByRoleUser(Users users) {
-        return new UserRole(users, UserRoles.ROLE_USER);
+        UserRole userRole = new UserRole(users, UserRoles.ROLE_USER);
+        users.saveUserRole(userRole);
+        return userRole;
     }
 
     public static UserRole generateNewMemberByRoleAdmin(Users users) {
         UserRole userRole = new UserRole(users, UserRoles.ROLE_ADMIN);
-        users.saveUserRole(Collections.singletonList(userRole));
+        users.saveUserRole(userRole);
         return userRole;
     }
 

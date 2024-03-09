@@ -13,6 +13,8 @@ public class JwtProperties {
     public static String AUTHORITIES_KEY;
     public static String AUTHORIZATION_HEADER;
     public static String REFRESH_HEADER;
+    public static Long ACCESS_TOKEN_EXPIRE_TIME;
+    public static Long REFRESH_TOKEN_EXPIRE_TIME;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -32,6 +34,12 @@ public class JwtProperties {
     @Value("${jwt.refresh_header}")
     private String refreshHeader;
 
+    @Value("${jwt.access_token_expire_time}")
+    private String accessTokenExpireTime;
+
+    @Value("${jwt.refresh_token_expire_time}")
+    private String refreshTokenExpireTime;
+
     @PostConstruct
     public void init() {
         SECRET = secret;
@@ -40,5 +48,7 @@ public class JwtProperties {
         AUTHORITIES_KEY = authoritiesKey;
         AUTHORIZATION_HEADER = authorizationHeader;
         REFRESH_HEADER = refreshHeader;
+        ACCESS_TOKEN_EXPIRE_TIME = Long.valueOf(accessTokenExpireTime);
+        REFRESH_TOKEN_EXPIRE_TIME = Long.valueOf(refreshTokenExpireTime);
     }
 }

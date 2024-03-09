@@ -1,4 +1,4 @@
-package sideproject.authservice.member.entity;
+package sideproject.authservice.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sideproject.authservice.auth.dto.SignUpDto;
-import sideproject.authservice.member.enums.AccountType;
+import sideproject.authservice.user.enums.AccountType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +24,21 @@ public class Users {
     @Column(name = "user_id")
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(name = "email",
+            nullable = false, unique = true, length = 30)
     private String email;
-    @Column(nullable = false, unique = true)
+
+    @Column(name = "password",
+            nullable = false, unique = true, length = 100)
     private String password;
-    @Column(nullable = false)
+
+    @Column(name = "nickname",
+            nullable = false, unique = true, length = 30)
     private String nickname;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "accountType",
+            nullable = true, length = 10)
     private AccountType accountType;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "users", cascade = CascadeType.ALL)
@@ -57,11 +64,12 @@ public class Users {
         );
     }
 
-    public void saveUserRole(List<UserRole> userRoles) {
-        this.roles = userRoles
-                .stream()
-                .filter(role -> role.getUsers().id.equals(this.id))
-                .toList();
+    public static Users createUser(String email, String password, String nickname, AccountType accountType) {
+        return new Users(UUID.randomUUID(), email, password, nickname, accountType);
+    }
+
+    public void saveUserRole(UserRole userRole) {
+        this.roles.add(userRole);
     }
 
     @Override

@@ -18,17 +18,16 @@ import sideproject.authservice.auth.repository.AuthRepository;
 import sideproject.authservice.auth.service.AuthService;
 import sideproject.authservice.common.util.CookieUtil;
 import sideproject.authservice.global.exception.ExpiredRefreshTokenException;
-import sideproject.authservice.global.exception.MemberDuplicateException;
+import sideproject.authservice.global.exception.EmailDuplicateException;
 import sideproject.authservice.global.exception.NicknameDuplicateException;
 import sideproject.authservice.jwt.util.JwtUtil;
-import sideproject.authservice.member.entity.Users;
-import sideproject.authservice.member.entity.UserRole;
 import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.principal.PrincipalDetailsService;
 import sideproject.authservice.redis.RedisUtil;
 import sideproject.authservice.redis.dto.RedisDto;
+import sideproject.authservice.user.entity.UserRole;
+import sideproject.authservice.user.entity.Users;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
@@ -46,13 +45,13 @@ public class AuthServiceImpl implements AuthService {
 
     public SignUpResponse signUp(SignUpDto dto) {
         if(authRepository.existsByEmail(dto.email()))
-            throw new MemberDuplicateException();
+            throw new EmailDuplicateException();
 
         if(authRepository.existsByNickname(dto.nickname()))
             throw new NicknameDuplicateException();
 
         Users users = Users.createUser(dto);
-        users.saveUserRole(Collections.singletonList(UserRole.generateNewMemberByRoleAdmin(users)));
+        users.saveUserRole(UserRole.generateNewMemberByRoleUser(users));
         Users saveUsers = authRepository.save(users);
         SignUpItem signUpItem = SignUpItem.UserEntityToDto(saveUsers);
         return new SignUpResponse(signUpItem);
