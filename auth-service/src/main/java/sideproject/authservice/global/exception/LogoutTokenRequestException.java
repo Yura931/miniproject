@@ -1,9 +1,11 @@
 package sideproject.authservice.global.exception;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import sideproject.authservice.global.exception.enums.ErrorCode;
 
 @RequiredArgsConstructor
+@Getter
 public class LogoutTokenRequestException extends RuntimeException {
     private final ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
 

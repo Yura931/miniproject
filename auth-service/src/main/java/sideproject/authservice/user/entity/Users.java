@@ -37,8 +37,7 @@ public class Users {
     private String nickname;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "accountType",
-            nullable = true, length = 10)
+    @Column(name = "accountType", length = 10)
     private AccountType accountType;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "users", cascade = CascadeType.ALL)
@@ -48,8 +47,8 @@ public class Users {
     private Users(UUID userId, String email, String nickname, String password, AccountType accountType) {
         this.id = userId;
         this.email = email;
-        this.password = password;
         this.nickname = nickname;
+        this.password = password;
         this.accountType = accountType;
     }
 
@@ -58,14 +57,14 @@ public class Users {
         return new Users(
                 uuid,
                 dto.email(),
-                dto.password(),
                 dto.nickname(),
+                dto.password(),
                 dto.accountType()
         );
     }
 
     public static Users createUser(String email, String password, String nickname, AccountType accountType) {
-        return new Users(UUID.randomUUID(), email, password, nickname, accountType);
+        return new Users(UUID.randomUUID(), email, nickname, password, accountType);
     }
 
     public void saveUserRole(UserRole userRole) {

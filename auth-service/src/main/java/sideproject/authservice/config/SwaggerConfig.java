@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    /**
+     * swagger-ui/index.html
+     * @return
+     */
     @Bean
     public GroupedOpenApi userGroup() {
         return GroupedOpenApi.builder()

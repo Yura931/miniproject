@@ -2,8 +2,12 @@ package sideproject.authservice.global.exception;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import sideproject.authservice.global.exception.enums.ErrorCode;
+import sideproject.authservice.jwt.properties.JwtProperties;
 import sideproject.authservice.redis.RedisUtil;
+
+import static sideproject.authservice.jwt.properties.JwtProperties.*;
 
 
 @NoArgsConstructor
@@ -20,6 +24,6 @@ public class ExpiredRefreshTokenException extends RuntimeException {
     }
 
     private void refreshTokenDelete(String refreshToken) {
-        redisUtil.delete(refreshToken);
+        redisUtil.delete(REFRESH_TOKEN_KEY_PREFIX.concat(refreshToken));
     }
 }

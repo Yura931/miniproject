@@ -6,18 +6,21 @@ import io.jsonwebtoken.security.Keys;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import sideproject.authservice.global.exception.ExpiredJwtTokenException;
+import sideproject.authservice.global.exception.NotFoundTokenFromHeaderException;
 import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.redis.RedisUtil;
 import sideproject.authservice.redis.dto.RedisDto;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import static sideproject.authservice.jwt.properties.JwtProperties.*;
@@ -26,6 +29,24 @@ import static sideproject.authservice.jwt.properties.JwtProperties.*;
 @RequiredArgsConstructor
 public class JwtUtil {
     private final RedisUtil redisUtil;
+
+    public Authentication getAuthentication(String accessToken) {
+        Claims claims = extractAllClaims(accessToken);
+        List<Map<String, String>> roles = new ArrayList<>();
+        roles = (List<Map<String, String>>) claims.get("roles");
+
+        Collection<? extends GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+                .toList();
+
+        UserDetails userDetails = new User(getNickname(accessToken), "", authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, accessToken, authorities);
+    }
+
+    public String getNickname(String accessToken) {
+        Claims claims = extractAllClaims(accessToken);
+        return Optional.ofNullable(claims.get("nickname").toString()).orElseGet(() -> "");
+    }
 
     public String generateToken(PrincipalDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -54,7 +75,7 @@ public class JwtUtil {
         // redis에 저장
 
         RedisDto refreshDto = RedisDto.of(userDetails.getUsername(), refreshToken);
-        redisUtil.set(refreshToken, refreshDto, REFRESH_TOKEN_EXPIRE_TIME);
+        redisUtil.set(REFRESH_TOKEN_KEY_PREFIX.concat(refreshToken), refreshDto, REFRESH_TOKEN_EXPIRE_TIME);
         return refreshToken;
     }
 
@@ -79,7 +100,8 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException
+                 | UnsupportedJwtException | IllegalArgumentException e) {
             throw new JwtException("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             throw new ExpiredJwtTokenException();
@@ -92,14 +114,11 @@ public class JwtUtil {
     }
 
     public String getHeaderAccessToken(HttpServletRequest request) {
-        String headerValue = request.getHeader(AUTHORIZATION_HEADER);
-        if (Objects.isNull(headerValue) || StringUtils.isEmpty(headerValue)
-            || !org.apache.commons.lang3.StringUtils.startsWith(headerValue, TOKEN_PREFIX)) {
-            return "";
-        }
-
-        return headerValue.substring(TOKEN_PREFIX.length());
+        request.getRequestURI();
+        return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
+                .filter(headerValue -> !org.apache.commons.lang3.StringUtils.startsWith(headerValue, TOKEN_PREFIX))
+                .map(token -> token.substring(TOKEN_PREFIX.length()))
+                .orElseThrow(() -> new NotFoundTokenFromHeaderException());
     }
-
 
 }

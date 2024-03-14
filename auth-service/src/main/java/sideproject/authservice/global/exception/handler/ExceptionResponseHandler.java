@@ -29,13 +29,13 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(LoginFailException.class)
-    public Result<?> handleLoginFailException(ErrorCode e) {
-        return ResultHandler.errorHandle(e);
+    public Result<?> handleLoginFailException(LoginFailException e) {
+        return ResultHandler.errorHandle(e.getErrorCode());
     }
 
     @ExceptionHandler(EmailDuplicateException.class)
-    public Result<?> handleUserDuplicateException(ErrorCode e) {
-        return ResultHandler.errorHandle(e);
+    public Result<?> handleUserDuplicateException(EmailDuplicateException e) {
+        return ResultHandler.errorHandle(e.getErrorCode());
     }
 
     @ExceptionHandler(UnsupportedJwtException.class)

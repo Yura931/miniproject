@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     EXPIRED_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
-    HEADER_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "토큰 정보가 없습니다."),
+    NOT_FOUND_HEADER_TOKEN(HttpStatus.UNAUTHORIZED, "토큰 정보가 없습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "REFRESH TOKEN이 만료되었습니다."),
     EMAIL_DUPLICATE(HttpStatus.CONFLICT, "이미 가입되어 있는 유저입니다."),

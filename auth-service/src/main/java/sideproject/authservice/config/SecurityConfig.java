@@ -18,8 +18,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
+import sideproject.authservice.jwt.filter.JwtAuthenticationFilter;
+import sideproject.authservice.jwt.filter.JwtExceptionFilter;
 import sideproject.authservice.principal.PrincipalDetailsService;
+import sideproject.authservice.user.enums.UserRoles;
 
 @Configuration
 @EnableWebSecurity
@@ -29,11 +33,19 @@ public class SecurityConfig {
 
     private final PrincipalDetailsService principalDetailsService;
     private final CorsFilter corsFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     private static final String[] WHITE_LIST = {
             "/favicon.ico",
-            "/**"
+            "/**",
     };
+
+    private static final String[] ADMIN_LIST = {
+            "/management",
+            "/swagger-ui"
+    };
+
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
         return http
@@ -47,8 +59,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(ADMIN_LIST).hasRole("ADMIN")
+                        .anyRequest().permitAll())
                 .addFilter(corsFilter)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 

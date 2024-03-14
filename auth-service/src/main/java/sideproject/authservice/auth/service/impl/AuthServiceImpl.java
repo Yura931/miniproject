@@ -20,6 +20,7 @@ import sideproject.authservice.common.util.CookieUtil;
 import sideproject.authservice.global.exception.ExpiredRefreshTokenException;
 import sideproject.authservice.global.exception.EmailDuplicateException;
 import sideproject.authservice.global.exception.NicknameDuplicateException;
+import sideproject.authservice.global.exception.enums.ErrorCode;
 import sideproject.authservice.jwt.util.JwtUtil;
 import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.principal.PrincipalDetailsService;
@@ -31,8 +32,9 @@ import sideproject.authservice.user.entity.Users;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
-import static sideproject.authservice.jwt.properties.JwtProperties.REFRESH_PREFIX;
+import static sideproject.authservice.jwt.properties.JwtProperties.*;
 
 @Service
 @RequiredArgsConstructor
@@ -84,13 +86,13 @@ public class AuthServiceImpl implements AuthService {
         RefreshTokenDto dto = RefreshTokenDto.from(cookie.getValue());
 
 
-        if(!Objects.isNull(redisUtil.get(dto.refreshToken()))) {
-            redisUtil.delete(dto.refreshToken());
+        if(!Objects.isNull(redisUtil.get(REFRESH_TOKEN_KEY_PREFIX.concat(dto.refreshToken())))) {
+            redisUtil.delete(REFRESH_TOKEN_KEY_PREFIX.concat(dto.refreshToken()));
         }
 
         Long getExpiration = jwtUtil.getExpiration(accessToken) - new Date().getTime();
         RedisDto accessTokenDto = RedisDto.of(userEmail, accessToken);
-        redisUtil.setBlackList(accessToken, accessTokenDto, getExpiration.intValue());
+        redisUtil.setBlackList(ACCESS_TOKEN_KEY_PREFIX.concat(accessToken), accessTokenDto, getExpiration.intValue());
         cookieUtil.deleteCookie(request, response, REFRESH_PREFIX);
 
         return LogoutResponse.from("로그아웃 되었습니다");
