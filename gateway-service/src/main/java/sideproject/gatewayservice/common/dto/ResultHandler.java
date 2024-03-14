@@ -16,7 +16,7 @@ public class ResultHandler {
 
     public static Result<?> errorHandle(ErrorCode e) {
         return Result.builder()
-                .status(e.getStatus())
+                .status(e.getStatus().value())
                 .msg(e.getMessage())
                 .data(e)
                 .errorName(e.name())

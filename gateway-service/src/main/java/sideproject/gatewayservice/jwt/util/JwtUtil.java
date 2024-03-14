@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import sideproject.gatewayservice.exception.ExpiredJwtTokenException;
+import sideproject.gatewayservice.exception.NotFoundTokenFromHeaderException;
 import sideproject.gatewayservice.exception.enums.ErrorCode;
 import sideproject.gatewayservice.redis.RedisUtil;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static sideproject.gatewayservice.jwt.properties.JwtProperties.*;
@@ -50,7 +52,7 @@ public class JwtUtil {
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new JwtException("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtTokenException(ErrorCode.EXPIRED_JWT_TOKEN);
+            throw new ExpiredJwtTokenException();
         }
 
     }
@@ -60,13 +62,10 @@ public class JwtUtil {
     }
 
     public String getHeaderAccessToken(ServerHttpRequest request) {
-        String headerValue = request.getHeaders().getOrEmpty(AUTHORIZATION_HEADER).get(0);
-        if (Objects.isNull(headerValue) || StringUtils.isEmpty(headerValue)
-            || !org.apache.commons.lang3.StringUtils.startsWith(headerValue, TOKEN_PREFIX)) {
-            return "";
-        }
-
-        return headerValue.substring(TOKEN_PREFIX.length());
+        return Optional.ofNullable(request.getHeaders().getOrEmpty(AUTHORIZATION_HEADER).get(0))
+                .filter(headerValue -> headerValue.startsWith(TOKEN_PREFIX))
+                .map(token -> token.substring(TOKEN_PREFIX.length()))
+                .orElseThrow(NotFoundTokenFromHeaderException::new);
     }
 
 

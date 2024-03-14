@@ -16,10 +16,12 @@ import reactor.core.publisher.Mono;
 import sideproject.gatewayservice.common.dto.ResultHandler;
 import sideproject.gatewayservice.exception.ExpiredJwtTokenException;
 import sideproject.gatewayservice.exception.ExpiredRefreshTokenException;
+import sideproject.gatewayservice.exception.NotFoundTokenFromHeaderException;
 import sideproject.gatewayservice.exception.enums.ErrorCode;
 import sideproject.gatewayservice.jwt.util.JwtUtil;
 import sideproject.gatewayservice.redis.RedisUtil;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static sideproject.gatewayservice.jwt.properties.JwtProperties.AUTHORIZATION_HEADER;
@@ -46,24 +48,20 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
-            log.info("AuthorizationHeaderFilter -> {}", "filter");
             ServerHttpRequest request = exchange.getRequest();
             ServerHttpResponse response = exchange.getResponse();
 
-
-            if (authMissing(request)) {
-                return onError(response, ErrorCode.UNAUTHORIZED);
-            }
-
-
-            final String accessToken = jwtUtil.getHeaderAccessToken(request);
-
-            if(redisUtil.hasKeyBlackList(accessToken)) {
-                return onError(response, ErrorCode.LOGOUT_TOKEN);
-            };
-
             try {
+
+                final String accessToken = jwtUtil.getHeaderAccessToken(request);
+
+                if(redisUtil.hasKeyBlackList(accessToken))
+                    return onError(response, ErrorCode.INVALID_TOKEN);
+
                 jwtUtil.extractUserName(accessToken);
+
+            } catch (NotFoundTokenFromHeaderException ex) {
+                return onError(response, ErrorCode.NOT_FOUND_HEADER_TOKEN);
             } catch (ExpiredRefreshTokenException ex) {
                 return onError(response, ErrorCode.EXPIRED_REFRESH_TOKEN);
             } catch (ExpiredJwtTokenException ex) {

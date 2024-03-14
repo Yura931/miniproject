@@ -1,15 +1,11 @@
 package sideproject.gatewayservice.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import sideproject.gatewayservice.exception.enums.ErrorCode;
+
+@RequiredArgsConstructor
+@Getter
 public class NotFoundTokenFromHeaderException extends RuntimeException {
-
-    private String message;
-
-    public NotFoundTokenFromHeaderException(String message) {
-        this.message = message;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.getMessage();
-    }
+    private final ErrorCode errorCode = ErrorCode.NOT_FOUND_HEADER_TOKEN;
 }
