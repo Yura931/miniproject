@@ -22,7 +22,7 @@ public record SearchBoardDto(
         );
     }
 
-    public static SearchBoardDto of(String title, String content, SortDirection sortDirection, BoardSortCondition sortCondition, int pageNo, int pageSize) {
+    public static SearchBoardDto of(SortDirection sortDirection, BoardSortCondition sortCondition, int pageNo, int pageSize) {
         return new SearchBoardDto(
                 sortDirection,
                 sortCondition,

@@ -9,14 +9,14 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class BoardSelectorItem {
+public class BoardIdItem {
     private List<BoardSelectorDto> boardSelector;
 
-    public BoardSelectorItem(List<BoardSelectorDto> boardSelector) {
+    public BoardIdItem(List<BoardSelectorDto> boardSelector) {
         this.boardSelector = boardSelector;
     }
 
-    public static BoardSelectorItem boardEntityToDto(List<BoardSelectorDto> boardSelector) {
-        return new BoardSelectorItem(boardSelector);
+    public static BoardIdItem boardEntityToDto(List<BoardSelectorDto> boardSelector) {
+        return new BoardIdItem(boardSelector);
     }
 }

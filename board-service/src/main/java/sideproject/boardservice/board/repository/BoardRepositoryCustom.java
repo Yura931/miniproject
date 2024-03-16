@@ -11,5 +11,5 @@ public interface BoardRepositoryCustom {
 
     Page<SearchBoardPageDto> searchAll(SearchBoardDto condition);
 
-    public List<BoardSelectorDto> boardSelector();
+    List<BoardSelectorDto> boardSelector();
 }

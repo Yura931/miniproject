@@ -9,15 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import sideproject.boardservice.board.dto.*;
 import sideproject.boardservice.board.dto.item.BoardItem;
 import sideproject.boardservice.board.dto.item.BoardPageItem;
-import sideproject.boardservice.board.dto.item.BoardSelectorItem;
+import sideproject.boardservice.board.dto.item.BoardIdItem;
 import sideproject.boardservice.board.dto.projection.SearchBoardPageDto;
 import sideproject.boardservice.board.dto.response.*;
 import sideproject.boardservice.board.entity.Board;
+import sideproject.boardservice.board.entity.BoardCategory;
 import sideproject.boardservice.board.repository.BoardCategoryRepository;
 import sideproject.boardservice.board.repository.BoardRepository;
 import sideproject.boardservice.board.repository.BoardRepositoryCustom;
 import sideproject.boardservice.board.service.BoardService;
 import sideproject.boardservice.messagequeue.KafkaProducer;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +29,13 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardRepositoryCustom boardRepositoryCustom;
-    private final BoardCategoryRepository boardCategoryRepository;
     private final KafkaProducer kafkaProducer;
 
     @Override
     @Transactional
-    public BoardSelectorResponse boardSelector() {
-        BoardSelectorItem boardSelectorItem = BoardSelectorItem.boardEntityToDto(boardRepositoryCustom.boardSelector());
-        return new BoardSelectorResponse(boardSelectorItem);
+    public BoardIdResponse boardId() {
+        BoardIdItem boardIdItem = BoardIdItem.boardEntityToDto(boardRepositoryCustom.boardSelector());
+        return new BoardIdResponse(boardIdItem);
     }
 
     @Override
@@ -41,10 +43,6 @@ public class BoardServiceImpl implements BoardService {
     public RegisterBoardResponse save(RegisterBoardDto dto) {
         Board board = Board.createBoard(dto);
         Board save = boardRepository.save(board);
-
-
-        
-
         BoardItem item = BoardItem.boardEntityToDto(save);
         return new RegisterBoardResponse(item);
     }
@@ -52,8 +50,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional(readOnly = true)
     public SearchBoardResponse findById(SelectBoardDto dto) {
-        Board board = boardRepository.findById(dto.id())
-                .orElseThrow(EntityNotFoundException::new);
+        Board board = this.getBoard(dto.id());
 
         BoardItem item = BoardItem.boardEntityToDto(board);
         return new SearchBoardResponse(item);
@@ -67,63 +64,50 @@ public class BoardServiceImpl implements BoardService {
         BoardPageItem item = BoardPageItem.boardEntityToDto(searchBoardPageDtos);
         return new BoardPageResponse(item);
     }
-
+    @Override
     @Transactional
     public UpdateBoardResponse updateById(UpdateBoardDto dto) {
-        Board findBoard = boardRepository.findById(dto.id())
-                .orElseThrow(EntityNotFoundException::new);
-        Board board = findBoard.updateBoard(
-                dto.boardEnabled(),
-                dto.boardVisible(),
-                dto.boardType(),
-                dto.boardTitle(),
-                dto.boardDescription(),
-                dto.boardCategoryEnabled(),
-                dto.boardFileEnabled(),
-                dto.boardCommentEnabled(),
-                dto.boardReplyCommentEnabled()
-        );
+        Board findBoard = this.getBoard(dto.id());
+        Board board = findBoard.updateBoard(dto);
 
         BoardItem boardItem = BoardItem.boardEntityToDto(board);
         return new UpdateBoardResponse(boardItem);
     }
-
+    @Override
     @Transactional
     public void deleteById(DeleteBoardDto dto) {
-        boardRepository.deleteById(dto.id());
+        boardRepository.findById(dto.id())
+                .stream().findFirst()
+                .ifPresentOrElse(board -> boardRepository.deleteById(board.getId()),
+                        () -> new EntityNotFoundException());
+    }
+    @Override
+    @Transactional
+    public void insertCategoryByBoardId(RegisterBoardCategoryDto dto) {
+        Board board = this.getBoard(dto.boardId());
+        BoardCategory boardCategory = BoardCategory.createCategory(board, BoardCategoryDto.from(dto.categoryName()));
+        board.addBoardCategory(boardCategory);
+    }
+    @Override
+    @Transactional
+    public void updateCategoryByBoardId(UpdateBoardCategoryDto dto) {
+        Board board = this.getBoard(dto.boardId());
+        board.getCategories()
+                .stream()
+                .filter(categories -> categories.getId().equals(dto.boardCategoryId()))
+                .findFirst()
+                .ifPresent(category -> category.updateCategory(dto.boardCategoryName()));
     }
 
+    @Override
     @Transactional
-    public RegisterBoardResponse insertCategoryByBoardId(RegisterBoardCategoryDto dto) {
+    public void deleteCategoryById(DeleteBoardCategoryDto dto) {
         Board board = this.getBoard(dto.boardId());
-        board.addBoardCategory(BoardCategoryDto.from(dto.categoryName()));
-        BoardItem boardItem = BoardItem.boardEntityToDto(board);
-        return new RegisterBoardResponse(boardItem);
-    }
-
-    @Transactional
-    public UpdateBoardResponse updateCategoryByBoardId(UpdateBoardCategoryDto dto) {
-        Board board = this.getBoard(dto.boardId());
-        board.getCategories().stream()
-                .filter((categories) -> categories.getId().equals(dto.boardCategoryId()))
-                .map((category) -> category.updateCategory(dto.boardCategoryName()))
-                .toList();
-
-        BoardItem boardItem = BoardItem.boardEntityToDto(board);
-        return new UpdateBoardResponse(boardItem);
+        board.deleteBoardCategory(dto.categoryId());
     }
 
     private Board getBoard(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
-    }
-
-    @Transactional
-    public DeleteBoardResponse deleteCategoryById(DeleteBoardCategoryDto dto) {
-        boardCategoryRepository.deleteByIdAndBoardId(dto.categoryId(), dto.boardId());
-        Board board = this.getBoard(dto.boardId());
-        board.deleteBoardCategory(dto.categoryId());
-        BoardItem boardItem = BoardItem.boardEntityToDto(board);
-        return new DeleteBoardResponse(boardItem);
     }
 }

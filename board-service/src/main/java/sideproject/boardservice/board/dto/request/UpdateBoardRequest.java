@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import sideproject.boardservice.board.entity.enums.BoardEnabled;
-import sideproject.boardservice.board.entity.enums.BoardType;
+import sideproject.boardservice.board.entity.enums.*;
 
 @Getter
 @NoArgsConstructor
@@ -19,7 +18,7 @@ public class UpdateBoardRequest {
     private BoardEnabled boardEnabled;
 
     @NotNull
-    private BoardEnabled boardVisible;
+    private BoardVisible boardVisible;
 
     @NotNull
     private BoardType boardType;
@@ -30,14 +29,12 @@ public class UpdateBoardRequest {
     private String boardDescription;
 
     @NotNull
-    private BoardEnabled boardCategoryEnabled;
+    private BoardCategoryEnabled boardCategoryEnabled;
 
     @NotNull
-    private BoardEnabled boardFileEnabled;
+    private BoardFileEnabled boardFileEnabled;
 
     @NotNull
-    private BoardEnabled boardCommentEnabled;
+    private BoardCommentEnabled boardCommentEnabled;
 
-    @NotNull
-    private BoardEnabled boardReplyCommentEnabled;
 }

@@ -4,13 +4,11 @@ import lombok.Getter;
 import sideproject.boardservice.common.enums.EnumModel;
 
 @Getter
-public enum BoardVisible implements EnumModel {
-
+public enum BoardFileEnabled implements EnumModel {
     Y("사용"), N("사용 안함");
-
     private final String value;
 
-    BoardVisible(String value) {
+    BoardFileEnabled(String value) {
         this.value = value;
     }
 
@@ -23,5 +21,4 @@ public enum BoardVisible implements EnumModel {
     public String gatValue() {
         return this.value;
     }
-
 }

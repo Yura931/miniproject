@@ -22,32 +22,32 @@ import java.util.UUID;
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
-    @GetMapping("/board/selector")
+    @GetMapping("/boards/selector")
     public ResponseEntity<Result> boardSelector() {
-        BoardSelectorResponse boardSelectorResponse = boardService.boardSelector();
+        BoardIdResponse boardSelectorResponse = boardService.boardId();
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "board_id 목록", boardSelectorResponse));
     }
-    @GetMapping("/board")
+    @GetMapping("/boards")
     public ResponseEntity<Result> searchBoard(@Valid SearchBoardRequest request) {
         BoardPageResponse boardPageResponse = boardService.findAll(SearchBoardDto.from(request));
         return ResponseEntity.ok().body(ResultHandler.handle(
                 HttpStatus.OK.value(), "게시판관리 목록", boardPageResponse));
     }
-    @GetMapping("/board/enums")
+    @GetMapping("/boards/enums")
     public ResponseEntity<Result> enums() {
         BoardEnumsResponse enums = new BoardEnumsResponse(BoardEnumsItem.enums());
         return ResponseEntity.ok().body(ResultHandler.handle(
                 HttpStatus.OK.value(), "게시판 ENUMS", enums));
     }
 
-    @GetMapping("/board/{id}")
+    @GetMapping("/boards/{id}")
     public ResponseEntity<Result> selectBoard(@PathVariable Long id) {
         SearchBoardResponse searchBoardResponse = boardService.findById(SelectBoardDto.from(id));
         return ResponseEntity.ok().body(ResultHandler.handle(
                 HttpStatus.OK.value(), "게시판관리 상세정보", searchBoardResponse));
     }
 
-    @PostMapping("/board/register")
+    @PostMapping("/boards/register")
     public ResponseEntity<Result> insertBoard(@Valid @RequestBody RegisterBoardRequest request) {
         System.out.println("request = " + request);
         RegisterBoardResponse registerBoardResponse = boardService.save(RegisterBoardDto.from(request));
@@ -56,7 +56,7 @@ public class BoardController {
         ));
     }
 
-    @PutMapping("/board/{id}")
+    @PutMapping("/boards/{id}")
     public ResponseEntity<Result> updateBoard(@PathVariable Long id, @Valid @RequestBody UpdateBoardRequest request) {
         UpdateBoardResponse updateBoardResponse = boardService.updateById(UpdateBoardDto.of(id, request));
         return ResponseEntity.ok().body(ResultHandler.handle(
@@ -64,37 +64,30 @@ public class BoardController {
         ));
     }
 
-    @DeleteMapping("/board/{id}")
+    @DeleteMapping("/boards/{id}")
     public ResponseEntity<Result> deleteBoard(@PathVariable Long id) {
         boardService.deleteById(DeleteBoardDto.of(id));
         return ResponseEntity.ok().body(ResultHandler.handle(
-                HttpStatus.OK.value(), "게시판관리 삭제", ""
-        ));
+                HttpStatus.OK.value(), "게시판관리 삭제"));
     }
 
-    @PostMapping("/board/{id}/category/register")
+    @PostMapping("/boards/{id}/categories/register")
     public ResponseEntity<Result> insertCategory(@PathVariable Long id, @Valid @RequestBody RegisterBoardCategoryRequest request) {
-        RegisterBoardResponse registerBoardResponse = boardService.insertCategoryByBoardId(RegisterBoardCategoryDto.of(id, request.getCategoryName()));
-        return ResponseEntity.ok().body(ResultHandler.handle(
-                HttpStatus.OK.value(), "게시판 카테고리 추가", registerBoardResponse
-        ));
+        boardService.insertCategoryByBoardId(RegisterBoardCategoryDto.of(id, request.getCategoryName()));
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판 카테고리 추가"));
     }
 
-    @PutMapping("/board/{id}/category/{categoryId}")
+    @PutMapping("/boards/{id}/categories/{categoryId}")
     public ResponseEntity<Result> updateCategory(@PathVariable Long id,
                                                  @PathVariable UUID categoryId,
                                                  @Valid @RequestBody UpdateBoardCategoryRequest request) {
-        UpdateBoardResponse updateBoardResponse = boardService.updateCategoryByBoardId(UpdateBoardCategoryDto.of(id, categoryId, request.getCategoryName()));
-        return ResponseEntity.ok().body(ResultHandler.handle(
-                HttpStatus.OK.value(), "게시판 카테고리 수정", updateBoardResponse
-        ));
+        boardService.updateCategoryByBoardId(UpdateBoardCategoryDto.of(id, categoryId, request.getCategoryName()));
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판 카테고리 수정"));
     }
 
-    @DeleteMapping("/board/{id}/category/{categoryId}")
+    @DeleteMapping("/boards/{id}/categories/{categoryId}")
     public ResponseEntity<Result> deleteCategory(@PathVariable Long id, @PathVariable UUID categoryId) {
-        DeleteBoardResponse deleteBoardResponse = boardService.deleteCategoryById(DeleteBoardCategoryDto.of(id, categoryId));
-        return ResponseEntity.ok().body(ResultHandler.handle(
-                HttpStatus.OK.value(), "게시판 카테고리 삭제", deleteBoardResponse
-        ));
+        boardService.deleteCategoryById(DeleteBoardCategoryDto.of(id, categoryId));
+        return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시판 카테고리 삭제"));
     }
 }

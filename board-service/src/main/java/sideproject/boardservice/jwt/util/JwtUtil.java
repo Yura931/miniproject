@@ -89,6 +89,7 @@ public class JwtUtil {
             return "";
         }
 
+
         return headerValue.substring(TOKEN_PREFIX.length());
     }
 }

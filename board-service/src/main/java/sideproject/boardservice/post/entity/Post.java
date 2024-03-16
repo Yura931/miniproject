@@ -16,7 +16,6 @@ import sideproject.boardservice.post.dto.UpdatePostDto;
 import java.util.UUID;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "file_mapping_id"))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = { "id", "postTitle", "postContent", "viewCount"})
@@ -43,8 +42,6 @@ public class Post extends BaseEntity {
     @ColumnDefault("0")
     private Long viewCount;
 
-    @Column(name = "file_mapping_id")
-    private UUID fileMappingId;
 
     private Post(UUID id, Board board, String postTitle, String postContent, Long viewCount) {
         this.id = id;
@@ -66,10 +63,6 @@ public class Post extends BaseEntity {
 
     public void addBoardCategory(BoardCategory boardCategory) {
         this.boardCategory = boardCategory;
-    }
-
-    public void addFileMappingId(UUID fileMappingId) {
-        this.fileMappingId = fileMappingId;
     }
 
     public void updatePost(UpdatePostDto dto) {

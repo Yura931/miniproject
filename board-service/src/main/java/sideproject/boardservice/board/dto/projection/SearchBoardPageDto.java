@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import sideproject.boardservice.board.entity.enums.BoardEnabled;
 import sideproject.boardservice.board.entity.enums.BoardType;
+import sideproject.boardservice.board.entity.enums.BoardVisible;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 public class SearchBoardPageDto {
     private Long id;
     private BoardEnabled boardEnabled;
-    private BoardEnabled boardVisible;
+    private BoardVisible boardVisible;
     private BoardType boardType;
     private String boardTitle;
     private LocalDateTime createDate;

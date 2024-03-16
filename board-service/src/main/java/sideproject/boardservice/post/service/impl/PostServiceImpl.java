@@ -60,14 +60,6 @@ public class PostServiceImpl implements PostService {
                             .orElseThrow(EntityNotFoundException::new);
                     post.addBoardCategory(boardCategory);
                 });
-        Optional.ofNullable(request.getMultiFileMap())
-                .ifPresent(multiValueMap -> {
-                    UUID fileMappingId = fileServiceClient.fileRegister(
-                            multiValueMap.values().stream().flatMap(List::stream)
-                                    .collect(Collectors.toList())
-                    ).getBody();
-                    post.addFileMappingId(fileMappingId);
-                });
         Post savePost = postRepository.save(post);
 //        postProducer.send("posts", KafkaRegisterPostDto.postEntityToDto(post));
         RegisterPostItem registerPostItem = RegisterPostItem.postEntityToDto(savePost);
@@ -80,11 +72,6 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(dto.id())
                 .orElseThrow(EntityNotFoundException::new);
         SelectPostItem selectPostItem = SelectPostItem.postEntityToDto(post);
-        Optional.ofNullable(post.getFileMappingId())
-                        .ifPresent(id -> {
-                            List<FileDto> files = fileServiceClient.files(id).getBody();
-                            selectPostItem.addFiles(files);
-                        });
         return new SelectPostResponse(selectPostItem);
     }
 
@@ -113,10 +100,6 @@ public class PostServiceImpl implements PostService {
     public void deletePost(DeletePostDto dto) {
         Post post = postRepository.findById(dto.postId())
                 .orElseThrow(EntityNotFoundException::new);
-        Optional.ofNullable(post.getFileMappingId())
-                .ifPresent(uuid -> {
-                    fileServiceClient.fileMappingDelete(uuid);
-                });
         postRepository.delete(post);
     }
 

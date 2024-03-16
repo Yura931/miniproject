@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sideproject.boardservice.board.entity.enums.BoardEnabled;
-import sideproject.boardservice.board.entity.enums.BoardType;
+import sideproject.boardservice.board.entity.enums.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class RegisterBoardRequest {
     private BoardEnabled boardEnabled;
 
     @NotNull
-    private BoardEnabled boardVisible;
+    private BoardVisible boardVisible;
 
     @NotNull
     private BoardType boardType;
@@ -31,16 +30,13 @@ public class RegisterBoardRequest {
     private String boardDescription;
 
     @NotNull
-    private BoardEnabled boardCategoryEnabled;
+    private BoardCategoryEnabled boardCategoryEnabled;
 
     @NotNull
-    private BoardEnabled boardFileEnabled;
+    private BoardFileEnabled boardFileEnabled;
 
     @NotNull
-    private BoardEnabled boardCommentEnabled;
-
-    @NotNull
-    private BoardEnabled boardReplyCommentEnabled;
+    private BoardCommentEnabled boardCommentEnabled;
 
     private List<String> categories = new ArrayList<>();
 
@@ -55,7 +51,6 @@ public class RegisterBoardRequest {
                 ", boardCategoryEnabled=" + boardCategoryEnabled +
                 ", boardFileEnabled=" + boardFileEnabled +
                 ", boardCommentEnabled=" + boardCommentEnabled +
-                ", boardReplyCommentEnabled=" + boardReplyCommentEnabled +
                 ", categories=" + categories +
                 '}';
     }

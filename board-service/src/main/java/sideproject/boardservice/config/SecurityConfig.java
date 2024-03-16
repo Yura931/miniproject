@@ -42,7 +42,7 @@ public class SecurityConfig {
                                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/board-service/actuator/**").permitAll()
+                        .requestMatchers("/board-service/management/**").permitAll()
                         .requestMatchers("/board-service/api/v1/board/**").hasAnyAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .addFilter(corsFilter)
@@ -53,20 +53,17 @@ public class SecurityConfig {
                                 .authenticationEntryPoint(authenticationEntryPoint())
                 );
 
-        log.info("SecurityFilterChain() -> {}", SecurityContextHolder.getContext().getAuthentication());
         return http.build();
     }
 
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            log.info("accessDeniedException -> {}", "accessDeniedException");
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         };
     }
 
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authenticationException) -> {
-            log.info("authenticationException -> {}", "authenticationException");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         };
     }

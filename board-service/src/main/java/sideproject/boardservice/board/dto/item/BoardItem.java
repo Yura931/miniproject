@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import sideproject.boardservice.board.entity.Board;
 import sideproject.boardservice.board.entity.BoardCategory;
-import sideproject.boardservice.board.entity.enums.BoardEnabled;
-import sideproject.boardservice.board.entity.enums.BoardType;
+import sideproject.boardservice.board.entity.enums.*;
 
 import java.util.List;
 
@@ -16,14 +15,13 @@ import java.util.List;
 public class BoardItem {
     private final Long id;
     private final BoardEnabled boardEnabled;
-    private final BoardEnabled boardVisible;
+    private final BoardVisible boardVisible;
     private final BoardType boardType;
     private final String boardTitle;
     private final String boardDescription;
-    private final BoardEnabled boardCategoryEnabled;
-    private final BoardEnabled boardFileEnabled;
-    private final BoardEnabled boardCommentEnabled;
-    private final BoardEnabled boardReplyCommentEnabled;
+    private final BoardCategoryEnabled boardCategoryEnabled;
+    private final BoardFileEnabled boardFileEnabled;
+    private final BoardCommentEnabled boardCommentEnabled;
     private final List<BoardCategory> categories;
 
     public static BoardItem boardEntityToDto(Board board) {
@@ -37,7 +35,6 @@ public class BoardItem {
                 board.getBoardCategoryEnabled(),
                 board.getBoardFileEnabled(),
                 board.getBoardCommentEnabled(),
-                board.getBoardReplyCommentEnabled(),
                 board.getCategories()
         );
     }

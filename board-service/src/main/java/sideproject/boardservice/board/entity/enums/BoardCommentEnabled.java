@@ -4,24 +4,21 @@ import lombok.Getter;
 import sideproject.boardservice.common.enums.EnumModel;
 
 @Getter
-public enum BoardVisible implements EnumModel {
-
+public enum BoardCommentEnabled implements EnumModel {
     Y("사용"), N("사용 안함");
-
     private final String value;
 
-    BoardVisible(String value) {
+    BoardCommentEnabled(String value) {
         this.value = value;
     }
 
     @Override
     public String getKey() {
-        return name();
+        return null;
     }
 
     @Override
     public String gatValue() {
-        return this.value;
+        return null;
     }
-
 }

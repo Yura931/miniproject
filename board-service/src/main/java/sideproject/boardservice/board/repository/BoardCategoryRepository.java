@@ -7,5 +7,8 @@ import sideproject.boardservice.board.entity.BoardCategory;
 import java.util.UUID;
 
 public interface BoardCategoryRepository extends JpaRepository<BoardCategory, UUID> {
-    void deleteByIdAndBoardId(UUID id, Long boardId);
+    int deleteByIdAndBoardId(UUID id, Long boardId);
+
+    @Override
+    void deleteById(UUID uuid);
 }
