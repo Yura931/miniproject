@@ -22,13 +22,15 @@ public class SelectPostItem {
     private String postTitle;
     private String postContent;
     private List<FileDto> files = new ArrayList<>();
+    private UUID createdBy;
 
-    public SelectPostItem(UUID id, Board board, BoardCategory boardCategory, String postTitle, String postContent) {
+    public SelectPostItem(UUID id, Board board, BoardCategory boardCategory, String postTitle, String postContent, UUID createdBy) {
         this.id = id;
         this.board = board;
         this.boardCategory = boardCategory;
         this.postTitle = postTitle;
         this.postContent = postContent;
+        this.createdBy = createdBy;
     }
 
     public static SelectPostItem postEntityToDto(Post post) {
@@ -37,7 +39,8 @@ public class SelectPostItem {
                 post.getBoard(),
                 post.getBoardCategory(),
                 post.getPostTitle(),
-                post.getPostContent()
+                post.getPostContent(),
+                post.getCreatedBy()
         );
     }
 

@@ -12,7 +12,7 @@ public class RegisterCommentItem {
 
     public static RegisterCommentItem CommentEntityToDto(Comment comment) {
         return new RegisterCommentItem(
-                comment.getComment()
+                comment.getContent()
         );
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -44,7 +45,7 @@ public class PostController {
     }
     @PostMapping(value = "/posts/{boardId}/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Result> registerPost(MultipartHttpServletRequest multipartRequest, @PathVariable Long boardId, RegisterPostRequest request) {
-        RegisterPostDto dto = RegisterPostDto.of(boardId, request,0L);
+        RegisterPostDto dto = RegisterPostDto.of(boardId, request);
         RegisterPostResponse registerPostResponse = postService.save(dto, multipartRequest);
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 등록", registerPostResponse));
     }
@@ -53,8 +54,10 @@ public class PostController {
         SelectPostResponse selectPostResponse = postService.selectPost(SelectPostDto.of(postId));
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 상세정보", selectPostResponse));
     }
+
+    @PreAuthorize("#request.createBy == authentication.principal.id")
     @PutMapping(value = "/posts/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Result> updatePost(@PathVariable UUID postId, UpdatePostRequest request, MultipartHttpServletRequest multipartRequest, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Result> updatePost(@PathVariable UUID postId, UpdatePostRequest request, MultipartHttpServletRequest multipartRequest) {
         UpdatePostResponse updatePostResponse = postService.updatePost(UpdatePostDto.of(postId, request), multipartRequest);
         return ResponseEntity.ok().body(ResultHandler.handle(HttpStatus.OK.value(), "게시글 수정", updatePostResponse));
     }

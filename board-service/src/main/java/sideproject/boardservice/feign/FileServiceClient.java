@@ -12,14 +12,14 @@ import java.util.UUID;
 
 @FeignClient(name = "file-service")
 public interface FileServiceClient {
-    @GetMapping("/file-service/api/v1/files/{fileMappingId}")
-    ResponseEntity<List<FileDto>> files(@PathVariable UUID fileMappingId);
+    @GetMapping("/api/v1/files/{fileOwnerId}")
+    ResponseEntity<List<FileDto>> files(@PathVariable UUID fileOwnerId, @RequestBody String fileOwnerType);
     @PostMapping(value = "/api/v1/files/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<UUID> fileRegister(@RequestPart  List<MultipartFile> files);
-    @PostMapping(value = "/api/v1/files/{fileMappingId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<UUID> fileUpdate(@RequestPart("files") List<MultipartFile> files, @PathVariable UUID fileMappingId);
-    @DeleteMapping("/api/v1/files/{fileMappingId}")
-    ResponseEntity fileMappingDelete(@PathVariable UUID fileMappingId);
+    @PostMapping(value = "/api/v1/files/{fileOwnerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<UUID> fileUpdate(@RequestPart("files") List<MultipartFile> files, @PathVariable UUID fileOwnerId);
+    @DeleteMapping("/api/v1/files/{fileOwnerId}")
+    ResponseEntity fileMappingDelete(@PathVariable UUID fileOwnerId, @RequestBody String fileOwnerType);
     @PostMapping(value = "/api/v1/files/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<String> filesTest(@RequestPart List<MultipartFile> files);
     @PostMapping(value = "/api/v1/files/client/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

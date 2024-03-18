@@ -6,13 +6,13 @@ import java.util.UUID;
 
 public record RegisterCommentDto(
         UUID postId,
-        String comment
+        String content
 ) {
 
     public static RegisterCommentDto of(UUID postId, RegisterCommentRequest request) {
         return new RegisterCommentDto(
           postId,
-          request.getComment()
+          request.getContent()
         );
     }
 }

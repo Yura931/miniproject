@@ -1,5 +1,6 @@
 package sideproject.boardservice.config;
 
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Configuration
 @EnableJpaAuditing
@@ -17,13 +19,12 @@ import java.util.Optional;
 public class JpaAuditConfig {
 
     @Bean
-    public AuditorAware<String> auditorAware() {
+    public AuditorAware<UUID> auditorAware() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return () -> Optional.ofNullable(authentication)
                 .map(auth -> {
                     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                    return userDetails.getUsername();
-                })
-                .orElse("user").describeConstable();
+                    return UUID.fromString(userDetails.getUsername());
+                });
     }
 }

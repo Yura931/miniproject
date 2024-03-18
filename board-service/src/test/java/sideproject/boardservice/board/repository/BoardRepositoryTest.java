@@ -13,13 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import sideproject.boardservice.board.TestBoardData;
-import sideproject.boardservice.board.dto.SearchBoardDto;
+import sideproject.boardservice.TestData;
 import sideproject.boardservice.board.entity.Board;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,13 +33,13 @@ class BoardRepositoryTest {
     @PersistenceContext
     EntityManager em;
     @Autowired
-    TestBoardData testBoardData;
+    TestData<Board> testData;
     @BeforeEach
     void beforeEach() {
-        testBoardData.boardData(10)
+        testData.boards(10)
                 .stream().map(board -> boardRepository.save(board))
                 .findFirst()
-                .ifPresent(board -> testBoardData.setFirstData(testBoardData.getKey(), board));
+                .ifPresent(board -> testData.setFirstData(testData.getKey(), board));
 
         boardRepository.flush();
     }
@@ -50,7 +47,7 @@ class BoardRepositoryTest {
     @Test
     @DisplayName("저장 테스트")
     void saveTest() {
-        Board board = testBoardData.boardData(1).get(0);
+        Board board = testData.boards(1).get(0);
         Board saveBoard = boardRepository.save(board);
 
         Board findBoard = boardRepository.findById(saveBoard.getId()).get();
@@ -86,7 +83,7 @@ class BoardRepositoryTest {
     @Test
     @DisplayName("단일 조회 테스트")
     void findById() {
-        Board board = (Board) testBoardData.getFirstData().get(testBoardData.getKey());
+        Board board = testData.getFirstData().get(testData.getKey());
         Board findBoard = boardRepository.findById(board.getId()).get();
 
         assertThat(board.getId()).isEqualTo(findBoard.getId());
@@ -105,7 +102,7 @@ class BoardRepositoryTest {
     @Test
     @DisplayName("삭제 테스트")
     void deleteTest() {
-        Board board = (Board) testBoardData.getFirstData().get(testBoardData.getKey());
+        Board board = testData.getFirstData().get(testData.getKey());
         boardRepository.delete(board);
 
         List<Board> boardList = boardRepository.findAll();

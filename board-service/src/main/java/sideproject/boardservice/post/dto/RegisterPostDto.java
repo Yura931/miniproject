@@ -10,17 +10,15 @@ public record RegisterPostDto(
         Long boardId,
         UUID categoryId,
         String postTitle,
-        String postContent,
-        Long viewCount
+        String postContent
 ) {
-    public static RegisterPostDto of(Long boardId, RegisterPostRequest request, Long viewCount) {
+    public static RegisterPostDto of(Long boardId, RegisterPostRequest request) {
         return new RegisterPostDto(
                 UUID.randomUUID(),
                 boardId,
                 request.getCategoryId(),
                 request.getPostTitle(),
-                request.getPostContent(),
-                viewCount
+                request.getPostContent()
         );
     }
 

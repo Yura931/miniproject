@@ -11,10 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import sideproject.boardservice.board.TestBoardData;
+import sideproject.boardservice.TestData;
 import sideproject.boardservice.board.dto.SearchBoardDto;
 import sideproject.boardservice.board.dto.enums.BoardSortCondition;
 import sideproject.boardservice.board.dto.projection.SearchBoardPageDto;
+import sideproject.boardservice.board.entity.Board;
 import sideproject.boardservice.common.enums.SortDirection;
 
 import java.util.List;
@@ -35,16 +36,16 @@ class BoardRepositoryCustomTest {
     @PersistenceContext
     EntityManager em;
     @Autowired
-    TestBoardData testBoardData;
+    TestData<Board> testData;
 
     @BeforeEach
     void beforeEach() {
-        testBoardData.boardData(30)
+        testData.boards(30)
                 .stream().map(board -> boardRepository.save(board))
                 .toList()
                 .stream()
                 .findFirst()
-                .ifPresent(board -> testBoardData.setFirstData(testBoardData.getKey(), board));
+                .ifPresent(board -> testData.setFirstData(testData.getKey(), board));
 
         em.flush();
         em.clear();

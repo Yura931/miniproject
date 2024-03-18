@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import sideproject.boardservice.board.TestBoardData;
+import sideproject.boardservice.TestData;
 import sideproject.boardservice.board.dto.BoardCategoryDto;
 import sideproject.boardservice.board.dto.UpdateBoardDto;
 import sideproject.boardservice.board.dto.request.UpdateBoardRequest;
@@ -25,28 +25,21 @@ class BoardTest {
     @PersistenceContext
     EntityManager em;
 
-    TestBoardData testBoardData = new TestBoardData();
+    TestData<Board> testData = new TestData();
 
 
     @BeforeEach
     void beforeEach() {
-        testBoardData.boardData(10)
+        testData.boards(10)
                 .forEach(board -> em.persist(board));
         em.flush();
         em.clear();
     }
 
     @Test
-    @DisplayName("")
-    void beforeTest() {
-
-    }
-
-
-    @Test
     @DisplayName("BOARD 저장 테스트")
     void boardCreateTest() {
-        Board board = testBoardData.boardData(1).get(0);
+        Board board = testData.boards(1).get(0);
         em.persist(board);
 
         Board findBoard = em.find(Board.class, board.getId());

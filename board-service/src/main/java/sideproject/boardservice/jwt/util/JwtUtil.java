@@ -35,7 +35,7 @@ public class JwtUtil {
                 .map(role -> new SimpleGrantedAuthority(role.get("authority")))
                 .toList();
 
-        UserDetails userDetails = new User(getNickname(accessToken), "", authorities);
+        UserDetails userDetails = new User(getUserId(accessToken), "", authorities);
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken, authorities);
     }
 
@@ -44,7 +44,7 @@ public class JwtUtil {
         return Optional.ofNullable(claims.get("nickname").toString()).orElseGet(() -> "");
     }
 
-    public String getMemberId(String accessToken) {
+    public String getUserId(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
         return Optional.ofNullable(claims.get("id").toString()).orElseGet(() -> "");
     }

@@ -26,8 +26,7 @@ public class PostProducer {
             Field.createField("string", true, "board_category_id"),
             Field.createField("string", true, "post_title"),
             Field.createField("string", true, "post_content"),
-            Field.createField("int64", true, "view_count"),
-            Field.createField("string", true, "file_mapping_id")
+            Field.createField("int64", true, "view_count")
     );
 
     Schema schema = Schema.createSchema("struct", fields, false, "post");

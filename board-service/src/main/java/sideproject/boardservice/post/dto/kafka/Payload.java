@@ -3,6 +3,7 @@ package sideproject.boardservice.post.dto.kafka;
 import lombok.Getter;
 
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 @Getter
 public class Payload {
@@ -14,12 +15,12 @@ public class Payload {
     private Long view_count;
     private Long create_date;
     private Long modified_date;
-    private String created_by;
+    private UUID created_by;
     private String last_modified_by;
 
     private Payload(String postId, Long boardId,
                     String postTitle, String postContent, Long viewCount,
-                    Long createDate, Long modifiedDate, String createdBy, String lastModifiedBy
+                    Long createDate, Long modifiedDate, UUID createdBy, String lastModifiedBy
     ) {
         this.post_id = postId;
         this.board_id = boardId;

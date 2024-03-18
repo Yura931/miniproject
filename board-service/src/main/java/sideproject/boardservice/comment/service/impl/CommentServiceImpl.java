@@ -36,11 +36,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     public UpdateCommentResponse updateById(UpdateCommentDto dto) {
-        Post post = postRepository.findById(dto.postId())
-                .orElseThrow(EntityNotFoundException::new);
         Comment comment = commentRepository.findById(dto.commentId())
                 .orElseThrow(EntityNotFoundException::new);
-        Comment updateComment = comment.updateComment(dto);
+        Comment updateComment = comment.updateComment(dto.content());
         UpdateCommentItem updateCommentItem = UpdateCommentItem.CommentEntityToDto(updateComment);
         return new UpdateCommentResponse(updateCommentItem);
     }

@@ -13,7 +13,7 @@ public record KafkaRegisterPostDto (
         Long viewCount,
         LocalDateTime createDate,
         LocalDateTime modifiedDate,
-        String createdBy,
+        UUID createdBy,
         String lastModifiedBy
 ) {
     public static KafkaRegisterPostDto postEntityToDto(Post post) {

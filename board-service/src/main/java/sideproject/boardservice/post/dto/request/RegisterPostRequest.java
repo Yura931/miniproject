@@ -9,11 +9,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class RegisterPostRequest {
     private String postTitle;
     private String postContent;
     private UUID categoryId;
     private List<MultipartFile> files;
+
+    @Builder
+    public RegisterPostRequest(String postTitle, String postContent, UUID categoryId, List<MultipartFile> files) {
+        this.postTitle = postTitle;
+        this.postContent = postContent;
+        this.categoryId = categoryId;
+        this.files = files;
+    }
 }

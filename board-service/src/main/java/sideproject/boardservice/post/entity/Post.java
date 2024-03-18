@@ -2,27 +2,29 @@ package sideproject.boardservice.post.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import sideproject.boardservice.board.entity.Board;
 import sideproject.boardservice.board.entity.BoardCategory;
+import sideproject.boardservice.comment.entity.Comment;
 import sideproject.boardservice.common.entity.BaseEntity;
 import sideproject.boardservice.post.dto.RegisterPostDto;
 import sideproject.boardservice.post.dto.UpdatePostDto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = { "id", "postTitle", "postContent", "viewCount"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class Post extends BaseEntity {
 
     @Id
     @Column(name = "post_id")
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,20 +37,24 @@ public class Post extends BaseEntity {
     @JsonIgnore
     private BoardCategory boardCategory;
 
+    @Column(length = 150)
     private String postTitle;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String postContent;
 
     @ColumnDefault("0")
-    private Long viewCount;
+    private Long viewCount = 0L;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+    private List<Comment> comments = new ArrayList<>();
 
 
-    private Post(UUID id, Board board, String postTitle, String postContent, Long viewCount) {
+    private Post(UUID id, Board board, String postTitle, String postContent) {
         this.id = id;
         this.board = board;
         this.postTitle = postTitle;
         this.postContent = postContent;
-        this.viewCount = viewCount;
     }
 
     public static Post createPost(RegisterPostDto dto, Board board) {
@@ -56,8 +62,7 @@ public class Post extends BaseEntity {
                 dto.postId(),
                 board,
                 dto.postTitle(),
-                dto.postContent(),
-                dto.viewCount()
+                dto.postContent()
         );
     }
 
@@ -74,5 +79,6 @@ public class Post extends BaseEntity {
     public void updateViewCount() {
         this.viewCount = this.viewCount + 1;
     }
+
 
 }

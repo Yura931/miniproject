@@ -10,6 +10,8 @@ import sideproject.boardservice.comment.dto.UpdateCommentDto;
 import sideproject.boardservice.common.entity.BaseEntity;
 import sideproject.boardservice.post.entity.Post;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,7 +20,6 @@ import java.util.UUID;
 public class Comment extends BaseEntity {
 
     @Id
-    @GeneratedValue
     @Column(name = "comment_id")
     private UUID id;
 
@@ -27,24 +28,37 @@ public class Comment extends BaseEntity {
     @JsonIgnore
     private Post post;
 
-    private String comment;
+    @Column(name = "content", length = 1000)
+    private String content;
 
-    public Comment(UUID id, Post post, String comment) {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> replies = new ArrayList<>();
+
+    public Comment(UUID id, Post post, String content) {
         this.id = id;
         this.post = post;
-        this.comment = comment;
+        this.content = content;
     }
 
     public static Comment createComment(RegisterCommentDto dto, Post post) {
         return new Comment(
                 UUID.randomUUID(),
                 post,
-                dto.comment()
+                dto.content()
         );
     }
 
-    public Comment updateComment(UpdateCommentDto dto) {
-        this.comment = dto.comment();
+    public Comment updateComment(String content) {
+        this.content = content;
         return this;
     }
+
+    public void addReply(Reply reply) {
+        this.replies.add(reply);
+    }
+
+    public void deleteReply(Reply reply) {
+        this.replies.removeIf(thisReply -> thisReply.getId().equals(reply.getId()));
+    }
+
 }

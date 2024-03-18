@@ -32,7 +32,7 @@ public class BoardServiceImpl implements BoardService {
     private final KafkaProducer kafkaProducer;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public BoardIdResponse boardId() {
         BoardIdItem boardIdItem = BoardIdItem.boardEntityToDto(boardRepositoryCustom.boardSelector());
         return new BoardIdResponse(boardIdItem);

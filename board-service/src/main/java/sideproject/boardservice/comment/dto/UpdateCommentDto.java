@@ -7,14 +7,14 @@ import java.util.UUID;
 public record UpdateCommentDto (
         UUID postId,
         UUID commentId,
-        String comment
+        String content
 ) {
 
     public static UpdateCommentDto of(UUID postId, UUID commentId, UpdateCommentRequest request) {
         return new UpdateCommentDto(
                 postId,
                 commentId,
-                request.getComment()
+                request.getContent()
         );
     }
 }
