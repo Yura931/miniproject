@@ -1,6 +1,9 @@
 package sideproject.fileservice.file.dto;
 
 import sideproject.fileservice.file.entity.File;
+import sideproject.fileservice.file.entity.enums.FileOwnerTypes;
+
+import java.util.UUID;
 
 public record FileDto(
         // 원본 명
@@ -12,12 +15,15 @@ public record FileDto(
 
         String fileContentType,
         String fileExt,
-        Integer downloadCount
+        Integer downloadCount,
+
+        UUID fileOwnerId,
+        FileOwnerTypes fileOwnerTypes
 ) {
 
     public static FileDto of(String originalFilename, String storedFilename,
                              String filePath, String fileSize, String fileContentType,
-                             String fileExt, Integer downloadCount) {
+                             String fileExt, Integer downloadCount, UUID fileOwnerId, FileOwnerTypes fileOwnerTypes) {
         return new FileDto(
                 originalFilename,
                 storedFilename,
@@ -25,7 +31,9 @@ public record FileDto(
                 fileSize,
                 fileContentType,
                 fileExt,
-                downloadCount
+                downloadCount,
+                fileOwnerId,
+                fileOwnerTypes
         );
     }
 
@@ -37,7 +45,9 @@ public record FileDto(
                 file.getFileSize(),
                 file.getFileContentType(),
                 file.getFileExt(),
-                file.getDownloadCount()
+                file.getDownloadCount(),
+                file.getFileOwnerId(),
+                file.getFileOwnerType()
         );
     }
 }

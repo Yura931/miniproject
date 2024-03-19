@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sideproject.fileservice.common.entity.BaseTimeEntity;
 import sideproject.fileservice.file.dto.FileDto;
+import sideproject.fileservice.file.entity.enums.FileOwnerTypes;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
+@Table(indexes = @Index(name = "idx__file_owner_id__file_owner_type", columnList = "file_owner_id, file_owner_type"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class File extends BaseTimeEntity {
 
@@ -27,11 +29,15 @@ public class File extends BaseTimeEntity {
     private String fileExt;
     private Integer downloadCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_mapping_id")
-    private FileMapping fileMapping;
+    @Column(name = "file_owner_id")
+    private UUID fileOwnerId;
 
-    public File(UUID id, String originalFilename, String storedFilename, String filePath, String fileSize, String fileContentType, String fileExt, Integer downloadCount, FileMapping fileMapping) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "file_owner_type")
+    private FileOwnerTypes fileOwnerType;
+
+    public File(UUID id, String originalFilename, String storedFilename, String filePath, String fileSize, String fileContentType,
+                String fileExt, Integer downloadCount, UUID fileOwnerId, FileOwnerTypes fileOwnerType) {
         this.id = id;
         this.originalFilename = originalFilename;
         this.storedFilename = storedFilename;
@@ -40,10 +46,9 @@ public class File extends BaseTimeEntity {
         this.fileContentType = fileContentType;
         this.fileExt = fileExt;
         this.downloadCount = downloadCount;
-        this.fileMapping = fileMapping;
     }
 
-    public static File createFile (FileDto dto, FileMapping fileMapping) {
+    public static File createFile (FileDto dto) {
         return new File(
                 UUID.randomUUID(),
                 dto.originalFilename(),
@@ -53,12 +58,30 @@ public class File extends BaseTimeEntity {
                 dto.fileContentType(),
                 dto.fileExt(),
                 dto.downloadCount(),
-                fileMapping
+                dto.fileOwnerId(),
+                dto.fileOwnerTypes()
         );
     }
-    public static List<File> updateFiles (FileMapping fileMapping, List<FileDto> fileDtos) {
+
+    public static List<File> createFiles (List<FileDto> fileDtoList) {
+        return fileDtoList.stream()
+                .map(dto -> new File(
+                        UUID.randomUUID(),
+                        dto.originalFilename(),
+                        dto.storedFilename(),
+                        dto.filePath(),
+                        dto.fileSize(),
+                        dto.fileContentType(),
+                        dto.fileExt(),
+                        dto.downloadCount(),
+                        dto.fileOwnerId(),
+                        dto.fileOwnerTypes()
+                ))
+                .toList();
+    }
+    public static List<File> updateFiles (List<FileDto> fileDtos) {
         return fileDtos.stream()
-                .map(dto -> File.createFile(dto, fileMapping)
+                .map(dto -> File.createFile(dto)
                 )
                 .toList();
     }

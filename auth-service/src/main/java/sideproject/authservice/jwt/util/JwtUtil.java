@@ -114,7 +114,6 @@ public class JwtUtil {
     }
 
     public String getHeaderAccessToken(HttpServletRequest request) {
-        request.getRequestURI();
         return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
                 .filter(headerValue -> !org.apache.commons.lang3.StringUtils.startsWith(headerValue, TOKEN_PREFIX))
                 .map(token -> token.substring(TOKEN_PREFIX.length()))

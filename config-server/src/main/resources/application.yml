@@ -1,29 +1,34 @@
 server:
   port: 8888
 
-
 spring:
-  cloud:
-    config:
-      server:
-        native:
-          searchLocations: C:\dev\config
-          #"{cipher}9df5b4d3eb11706853e7371d462b491f3390fe7ea4d207eec629dbbeab8a0fcf"
-          # 경로에 있는 설정 파일 중 application.yml 파일은 config client로 등록되어 있는 마이크로 서비스가 공통으로 사용 함
-        encrypt:
-          enabled: false
 
   application:
     name: config-server
 
-  profiles:
-    active: native
-
   rabbitmq:
-    host: 127.0.0.1
+    host: compose_rabbitmq
     port: 5672
     username: guest
     password: guest
+
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations: file:/config
+        bootstrap: true
+#          "{cipher}9df5b4d3eb11706853e7371d462b491f3390fe7ea4d207eec629dbbeab8a0fcf"
+#           경로에 있는 설정 파일 중 application.yml 파일은 config client로 등록되어 있는 마이크로 서비스가 공통으로 사용 함
+#        git:
+#          uri: ""
+#          username: ""
+#          password: ""
+        encrypt:
+          enabled: true
+
+  profiles:
+    active: native
 
 eureka:
 
@@ -40,8 +45,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans, httpexchanges, busrefresh
+        include: info, loggers, refresh, health, beans, httpexchanges, busrefresh, env
 
   endpoint:
+    health:
+      show-details: always
     shutdown:
       enabled: true

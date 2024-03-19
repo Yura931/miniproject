@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  auth-service:
+    container_name: "auth-service"
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - C:\dev\dockerize:/usr/local/bin/dockerize
+    networks:
+      - yul-ecommerce
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-service:3306/mydb
+    command: ["dockerize", "-wait", "http://config-service:8888", "-timeout", "20s", "java","-jar","AuthService.jar"]
+
+  board-service:
+    container_name: "board-service"
+    build:
+      context: ./board-service
+      dockerfile: Dockerfile
+    volumes:
+      - C:\dev\dockerize:/usr/local/bin/dockerize
+    networks:
+      - yul-ecommerce
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-service:3306/mydb
+    command: ["dockerize", "-wait", "http://config-service:8888", "-timeout", "20s", "java","-jar","BoardService.jar"]
+    
+
+networks:
+  yul-ecommerce:
+    external: true
+

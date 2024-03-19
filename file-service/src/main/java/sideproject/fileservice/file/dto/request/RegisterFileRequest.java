@@ -4,12 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.util.MultiValueMap;
+import sideproject.fileservice.file.entity.enums.FileOwnerTypes;
+
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class RegisterFileRequest {
-    private MultiValueMap<String, MultiValueMap> files;
+    private UUID fileOwnerId;
+    private FileOwnerTypes fileOwnerTypes;
 }

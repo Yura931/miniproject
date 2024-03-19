@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'sideproject'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 
 java {
     sourceCompatibility = '17'
@@ -41,3 +41,10 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task dockerComposeUp(type: Exec) {
+    dependsOn 'bootJar'
+    workingDir '../'
+    commandLine 'docker-compose', '-f', 'microservices-core-compose.yml', 'up', '--build', '-d', 'config-service'
+}
+bootJar.finalizedBy dockerComposeUp

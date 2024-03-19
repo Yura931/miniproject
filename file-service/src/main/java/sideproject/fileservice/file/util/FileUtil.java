@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import sideproject.fileservice.file.dto.FileDto;
+import sideproject.fileservice.file.entity.enums.FileOwnerTypes;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class FileUtil {
     @Value("${file.uploadPath}")
     String storedPathString;
 
-    public List<FileDto> uploadFileDto (List<MultipartFile> files) throws Exception {
+    public List<FileDto> uploadFileDto (List<MultipartFile> files, UUID fileOwnerId, FileOwnerTypes fileOwnerTypes) throws Exception {
 
         if (Boolean.FALSE.equals(files.isEmpty())) {
             File saveFolder = new File(filePathBlackList(storedPathString));
@@ -50,7 +51,8 @@ public class FileUtil {
                             filePath,
                             Long.toString(size),
                             file.getContentType(),
-                            fileExt, 0
+                            fileExt, 0,
+                            fileOwnerId, fileOwnerTypes
                         );
 
                     })

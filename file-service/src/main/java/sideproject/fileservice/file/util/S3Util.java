@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import sideproject.fileservice.file.dto.FileDto;
+import sideproject.fileservice.file.entity.enums.FileOwnerTypes;
 
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,13 +24,14 @@ public class S3Util {
     private final AmazonS3 amazonS3Client;
     private final Map<String, String> buketInfo;
 
-    public List<FileDto> uploadFileDto(MultipartHttpServletRequest request) {
+    public List<FileDto> uploadFileDto(MultipartHttpServletRequest request, UUID fileOwnerId, FileOwnerTypes fileOwnerTypes) {
 
+        final String fileType = StringUtils.lowerCase(fileOwnerTypes.toString());
         final Map<String, MultipartFile> files = request.getFileMap();
 
         if (Boolean.FALSE.equals(files.isEmpty())) {
 
-            String uploadFilePath = "bbs" +  "/" + getFolderName();
+            String uploadFilePath = fileType + File.separator + getFolderName();
             return files.entrySet()
                     .stream()
                     .map(Map.Entry::getValue)
@@ -64,7 +67,8 @@ public class S3Util {
                                     uploadFileUrl,
                                     Long.toString(size),
                                     file.getContentType(),
-                                    fileExt, 0
+                                    fileExt, 0,
+                                    fileOwnerId, fileOwnerTypes
                             );
 
                         } catch (Exception e) {

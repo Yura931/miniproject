@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  compose_zipkin:
+    container_name: "compose_zipkin"
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - yul-ecommerce
+
+networks:
+  yul-ecommerce:
+    external: true
