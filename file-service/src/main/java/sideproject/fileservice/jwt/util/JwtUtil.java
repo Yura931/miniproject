@@ -27,20 +27,24 @@ public class JwtUtil {
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        List<Map<String, String>> roles = new ArrayList<>();
-        roles = (List<Map<String, String>>) claims.get("roles");
+        List<Map<String, String>> roles = (List<Map<String, String>>) claims.get("roles");
 
         Collection<? extends GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.get("authority")))
                 .toList();
 
-        UserDetails userDetails = new User(getNickname(accessToken), "", authorities);
+        UserDetails userDetails = new User(getUserId(accessToken), "", authorities);
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
-    public String getNickname(String accessToken) {
+    private String getUserId(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        return Optional.ofNullable(claims.get("nickname").toString()).orElseGet(() -> "");
+        return Optional.ofNullable(claims.get("id").toString()).orElse("");
+    }
+
+    private String getNickname(String accessToken) {
+        Claims claims = extractAllClaims(accessToken);
+        return Optional.ofNullable(claims.get("nickname").toString()).orElse("");
     }
 
     public Long getExpiration(String token) {
