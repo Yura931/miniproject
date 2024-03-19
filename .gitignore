@@ -1,6 +1,3 @@
 /.idea
 /admin
-messaging-database-compose.yml
-microservices-compose.yml
-microservices-core-compose.yml
-monitoring-compose.yml
+docker-compose-messaging-database.yml

@@ -103,6 +103,6 @@ clean {
 task dockerComposeUp(type: Exec) {
 	dependsOn 'bootJar'
 	workingDir '../'
-	commandLine 'docker-compose', '-f', 'microservices-compose.yml', 'up', '--build', '-d', 'board-service'
+	commandLine 'docker-compose', '-f', 'docker-compose-microservices.yml', 'up', '--build', '-d', 'board-service'
 }
 bootJar.finalizedBy dockerComposeUp

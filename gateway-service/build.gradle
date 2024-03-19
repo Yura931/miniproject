@@ -69,7 +69,7 @@ tasks.named('test') {
 task dockerComposeUp(type: Exec) {
 	dependsOn 'bootJar'
 	workingDir '../'
-	commandLine 'docker-compose', '-f', 'microservices-core-compose.yml', 'up', '--build', '-d', 'gateway-service'
+	commandLine 'docker-compose', '-f', 'docker-compose-microservices-core.yml', 'up', '--build', '-d', 'gateway-service'
 }
 
 bootJar.finalizedBy dockerComposeUp

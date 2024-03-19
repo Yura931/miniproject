@@ -69,3 +69,10 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task dockerComposeUp(type: Exec) {
+    dependsOn 'bootJar'
+    workingDir '../'
+    commandLine 'docker-compose', '-f', 'docker-compose-microservices.yml', 'up', '--build', '-d', 'file-service'
+}
+bootJar.finalizedBy dockerComposeUp

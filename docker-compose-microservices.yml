@@ -32,7 +32,16 @@ services:
       - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
       - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-service:3306/mydb
     command: ["dockerize", "-wait", "http://config-service:8888", "-timeout", "20s", "java","-jar","BoardService.jar"]
-    
+  
+  file-service:
+    container_name: "file-service"
+    build:
+      context: ./file-service
+      dockerfile: Dockerfile
+    volumes:
+      - C:\dev\dockerize:/usr/local/bin/dockerize
+    networks:
+      - yul-ecommerce
 
 networks:
   yul-ecommerce:
