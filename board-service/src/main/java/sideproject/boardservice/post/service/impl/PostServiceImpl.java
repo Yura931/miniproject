@@ -12,8 +12,7 @@ import sideproject.boardservice.board.entity.Board;
 import sideproject.boardservice.board.entity.BoardCategory;
 import sideproject.boardservice.board.repository.BoardCategoryRepository;
 import sideproject.boardservice.board.repository.BoardRepository;
-import sideproject.boardservice.common.dto.FileDto;
-import sideproject.boardservice.common.exception.UserInformationNotMatchException;
+import sideproject.boardservice.global.exception.UserInformationNotMatchException;
 import sideproject.boardservice.feign.FileServiceClient;
 import sideproject.boardservice.messagequeue.PostProducer;
 import sideproject.boardservice.post.dto.*;
@@ -31,10 +30,7 @@ import sideproject.boardservice.post.repository.PostRepository;
 import sideproject.boardservice.post.repository.PostRepositoryCustom;
 import sideproject.boardservice.post.service.PostService;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

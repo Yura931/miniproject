@@ -16,6 +16,7 @@ import sideproject.boardservice.jwt.util.JwtUtil;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -29,12 +30,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         final String accessToken = jwtUtil.getHeaderAccessToken(request);
-        if (StringUtils.hasText(accessToken) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            Authentication authentication = jwtUtil.getAuthentication(accessToken);
-            securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
-        }
+        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .ifPresentOrElse(context -> {},
+                        () -> {
+                            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                            Authentication authentication = jwtUtil.getAuthentication(accessToken);
+                            securityContext.setAuthentication(authentication);
+                            SecurityContextHolder.setContext(securityContext);
+                        });
         filterChain.doFilter(request, response);
     }
 }

@@ -24,9 +24,6 @@ import static sideproject.gatewayservice.jwt.properties.JwtProperties.*;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //10000;    // 30분
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
-    private final RedisUtil redisUtil;
 
     public Long getExpiration(String token) {
         return extractClaim(token, Claims::getExpiration).getTime();

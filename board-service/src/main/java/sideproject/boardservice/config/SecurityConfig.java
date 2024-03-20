@@ -19,6 +19,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import sideproject.boardservice.jwt.filter.JwtAuthenticationFilter;
+import sideproject.boardservice.jwt.filter.JwtExceptionFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +29,7 @@ import sideproject.boardservice.jwt.filter.JwtAuthenticationFilter;
 public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
 
@@ -43,10 +45,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers("/board-service/management/**").permitAll()
-                        .requestMatchers("/board-service/api/v1/board/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/board-service/api/v1/board/**").hasRole("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .addFilter(corsFilter)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .accessDeniedHandler(accessDeniedHandler())
@@ -58,13 +61,13 @@ public class SecurityConfig {
 
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
         };
     }
 
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authenticationException) -> {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authenticationException.getMessage());
         };
     }
 }

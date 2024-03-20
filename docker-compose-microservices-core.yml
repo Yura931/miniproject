@@ -29,9 +29,7 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
       - ENCRYPT_KEY-STORE_LOCATION=file:/apiEncryptionKey.jks
-    command: ["dockerize", "-wait", "tcp://mariadb-service:3306", \
- "-wait", "http://discovery-service:8761", \
- "-timeout", "20s", "java","-jar","ConfigService.jar"]
+    command: ["dockerize", "-wait", "tcp://mariadb-service:3306", "-wait", "http://discovery-service:8761", "-timeout", "20s", "java","-jar","ConfigService.jar"]
 
   gateway-service:
     container_name: "gateway-service"
@@ -47,9 +45,7 @@ services:
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
       - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
-    command: ["dockerize", "-wait", "http://config-service:8888", \
-"-timeout", "20s", \
-"java","-jar","GatewayService.jar"]
+    command: ["dockerize", "-wait", "http://config-service:8888", "-wait", "http://discovery-service:8761", "-timeout", "20s", "java","-jar","GatewayService.jar"]
 
 networks:
   yul-ecommerce:

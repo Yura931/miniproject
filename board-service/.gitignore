@@ -36,3 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 /src/main/generated/
+
+gradlew
+gradlew.bat
+HELP.md
+settings.gradle

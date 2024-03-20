@@ -40,11 +40,11 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UnsupportedJwtException.class)
     public Result<?> handleUnsupportedJwtException(UnsupportedJwtException e) {
-        return errorHandler(e, 401);
+        return errorHandler(e, HttpStatus.UNAUTHORIZED.value());
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public Result<?> handleIllegalArgumentException(IllegalArgumentException e) {
-        return errorHandler(e, 401);
+        return errorHandler(e, HttpStatus.UNAUTHORIZED.value());
     }
     @ExceptionHandler(ExpiredRefreshTokenException.class)
     public ResponseEntity<Result> handleRefreshTokenInvalidException(ExpiredRefreshTokenException e) {

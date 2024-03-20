@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers(ADMIN_LIST).hasRole("ADMIN")
+                        .requestMatchers(ADMIN_LIST).hasRole(UserRoles.ROLE_ADMIN.name())
                         .anyRequest().permitAll())
                 .addFilter(corsFilter)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

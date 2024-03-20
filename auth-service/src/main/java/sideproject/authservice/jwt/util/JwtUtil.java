@@ -3,7 +3,6 @@ package sideproject.authservice.jwt.util;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +13,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import sideproject.authservice.global.exception.ExpiredJwtTokenException;
+import sideproject.authservice.global.exception.InvalidTokenException;
 import sideproject.authservice.global.exception.NotFoundTokenFromHeaderException;
+import sideproject.authservice.jwt.enums.ClaimsKey;
 import sideproject.authservice.principal.PrincipalDetails;
 import sideproject.authservice.redis.RedisUtil;
 import sideproject.authservice.redis.dto.RedisDto;
@@ -23,6 +24,7 @@ import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
 
+import static sideproject.authservice.jwt.enums.ClaimsKey.*;
 import static sideproject.authservice.jwt.properties.JwtProperties.*;
 
 @Component
@@ -32,27 +34,26 @@ public class JwtUtil {
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        List<Map<String, String>> roles = new ArrayList<>();
-        roles = (List<Map<String, String>>) claims.get("roles");
+        List<Map<String, String>> roles = (List<Map<String, String>>) claims.get(ROLES.getValue());
 
         Collection<? extends GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+                .map(role -> new SimpleGrantedAuthority(role.get(AUTHORITY.getValue())))
                 .toList();
 
-        UserDetails userDetails = new User(getNickname(accessToken), "", authorities);
+        UserDetails userDetails = new User(getUserId(accessToken), "", authorities);
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken, authorities);
     }
 
-    public String getNickname(String accessToken) {
+    public String getUserId(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        return Optional.ofNullable(claims.get("nickname").toString()).orElseGet(() -> "");
+        return Optional.ofNullable(claims.get(ID.getValue()).toString()).orElseThrow(InvalidTokenException::new);
     }
 
     public String generateToken(PrincipalDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("roles", userDetails.getAuthorities());
-        extraClaims.put("id", userDetails.getId());
-        extraClaims.put("nickname", userDetails.getNickname());
+        extraClaims.put(ROLES.getValue(), userDetails.getAuthorities());
+        extraClaims.put(ID.getValue(), userDetails.getId());
+        extraClaims.put(NICKNAME.getValue(), userDetails.getNickname());
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
@@ -63,7 +64,7 @@ public class JwtUtil {
     }
 
     public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        extraClaims.put("roles", userDetails.getAuthorities());
+        extraClaims.put(ROLES.getValue(), userDetails.getAuthorities());
         String refreshToken = Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
@@ -115,9 +116,9 @@ public class JwtUtil {
 
     public String getHeaderAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
-                .filter(headerValue -> !org.apache.commons.lang3.StringUtils.startsWith(headerValue, TOKEN_PREFIX))
+                .filter(headerValue -> headerValue.startsWith(TOKEN_PREFIX))
                 .map(token -> token.substring(TOKEN_PREFIX.length()))
-                .orElseThrow(() -> new NotFoundTokenFromHeaderException());
+                .orElseThrow(NotFoundTokenFromHeaderException::new);
     }
 
 }

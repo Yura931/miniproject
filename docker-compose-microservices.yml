@@ -14,8 +14,6 @@ services:
       - yul-ecommerce
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
-      - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-service:3306/mydb
     command: ["dockerize", "-wait", "http://config-service:8888", "-timeout", "20s", "java","-jar","AuthService.jar"]
 
   board-service:
@@ -29,8 +27,6 @@ services:
       - yul-ecommerce
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
-      - EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service:8761/eureka
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-service:3306/mydb
     command: ["dockerize", "-wait", "http://config-service:8888", "-timeout", "20s", "java","-jar","BoardService.jar"]
   
   file-service:

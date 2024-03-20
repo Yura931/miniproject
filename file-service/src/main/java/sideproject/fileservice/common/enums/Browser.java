@@ -3,7 +3,7 @@ package sideproject.fileservice.common.enums;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-public enum Browser {
+public enum Browser implements EnumModel {
     MSIE("MSIE", EncodedFileName.MSIE),
     FIREFOX("Firefox", EncodedFileName.FIREFOX_OPERA),
 
@@ -19,10 +19,12 @@ public enum Browser {
         this.encodedFileName = encodedFileName;
     }
 
+    @Override
     public String getKey() {
         return name();
     }
 
+    @Override
     public String getValue() {
         return this.value;
     }
@@ -46,7 +48,7 @@ public enum Browser {
         },
         CHROME {
             @Override
-            String encodedFilename(String filename) throws Exception {
+            String encodedFilename(String filename) {
                 return filename.chars()
                         .mapToObj(c -> {
                             try {

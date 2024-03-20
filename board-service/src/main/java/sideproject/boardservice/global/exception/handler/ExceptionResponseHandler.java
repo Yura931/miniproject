@@ -1,4 +1,4 @@
-package sideproject.boardservice.common.exception.handler;
+package sideproject.boardservice.global.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +17,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import sideproject.boardservice.common.dto.Result;
 import sideproject.boardservice.common.dto.ResultHandler;
-import sideproject.boardservice.common.exception.ExpiredJwtTokenException;
-import sideproject.boardservice.common.exception.UserInformationNotMatchException;
+import sideproject.boardservice.global.exception.ExpiredJwtTokenException;
+import sideproject.boardservice.global.exception.UserInformationNotMatchException;
 
 import java.net.UnknownHostException;
 import java.util.Map;

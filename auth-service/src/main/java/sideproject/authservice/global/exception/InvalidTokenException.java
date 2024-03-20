@@ -1,17 +1,12 @@
 package sideproject.authservice.global.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import sideproject.authservice.global.exception.enums.ErrorCode;
 
+@RequiredArgsConstructor
 @Getter
 public class InvalidTokenException extends RuntimeException {
-    private String message;
+    private final ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
 
-    public InvalidTokenException(String message) {
-        this.message = message;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
 }

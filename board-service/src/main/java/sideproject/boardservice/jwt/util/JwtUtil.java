@@ -13,12 +13,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import sideproject.boardservice.common.exception.ExpiredJwtTokenException;
+import sideproject.boardservice.global.exception.ExpiredJwtTokenException;
+import sideproject.boardservice.global.exception.InvalidTokenException;
+import sideproject.boardservice.global.exception.NotFoundTokenFromHeaderException;
+import sideproject.boardservice.jwt.enums.ClaimsKey;
 
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
 
+import static sideproject.boardservice.jwt.enums.ClaimsKey.*;
 import static sideproject.boardservice.jwt.properties.JwtProperties.*;
 
 
@@ -28,11 +32,10 @@ public class JwtUtil {
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        List<Map<String, String>> roles = new ArrayList<>();
-        roles = (List<Map<String, String>>) claims.get("roles");
+        List<Map<String, String>> roles = (List<Map<String, String>>) claims.get(ROLES.getValue());
 
         Collection<? extends GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+                .map(role -> new SimpleGrantedAuthority(role.get(AUTHORITY.getValue())))
                 .toList();
 
         UserDetails userDetails = new User(getUserId(accessToken), "", authorities);
@@ -41,12 +44,12 @@ public class JwtUtil {
 
     public String getNickname(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        return Optional.ofNullable(claims.get("nickname").toString()).orElseGet(() -> "");
+        return Optional.ofNullable(claims.get(NICKNAME.getValue()).toString()).orElseGet(() -> "");
     }
 
     public String getUserId(String accessToken) {
         Claims claims = extractAllClaims(accessToken);
-        return Optional.ofNullable(claims.get("id").toString()).orElseGet(() -> "");
+        return Optional.ofNullable(claims.get(ID.getValue()).toString()).orElseThrow(InvalidTokenException::new);
     }
 
     public Long getExpiration(String token) {
@@ -83,13 +86,9 @@ public class JwtUtil {
     }
 
     public String getHeaderAccessToken(HttpServletRequest request) {
-        String headerValue = request.getHeader(AUTHORIZATION_HEADER);
-        if (Objects.isNull(headerValue) || StringUtils.isEmpty(headerValue)
-                || !org.apache.commons.lang3.StringUtils.startsWith(headerValue, TOKEN_PREFIX)) {
-            return "";
-        }
-
-
-        return headerValue.substring(TOKEN_PREFIX.length());
+        return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
+                .filter(headerValue -> headerValue.startsWith(TOKEN_PREFIX))
+                .map(token -> token.substring(TOKEN_PREFIX.length()))
+                .orElseThrow(NotFoundTokenFromHeaderException::new);
     }
 }

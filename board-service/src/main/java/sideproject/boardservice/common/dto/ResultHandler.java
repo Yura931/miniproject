@@ -1,6 +1,6 @@
 package sideproject.boardservice.common.dto;
 
-import sideproject.boardservice.common.exception.enums.ErrorCode;
+import sideproject.boardservice.global.exception.enums.ErrorCode;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class ResultHandler {
 
     public static Result<?> errorHandle(ErrorCode e) {
         return Result.builder()
-                .status(e.getStatus())
+                .status(e.getStatus().value())
                 .msg(e.getMessage())
                 .data(e)
                 .errorName(e.name())
