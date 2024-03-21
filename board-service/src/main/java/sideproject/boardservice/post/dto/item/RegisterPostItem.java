@@ -16,7 +16,7 @@ public class RegisterPostItem {
     private Long boardId;
     private String postTitle;
     private String postContent;
-    private String lastModifiedBy;
+    private UUID lastModifiedBy;
     private LocalDateTime lastModifiedDate;
 
     public static RegisterPostItem postEntityToDto(Post post) {

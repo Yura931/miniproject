@@ -97,7 +97,6 @@ public class BoardRepositoryImpl extends QuerydslRepositorySupport implements Bo
                 return;
             case BOARD_TYPE:
                 specifiers.add(new OrderSpecifier(order, board.boardType));
-                return;
         }
     }
 

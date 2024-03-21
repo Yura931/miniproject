@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Profile;
 import sideproject.boardservice.TestData;
 import sideproject.boardservice.board.dto.BoardCategoryDto;
 import sideproject.boardservice.board.dto.UpdateBoardDto;

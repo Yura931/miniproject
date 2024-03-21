@@ -78,8 +78,13 @@ tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
 
-tasks.named('test') {
+/*tasks.named('test') {
 	useJUnitPlatform()
+}*/
+
+tasks.create('customTest', Test) {
+	useJUnitPlatform()
+	systemProperty 'spring.profiles.active', 'test' /* test 실행 시 profiles test 적용 */
 }
 
 // Querydsl 설정부
@@ -88,6 +93,7 @@ def generated = 'src/main/generated'
 // querydsl QClass 파일 생성 위치를 지정
 tasks.withType(JavaCompile) {
 	options.getGeneratedSourceOutputDirectory().set(file(generated))
+	options.compilerArgs << '-Xlint:unchecked' /* unchecked, unsafe 연산 코드 감지 */
 }
 
 // java source set에 querydsl Qclass 위치 추가

@@ -20,5 +20,5 @@ public class BaseEntity extends BaseTimeEntity{
     private UUID createdBy;
 
     @LastModifiedBy
-    private String lastModifiedBy;
+    private UUID lastModifiedBy;
 }

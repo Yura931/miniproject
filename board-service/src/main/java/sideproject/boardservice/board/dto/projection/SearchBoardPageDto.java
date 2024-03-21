@@ -9,6 +9,7 @@ import sideproject.boardservice.board.entity.enums.BoardType;
 import sideproject.boardservice.board.entity.enums.BoardVisible;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,5 +22,5 @@ public class SearchBoardPageDto {
     private BoardType boardType;
     private String boardTitle;
     private LocalDateTime createDate;
-    private String createdBy;
+    private UUID createdBy;
 }

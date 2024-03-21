@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
+@Rollback
 class BoardRepositoryTest {
 
     @Autowired
@@ -38,10 +38,13 @@ class BoardRepositoryTest {
     void beforeEach() {
         testData.boards(10)
                 .stream().map(board -> boardRepository.save(board))
+                .toList()
+                .stream()
                 .findFirst()
                 .ifPresent(board -> testData.setFirstData(testData.getKey(), board));
 
-        boardRepository.flush();
+        em.flush();
+        em.clear();
     }
 
     @Test

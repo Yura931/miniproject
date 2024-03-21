@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers("/board-service/management/**").permitAll()
-                        .requestMatchers("/board-service/api/v1/board/**").hasRole("ROLE_ADMIN")
+                        .requestMatchers("/board-service/api/v1/board/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilter(corsFilter)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

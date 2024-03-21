@@ -14,7 +14,7 @@ public record KafkaRegisterPostDto (
         LocalDateTime createDate,
         LocalDateTime modifiedDate,
         UUID createdBy,
-        String lastModifiedBy
+        UUID lastModifiedBy
 ) {
     public static KafkaRegisterPostDto postEntityToDto(Post post) {
         return new KafkaRegisterPostDto(

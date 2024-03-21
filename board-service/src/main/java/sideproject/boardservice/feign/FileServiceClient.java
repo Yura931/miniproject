@@ -14,8 +14,8 @@ import java.util.UUID;
 public interface FileServiceClient {
     @GetMapping("/api/v1/files/{fileOwnerId}")
     ResponseEntity<List<FileDto>> files(@PathVariable UUID fileOwnerId, @RequestBody String fileOwnerType);
-    @PostMapping(value = "/api/v1/files/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<UUID> fileRegister(@RequestPart  List<MultipartFile> files);
+    @PostMapping(value = "/api/v1/files/{postId}/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<UUID> fileRegister(@RequestPart  List<MultipartFile> files, @PathVariable UUID postId);
     @PostMapping(value = "/api/v1/files/{fileOwnerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<UUID> fileUpdate(@RequestPart("files") List<MultipartFile> files, @PathVariable UUID fileOwnerId);
     @DeleteMapping("/api/v1/files/{fileOwnerId}")
